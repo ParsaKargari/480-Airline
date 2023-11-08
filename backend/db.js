@@ -1,16 +1,24 @@
-const mysql = require('mysql');
+const { Pool } = require('pg');
 
-const db = mysql.createConnection({
+const pool = new Pool({
+  user: 'postgres',
   host: 'localhost',
-  user: '',
-  password: '',
-  database: '',
+  database: 'airlines',
+  password: 'password',
+  port: 5432,
 });
 
-db.connect((err) => {
-  if (err) {
-    console.error('Database connection failed: ' + err.stack);
-    return;
-  }
-  console.log('Connected to the database');
+pool.on('error', (err) => {
+  console.error('Unexpected error on idle client', err);
+  process.exit(-1);
 });
+
+module.exports = {
+  query: (text, params) => {
+    return new Promise((resolve, reject) => {
+      pool.query(text, params)
+        .then((result) => resolve(result))
+        .catch((error) => reject(error));
+    });
+  },
+};
