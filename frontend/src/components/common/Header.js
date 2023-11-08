@@ -43,7 +43,7 @@ export default function Header() {
       <AppBar position="static" className={classes.appBar}>
         <Toolbar>
           <Typography variant="h6" className={classes.title}>
-            POSD Airline
+          Moussavi Airlines
           </Typography>
           <Button color="inherit" onClick={handleLoginOpen}>Login</Button>
           <LoginModal open={isLoginOpen} handleClose={handleLoginClose} />

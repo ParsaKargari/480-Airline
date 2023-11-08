@@ -6,7 +6,7 @@ import { Typography, Link, makeStyles } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
   footer: {
     backgroundColor: theme.palette.background.paper,
-    padding: theme.spacing(6),
+    padding: theme.spacing(4),
   },
 }));
 
@@ -16,15 +16,12 @@ export default function Footer() {
   return (
     <footer className={classes.footer}>
       <Typography variant="h6" align="center" gutterBottom>
-        Airline Company
-      </Typography>
-      <Typography variant="subtitle1" align="center" color="textSecondary" component="p">
-        Flight Reservation System
+        Moussavi Airlines
       </Typography>
       <Typography variant="body2" color="textSecondary" align="center">
         {'Copyright © '}
         <Link color="inherit" href="https://material-ui.com/">
-          Your Website
+        Moussavi Airlines
         </Link>{' '}
         {new Date().getFullYear()}
         {'.'}
