@@ -4,6 +4,8 @@ import React from "react";
 import { Container, Typography, Paper, makeStyles } from "@material-ui/core";
 import Header from "./common/Header";
 import Footer from "./common/Footer";
+import FlightSearch from "./FlightSearch";
+import { blue } from "@material-ui/core/colors";
 
 const useStyles = makeStyles((theme) => ({
   mainFeaturedPost: {
@@ -23,6 +25,9 @@ const useStyles = makeStyles((theme) => ({
       paddingRight: 0,
     },
   },
+  searchContainer: {
+    marginBottom: theme.spacing(6),
+  }
 }));
 
 export default function HomePage() {
@@ -31,7 +36,9 @@ export default function HomePage() {
   return (
     <>
       <Header />
-      
+      <div className={classes.searchContainer}>
+        <FlightSearch />
+      </div>
       <Container maxWidth="lg">
         {/* Hero unit */}
         <Paper className={classes.mainFeaturedPost}>
