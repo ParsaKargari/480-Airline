@@ -7,6 +7,7 @@ const port = 8000; // Backend server will run on port 8000
 
 // Use the CORS middleware to allow requests from http://localhost:3000
 app.use(cors({ origin: 'http://localhost:3000' }));
+app.use(bodyParser.json());
 
 app.get('/flights', async (req, res) => {
   try {
