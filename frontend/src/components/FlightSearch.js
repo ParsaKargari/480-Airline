@@ -33,6 +33,15 @@ const mockFlights = [
   { id: 1, label: "Flight A to New York" },
   { id: 2, label: "Flight B to Los Angeles" },
   { id: 3, label: "Flight C to Miami" },
+  { id: 4, label: "Flight D to Chicago" },
+  { id: 5, label: "Flight E to San Francisco" },
+  { id: 6, label: "Flight F to Seattle" },
+  { id: 7, label: "Flight G to Boston" },
+  { id: 8, label: "Flight H to Washington D.C." },
+  { id: 9, label: "Flight I to Las Vegas" },
+  { id: 10, label: "Flight J to Denver" },
+  { id: 11, label: "Flight K to San Diego" },
+  { id: 12, label: "Flight L to Honolulu" },
 ];
 
 function Alert(props) {

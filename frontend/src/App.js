@@ -1,14 +1,15 @@
 // src/App.js
 
-import React from 'react';
-import HomePage from './components/HomePage';
+import React from "react";
+import HomePage from "./components/HomePage";
 import { makeStyles } from "@material-ui/core";
+import {AuthProvider} from "./components/contexts/AuthContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    display: 'flex',
-    flexDirection: 'column',
-    minHeight: '100vh',
+    display: "flex",
+    flexDirection: "column",
+    minHeight: "100vh",
   },
 }));
 
@@ -17,7 +18,10 @@ function App() {
 
   return (
     <div className={classes.root}>
-      <HomePage />
+      <AuthProvider>
+        <HomePage />
+      </AuthProvider>
+
       {/* Footer component will now be pushed to the bottom */}
     </div>
   );
