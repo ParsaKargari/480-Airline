@@ -1,5 +1,3 @@
-// src/components/common/Header.js
-
 import React, { useState, useContext } from "react";
 import {
   AppBar,
@@ -7,8 +5,10 @@ import {
   Typography,
   Button,
   makeStyles,
+  Link,
 } from "@material-ui/core";
-import LoginModal from "../LoginModal"; // Ensure this path is correct
+import { Link as RouterLink, useNavigate } from "react-router-dom";
+import LoginModal from "../LoginModal";
 import { AuthContext } from "../contexts/AuthContext";
 
 const useStyles = makeStyles((theme) => ({
@@ -20,15 +20,19 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 1,
+    cursor: "pointer", // Add cursor pointer for indicating it's clickable
+    // make it smaller width
+    width: "fit-content",
   },
   appBar: {
-    backgroundColor: "#003366", // Navy Blue color
+    backgroundColor: "#003366",
   },
 }));
 
 export default function Header() {
   const classes = useStyles();
   const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const [isLoginOpen, setLoginOpen] = useState(false);
 
@@ -40,23 +44,37 @@ export default function Header() {
     setLoginOpen(false);
   };
 
+  const handleTitleClick = () => {
+    // Navigate to the home page when the title is clicked
+    navigate("/");
+  };
+
+  const handleLogoutClick = () => {
+    // Perform logout and navigate to the home page
+    logout();
+    navigate("/");
+  };
+
   return (
     <div className={classes.root}>
       <AppBar position="static" className={classes.appBar}>
         <Toolbar>
-          <Typography variant="h6" className={classes.title}>
-            Moussavi Airlines
-          </Typography>
+          <Link
+            component={RouterLink}
+            to="/"
+            color="inherit"
+            underline="none"
+            className={classes.title}
+            onClick={handleTitleClick}
+          >
+            <Typography variant="h6">Moussavi Airlines</Typography>
+          </Link>
           {user ? (
             <>
               <Typography variant="h6" style={{ marginRight: "1rem" }}>
                 Welcome, {user.username}
               </Typography>
-              <Button
-                color="inherit"
-                onClick={logout}
-                style={{ marginRight: "1rem" }}
-              >
+              <Button color="inherit" onClick={handleLogoutClick}>
                 Logout
               </Button>
             </>

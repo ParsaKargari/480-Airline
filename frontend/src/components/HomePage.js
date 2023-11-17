@@ -1,11 +1,8 @@
 // src/components/HomePage.js
 
-import React, { useContext } from "react";
+import React from "react";
 import { Container, Typography, Paper, makeStyles } from "@material-ui/core";
-import Header from "./common/Header";
-import Footer from "./common/Footer";
 import FlightSearch from "./FlightSearch";
-import { AuthContext } from "./contexts/AuthContext";
 
 const useStyles = makeStyles((theme) => ({
   mainFeaturedPost: {
@@ -32,12 +29,8 @@ const useStyles = makeStyles((theme) => ({
 
 export default function HomePage() {
   const classes = useStyles();
-  // What user is logged in?
-  const { user, logout } = useContext(AuthContext);
-
   return (
     <>
-      <Header />
       <div className={classes.searchContainer}>
         <FlightSearch />
       </div>
@@ -69,9 +62,7 @@ export default function HomePage() {
             </div>
           </Container>
         </Paper>
-        {/* End hero unit */}
       </Container>
-      <Footer />
     </>
   );
 }
