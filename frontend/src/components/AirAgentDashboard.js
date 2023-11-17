@@ -1,7 +1,7 @@
 // src/components/DefaultDashboard.js
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
-import { makeStyles } from "@material-ui/core";
+import { Form, useLocation } from "react-router-dom";
+import { Button, FormControl, Switch, makeStyles } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
@@ -17,6 +17,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import PersonIcon from "@material-ui/icons/Person";
 import EventSeatIcon from "@material-ui/icons/EventSeat";
 import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 
 // import seat ico
 
@@ -68,6 +69,12 @@ const useStyles = makeStyles((theme) => ({
   selected: {
     backgroundColor: "#4CAF50 !important",
     color: "#fff",
+  },
+  pointerSelected: {
+    cursor: "pointer",
+    "&:hover": {
+      transform: "scale(1.05)",
+    },
   },
   sold: {
     backgroundColor: "#ff964f !important",
@@ -147,14 +154,13 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     backgroundColor: "#fff",
     borderRadius: "10px",
-    marginTop: "45px",
+    marginTop: "25px",
     // navy blue border
     padding: "30px",
     // shadow
     boxShadow: "0 0 10px rgba(0,0,0,0.2)",
     flexDirection: "column",
     alignItems: "center",
-    height: "75%",
     width: "40%",
   },
 }));
@@ -164,6 +170,7 @@ const AirAgentDashboard = () => {
   const selectedFlight = location.state && location.state.selectedFlight;
   const classes = useStyles();
   const [selectedSeat, setSelectedSeat] = useState("");
+  const [viewMode, setViewMode] = useState(true);
   const seatOptions = ["ordinary", "comfort", "business"];
   const [selectedPage, setSelectedPage] = useState("passengerList");
   const seatPrices = {
@@ -251,7 +258,7 @@ const AirAgentDashboard = () => {
     const seatKey = getSeatNumber(rowIndex, seatIndex);
 
     // Cannot select a seat that is NOT sold out
-    if (!isSoldOut(rowIndex, seatIndex)) {
+    if (!isSoldOut(rowIndex, seatIndex) && viewMode) {
       return;
     }
 
@@ -290,9 +297,20 @@ const AirAgentDashboard = () => {
                 {[1, 2].map((seat) => (
                   <div
                     key={seat}
-                    className={`${classes.seat}  ${
+                    className={`
+                    ${classes.seat}  ${
                       seatClassifier(rowIndex, seat) === seatOptions[2]
                         ? classes.business
+                        : ""
+                    }
+                    ${
+                      selectedSeat === getSeatNumber(rowIndex, seat)
+                        ? classes.selected
+                        : ""
+                    }
+                    ${
+                      !viewMode && !isSoldOut(rowIndex, seat)
+                        ? classes.pointerSelected
                         : ""
                     }
                   ${
@@ -300,6 +318,7 @@ const AirAgentDashboard = () => {
                       ? classes.comfort
                       : ""
                   }
+                  
                   ${isSoldOut(rowIndex, seat) ? classes.sold : ""}
                   `}
                     onClick={() => handleSeatClick(rowIndex, seat)}
@@ -307,6 +326,9 @@ const AirAgentDashboard = () => {
                     {!isSoldOut(rowIndex, seat)
                       ? ""
                       : getSeatNumber(rowIndex, seat)}
+                    {!viewMode && !isSoldOut(rowIndex, seat)
+                      ? getSeatNumber(rowIndex, seat)
+                      : ""}
                   </div>
                 ))}
                 <div style={{ width: "32px" }}></div>
@@ -318,6 +340,16 @@ const AirAgentDashboard = () => {
                         ? classes.business
                         : ""
                     }
+                    ${
+                      selectedSeat === getSeatNumber(rowIndex, seat)
+                        ? classes.selected
+                        : ""
+                    }
+                    ${
+                      !viewMode && !isSoldOut(rowIndex, seat)
+                        ? classes.pointerSelected
+                        : ""
+                    }
                   ${
                     seatClassifier(rowIndex, seat) === seatOptions[1]
                       ? classes.comfort
@@ -330,6 +362,9 @@ const AirAgentDashboard = () => {
                     {!isSoldOut(rowIndex, seat)
                       ? ""
                       : getSeatNumber(rowIndex, seat)}
+                    {!viewMode && !isSoldOut(rowIndex, seat)
+                      ? getSeatNumber(rowIndex, seat)
+                      : ""}
                   </div>
                 ))}
                 <div style={{ width: "32px" }}></div>
@@ -343,6 +378,16 @@ const AirAgentDashboard = () => {
                       : ""
                   }
                   ${
+                    selectedSeat === getSeatNumber(rowIndex, seat)
+                      ? classes.selected
+                      : ""
+                  }
+                    ${
+                      !viewMode && !isSoldOut(rowIndex, seat)
+                        ? classes.pointerSelected
+                        : ""
+                    }
+                  ${
                     seatClassifier(rowIndex, seat) === seatOptions[1]
                       ? classes.comfort
                       : ""
@@ -354,6 +399,9 @@ const AirAgentDashboard = () => {
                     {!isSoldOut(rowIndex, seat)
                       ? ""
                       : getSeatNumber(rowIndex, seat)}
+                    {!viewMode && !isSoldOut(rowIndex, seat)
+                      ? getSeatNumber(rowIndex, seat)
+                      : ""}
                   </div>
                 ))}
               </div>
@@ -415,6 +463,19 @@ const AirAgentDashboard = () => {
           </div>
         </div>
 
+        <FormControlLabel
+          control={
+            <Switch
+              checked={viewMode}
+              onChange={() => setViewMode(!viewMode)}
+              name="viewMode"
+              color="primary"
+              value={viewMode}
+            />
+          }
+          label="View Mode"
+        />
+
         <div className={classes.containerInfo}>
           <BottomNavigation
             className={classes.seatSelector}
@@ -437,7 +498,9 @@ const AirAgentDashboard = () => {
               <Paper elevation={3} className={classes.passengerDetailPaper}>
                 <List>
                   <ListItem>
-                    <ListItemIcon style={{ color: getIconColor(getSeatType(selectedSeat)) }}>
+                    <ListItemIcon
+                      style={{ color: getIconColor(getSeatType(selectedSeat)) }}
+                    >
                       <PersonIcon />
                     </ListItemIcon>
                     <ListItemText
@@ -461,19 +524,37 @@ const AirAgentDashboard = () => {
                       primary={`Price: ${getSeatPrice(selectedSeat)}`}
                     />
                   </ListItem>
-                  {/* Add more details as needed */}
                 </List>
               </Paper>
+              <Button
+                variant="contained"
+                color="primary"
+                style={{ marginTop: "20px" }}
+                disabled={
+                  !(
+                    getSeatPrice(selectedSeat) === undefined &&
+                    getSeatType(selectedSeat) === undefined
+                  )
+                }
+                onClick={() => {
+                  // You can implement the checkout logic here
+                  alert(`Checkout Successful! Total Price:`);
+                }}
+              >
+                Book Now
+              </Button>
             </div>
           )}
           {/* Display Passenger List */}
           {selectedPage === "passengerList" && (
             <div className={classes.selectedSeatsContainer}>
               <Paper elevation={3} className={classes.passengerListPaper}>
-                <List style={{ overflow: "auto", maxHeight: "300px" }}>
+                <List style={{ overflow: "auto", maxHeight: "250px" }}>
                   {passengerList.map((passenger) => (
                     <ListItem key={passenger.name}>
-                      <ListItemIcon style={{ color: getIconColor(passenger.seatType) }}>
+                      <ListItemIcon
+                        style={{ color: getIconColor(passenger.seatType) }}
+                      >
                         <PersonIcon />
                       </ListItemIcon>
                       <ListItemText
