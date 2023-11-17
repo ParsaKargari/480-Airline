@@ -5,11 +5,12 @@ import { makeStyles } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
-import RestoreIcon from "@material-ui/icons/Restore";
-import FavoriteIcon from "@material-ui/icons/Favorite";
-import LocationOnIcon from "@material-ui/icons/LocationOn";
+import Button from "@material-ui/core/Button";
+import FlightTakeoffIcon from "@material-ui/icons/FlightTakeoff";
+import FlightLandIcon from "@material-ui/icons/FlightLand";
+import FlightIcon from "@material-ui/icons/Flight";
+import AccessTimeIcon from "@material-ui/icons/AccessTime";
 
-// Declare the global variable for the number of rows
 const numRows = 13;
 
 const useStyles = makeStyles((theme) => ({
@@ -25,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     width: "50%",
+    height: "100%",
   },
   plane: {
     display: "flex",
@@ -98,6 +100,10 @@ const useStyles = makeStyles((theme) => ({
   legendContainer: {
     display: "flex",
     justifyContent: "center",
+    backgroundColor: "#fff",
+    borderRadius: "10px",
+    padding: "10px",
+    boxShadow: "0 0 10px rgba(0,0,0,0.2)",
     marginBottom: theme.spacing(2),
   },
   legendItem: {
@@ -109,8 +115,14 @@ const useStyles = makeStyles((theme) => ({
   seatSelector: {
     marginBottom: theme.spacing(2),
     backgroundColor: "inherit",
+    width: "100%",
   },
   selectedSeatsContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "left",
+    width: "100%",
+    height: "50%",
     marginTop: theme.spacing(2),
   },
   seatPrev: {
@@ -124,12 +136,17 @@ const useStyles = makeStyles((theme) => ({
   },
   containerInfo: {
     display: "flex",
-    // backgroundColor: "#DCDCDC",
+    backgroundColor: "#fff",
+    borderRadius: "10px",
+    marginTop: "45px",
+    // navy blue border
     padding: "30px",
+    // shadow
+    boxShadow: "0 0 10px rgba(0,0,0,0.2)",
     flexDirection: "column",
     alignItems: "center",
-    height: "100%",
-    width: "70%",
+    height: "75%",
+    width: "40%",
   },
 }));
 
@@ -141,6 +158,11 @@ const DefaultDashboard = () => {
   const seatOptions = ["ordinary", "comfort", "business"];
   const [selectedSeatType, setSelectedSeatType] = useState("all");
   const soldOutSeats = ["A1", "A3", "B2", "G12", "D7"];
+  const seatPrices = {
+    ordinary: 100,
+    comfort: 140,
+    business: 250,
+  };
 
   const getSeatNumber = (row, seat) => {
     const seatLetter = String.fromCharCode(64 + seat);
@@ -152,6 +174,20 @@ const DefaultDashboard = () => {
     const row = seatKey.split("-")[0];
     const seatLetter = String.fromCharCode(64 + parseInt(seat));
     return `${seatLetter}${row}`;
+  };
+
+  const calculateTotalPrice = () => {
+    let totalPrice = 0;
+
+    selectedSeats.forEach((seat) => {
+      const seatType = seatClassifier(
+        parseInt(seat.split("-")[0]),
+        parseInt(seat.split("-")[1])
+      );
+      totalPrice += seatPrices[seatType];
+    });
+
+    return totalPrice;
   };
 
   // Function to check if a seat is sold out
@@ -174,7 +210,10 @@ const DefaultDashboard = () => {
     const seatIndexInSelectedSeats = newSelectedSeats.indexOf(seatKey);
 
     // Check if the seat is sold out
-    if (isSoldOut(rowIndex, seatIndex)) {
+    if (
+      isSoldOut(rowIndex, seatIndex) ||
+      !filterSeatsByType(rowIndex, seatIndex)
+    ) {
       // Seat is sold out, do nothing
       return;
     }
@@ -204,17 +243,84 @@ const DefaultDashboard = () => {
   return (
     <div className={classes.root}>
       <div className={classes.seatSelection}>
-        <div className={classes.plane}>
-          {[...Array(numRows)].map((_, rowIndex) => (
-            <div key={rowIndex} className={classes.row}>
-              {[1, 2].map((seat) => (
-                <div
-                  key={seat}
-                  className={`${classes.seat} ${
-                    selectedSeats.includes(`${rowIndex}-${seat}`)
-                      ? classes.selected
+        <div 
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            backgroundColor: "#e9effb",
+            height: "100%",
+            padding: "20px",
+          }}
+        >
+          <div className={classes.plane}>
+            {[...Array(numRows)].map((_, rowIndex) => (
+              <div key={rowIndex} className={classes.row}>
+                {[1, 2].map((seat) => (
+                  <div
+                    key={seat}
+                    className={`${classes.seat} ${
+                      selectedSeats.includes(`${rowIndex}-${seat}`)
+                        ? classes.selected
+                        : ""
+                    } ${
+                      seatClassifier(rowIndex, seat) === seatOptions[2]
+                        ? classes.business
+                        : ""
+                    }
+                  ${
+                    seatClassifier(rowIndex, seat) === seatOptions[1]
+                      ? classes.comfort
                       : ""
-                  } ${
+                  }
+                  ${isSoldOut(rowIndex, seat) ? classes.sold : ""}
+                  ${!filterSeatsByType(rowIndex, seat) ? classes.filtered : ""}
+                  `}
+                    onClick={() => handleSeatClick(rowIndex, seat)}
+                  >
+                    {!isSoldOut(rowIndex, seat)
+                      ? getSeatNumber(rowIndex, seat)
+                      : "X"}
+                  </div>
+                ))}
+                <div style={{ width: "32px" }}></div>
+                {[3, 4, 5].map((seat) => (
+                  <div
+                    key={seat}
+                    className={`${classes.seat} ${
+                      selectedSeats.includes(`${rowIndex}-${seat}`)
+                        ? classes.selected
+                        : ""
+                    } ${
+                      seatClassifier(rowIndex, seat) === seatOptions[2]
+                        ? classes.business
+                        : ""
+                    }
+                  ${
+                    seatClassifier(rowIndex, seat) === seatOptions[1]
+                      ? classes.comfort
+                      : ""
+                  }
+                  ${isSoldOut(rowIndex, seat) ? classes.sold : ""}
+                  ${!filterSeatsByType(rowIndex, seat) ? classes.filtered : ""}
+                  `}
+                    onClick={() => handleSeatClick(rowIndex, seat)}
+                  >
+                    {!isSoldOut(rowIndex, seat)
+                      ? getSeatNumber(rowIndex, seat)
+                      : "X"}
+                  </div>
+                ))}
+                <div style={{ width: "32px" }}></div>
+                {[6, 7].map((seat) => (
+                  <div
+                    key={seat}
+                    className={`${classes.seat} ${
+                      selectedSeats.includes(`${rowIndex}-${seat}`)
+                        ? classes.selected
+                        : ""
+                    } 
+                  ${
                     seatClassifier(rowIndex, seat) === seatOptions[2]
                       ? classes.business
                       : ""
@@ -227,82 +333,49 @@ const DefaultDashboard = () => {
                   ${isSoldOut(rowIndex, seat) ? classes.sold : ""}
                   ${!filterSeatsByType(rowIndex, seat) ? classes.filtered : ""}
                   `}
-                  onClick={() => handleSeatClick(rowIndex, seat)}
-                >
-                  {!isSoldOut(rowIndex, seat)
-                    ? getSeatNumber(rowIndex, seat)
-                    : "X"}
-                </div>
-              ))}
-              <div style={{ width: "32px" }}></div>
-              {[3, 4, 5].map((seat) => (
-                <div
-                  key={seat}
-                  className={`${classes.seat} ${
-                    selectedSeats.includes(`${rowIndex}-${seat}`)
-                      ? classes.selected
-                      : ""
-                  } ${
-                    seatClassifier(rowIndex, seat) === seatOptions[2]
-                      ? classes.business
-                      : ""
-                  }
-                  ${
-                    seatClassifier(rowIndex, seat) === seatOptions[1]
-                      ? classes.comfort
-                      : ""
-                  }
-                  ${isSoldOut(rowIndex, seat) ? classes.sold : ""}
-                  ${!filterSeatsByType(rowIndex, seat) ? classes.filtered : ""}
-                  `}
-                  onClick={() => handleSeatClick(rowIndex, seat)}
-                >
-                  {!isSoldOut(rowIndex, seat)
-                    ? getSeatNumber(rowIndex, seat)
-                    : "X"}
-                </div>
-              ))}
-              <div style={{ width: "32px" }}></div>
-              {[6, 7].map((seat) => (
-                <div
-                  key={seat}
-                  className={`${classes.seat} ${
-                    selectedSeats.includes(`${rowIndex}-${seat}`)
-                      ? classes.selected
-                      : ""
-                  } 
-                  ${
-                    seatClassifier(rowIndex, seat) === seatOptions[2]
-                      ? classes.business
-                      : ""
-                  }
-                  ${
-                    seatClassifier(rowIndex, seat) === seatOptions[1]
-                      ? classes.comfort
-                      : ""
-                  }
-                  ${isSoldOut(rowIndex, seat) ? classes.sold : ""}
-                  ${!filterSeatsByType(rowIndex, seat) ? classes.filtered : ""}
-                  `}
-                  onClick={() => handleSeatClick(rowIndex, seat)}
-                >
-                  {!isSoldOut(rowIndex, seat)
-                    ? getSeatNumber(rowIndex, seat)
-                    : "X"}
-                </div>
-              ))}
-            </div>
-          ))}
+                    onClick={() => handleSeatClick(rowIndex, seat)}
+                  >
+                    {!isSoldOut(rowIndex, seat)
+                      ? getSeatNumber(rowIndex, seat)
+                      : "X"}
+                  </div>
+                ))}
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 
       <div className={classes.infoContainer}>
-        <Typography
-          variant="h4"
-          style={{ marginBottom: "40px", textAlign: "center" }}
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            marginBottom: "30px",
+          }}
         >
-          {selectedFlight.name}
-        </Typography>
+          <FlightTakeoffIcon fontSize="large" style={{ marginRight: "10px" }} />
+          <Typography variant="subtitle1">{selectedFlight.origin}</Typography>
+          <FlightIcon
+            fontSize="large"
+            style={{ margin: "0 10px", marginLeft: "30px" }}
+          />
+          <Typography variant="subtitle1">
+            {selectedFlight.flightNumber}
+          </Typography>
+          <FlightLandIcon
+            fontSize="large"
+            style={{ margin: "0 10px", marginLeft: "30px" }}
+          />
+          <Typography variant="subtitle1">
+            {selectedFlight.destination}
+          </Typography>
+          <AccessTimeIcon
+            fontSize="large"
+            style={{ margin: "0 10px", marginLeft: "30px" }}
+          />
+          <Typography variant="subtitle1">{selectedFlight.duration}</Typography>
+        </div>
         <div className={classes.legendContainer}>
           <div
             className={`${classes.seat} ${classes.selected} ${classes.legendItem} ${classes.seatPrev}`}
@@ -335,48 +408,52 @@ const DefaultDashboard = () => {
               setSelectedSeatType(newValue);
             }}
           >
-            <BottomNavigationAction
-              label="All"
-              value="all"
-              icon={<RestoreIcon />}
-            />
-            <BottomNavigationAction
-              label="Business"
-              value="business"
-              icon={<FavoriteIcon />}
-            />
-            <BottomNavigationAction
-              label="Comfort"
-              value="comfort"
-              icon={<LocationOnIcon />}
-            />
-            <BottomNavigationAction
-              label="Ordinary"
-              value="ordinary"
-              icon={<LocationOnIcon />}
-            />
+            <BottomNavigationAction label="All" value="all" />
+            <BottomNavigationAction label="Business" value="business" />
+            <BottomNavigationAction label="Comfort" value="comfort" />
+            <BottomNavigationAction label="Ordinary" value="ordinary" />
           </BottomNavigation>
           <div className={classes.selectedSeatsContainer}>
+            <strong style={{ color: "" }}>Selected Seats:</strong>
             <div className={classes.text}>
-              <strong
-              style={{ color: "" }}
-              >Selected Seats:</strong>
-              <p></p>
               {selectedSeats.length === 0 ? (
-                <p>No seats selected</p>
+                <span>No Selected Seats</span>
               ) : (
                 <span>
                   {selectedSeats.map((seat, index) => (
-                    <span key={seat} 
-                    style={{ fontWeight: "bold" }}
-                    
-                    >
+                    <span key={seat} style={{ fontWeight: "bold" }}>
                       {index > 0 && ", "} {convertSeatFormat(seat)}
                     </span>
                   ))}
                 </span>
               )}
             </div>
+          </div>
+          {/* Checkout button and total price */}
+          <div
+            style={{
+              marginTop: "20px",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
+          >
+            <div style={{ marginTop: "10px" }}>
+              <strong>Total Price:</strong> ${calculateTotalPrice()}
+            </div>
+            <Button
+              variant="contained"
+              color="primary"
+              style={{ marginTop: "20px" }}
+              onClick={() => {
+                // You can implement the checkout logic here
+                alert(
+                  `Checkout Successful! Total Price: $${calculateTotalPrice()}`
+                );
+              }}
+            >
+              Checkout
+            </Button>
           </div>
         </div>
       </div>
