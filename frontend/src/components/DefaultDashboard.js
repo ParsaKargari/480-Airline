@@ -157,8 +157,10 @@ const DefaultDashboard = () => {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const seatOptions = ["ordinary", "comfort", "business"];
   const [selectedSeatType, setSelectedSeatType] = useState("all");
-  const soldOutSeats = ["A1", "A3", "B2", "G12", "D7"];
+  
+  const soldOutSeats = ["A1", "A3", "B2", "G12", "D7"]; // Need to get this from the backend
   const seatPrices = {
+    // Need to get this from the backend
     ordinary: 100,
     comfort: 140,
     business: 250,
@@ -243,7 +245,7 @@ const DefaultDashboard = () => {
   return (
     <div className={classes.root}>
       <div className={classes.seatSelection}>
-        <div 
+        <div
           style={{
             display: "flex",
             justifyContent: "center",

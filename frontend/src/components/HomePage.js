@@ -5,6 +5,10 @@ import { Container, Typography, Paper, makeStyles } from "@material-ui/core";
 import FlightSearch from "./FlightSearch";
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+    padding: theme.spacing(3),
+  },
   mainFeaturedPost: {
     backgroundColor: theme.palette.grey[800],
     color: theme.palette.common.white,
@@ -30,7 +34,7 @@ const useStyles = makeStyles((theme) => ({
 export default function HomePage() {
   const classes = useStyles();
   return (
-    <>
+    <div className={classes.root}>
       <div className={classes.searchContainer}>
         <FlightSearch />
       </div>
@@ -63,6 +67,6 @@ export default function HomePage() {
           </Container>
         </Paper>
       </Container>
-    </>
+    </div>
   );
 }
