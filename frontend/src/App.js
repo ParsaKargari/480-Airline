@@ -19,6 +19,9 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     minHeight: "100vh",
   },
+  routes: {
+    flexGrow: 1,
+  },
 }));
 
 function App() {
@@ -32,8 +35,14 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/admin-dashboard" element={<AdminDashboard />} />
-            <Route path="/air-agent-dashboard" element={<AirAgentDashboard />} />
-            <Route path="/tour-agent-dashboard" element={<TourAgentDashboard />} />
+            <Route
+              path="/air-agent-dashboard"
+              element={<AirAgentDashboard />}
+            />
+            <Route
+              path="/tour-agent-dashboard"
+              element={<TourAgentDashboard />}
+            />
             <Route path="/default-dashboard" element={<DefaultDashboard />} />
           </Routes>
           <Footer />

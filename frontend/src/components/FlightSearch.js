@@ -39,18 +39,18 @@ const useStyles = makeStyles((theme) => ({
 
 // Mock flight data
 const mockFlights = [
-  { id: 1, label: "Flight A to New York" },
-  { id: 2, label: "Flight B to Los Angeles" },
-  { id: 3, label: "Flight C to Miami" },
-  { id: 4, label: "Flight D to Chicago" },
-  { id: 5, label: "Flight E to San Francisco" },
-  { id: 6, label: "Flight F to Seattle" },
-  { id: 7, label: "Flight G to Boston" },
-  { id: 8, label: "Flight H to Washington D.C." },
-  { id: 9, label: "Flight I to Las Vegas" },
-  { id: 10, label: "Flight J to Denver" },
-  { id: 11, label: "Flight K to San Diego" },
-  { id: 12, label: "Flight L to Honolulu" },
+  { id: 1, label: "Flight A to New York", name: "New York" },
+  { id: 2, label: "Flight B to Los Angeles", name: "Los Angeles" },
+  { id: 3, label: "Flight C to Miami", name: "Miami" },
+  { id: 4, label: "Flight D to Chicago", name: "Chicago" },
+  { id: 5, label: "Flight E to San Francisco", name: "San Francisco" },
+  { id: 6, label: "Flight F to Seattle", name: "Seattle" },
+  { id: 7, label: "Flight G to Boston", name: "Boston" },
+  { id: 8, label: "Flight H to Washington D.C.", name: "Washington D.C." },
+  { id: 9, label: "Flight I to Las Vegas", name: "Las Vegas" },
+  { id: 10, label: "Flight J to Denver", name: "Denver" },
+  { id: 11, label: "Flight K to San Diego", name: "San Diego" },
+  { id: 12, label: "Flight L to Honolulu", name: "Honolulu" },
 ];
 
 function Alert(props) {
