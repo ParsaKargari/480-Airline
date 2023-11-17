@@ -10,6 +10,11 @@ import FlightTakeoffIcon from "@material-ui/icons/FlightTakeoff";
 import FlightLandIcon from "@material-ui/icons/FlightLand";
 import FlightIcon from "@material-ui/icons/Flight";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import PersonIcon from "@material-ui/icons/Person";
+import ListItemText from "@material-ui/core/ListItemText";
+
 
 const numRows = 13;
 
@@ -157,7 +162,7 @@ const DefaultDashboard = () => {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const seatOptions = ["ordinary", "comfort", "business"];
   const [selectedSeatType, setSelectedSeatType] = useState("all");
-  
+
   const soldOutSeats = ["A1", "A3", "B2", "G12", "D7"]; // Need to get this from the backend
   const seatPrices = {
     // Need to get this from the backend
@@ -416,19 +421,20 @@ const DefaultDashboard = () => {
             <BottomNavigationAction label="Ordinary" value="ordinary" />
           </BottomNavigation>
           <div className={classes.selectedSeatsContainer}>
-            <strong style={{ color: "" }}>Selected Seats:</strong>
             <div className={classes.text}>
-              {selectedSeats.length === 0 ? (
-                <span>No Selected Seats</span>
-              ) : (
-                <span>
-                  {selectedSeats.map((seat, index) => (
-                    <span key={seat} style={{ fontWeight: "bold" }}>
-                      {index > 0 && ", "} {convertSeatFormat(seat)}
-                    </span>
-                  ))}
-                </span>
-              )}
+              <ListItem>
+                    <ListItemIcon>
+                      <PersonIcon />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={`Selected Seats:`}
+                      secondary={selectedSeats.map((seat, index) =>
+                        index === selectedSeats.length - 1
+                          ? convertSeatFormat(seat)
+                          : convertSeatFormat(seat) + ", "
+                      )}
+                    />
+                  </ListItem>
             </div>
           </div>
           {/* Checkout button and total price */}
@@ -454,7 +460,7 @@ const DefaultDashboard = () => {
                 );
               }}
             >
-              Checkout
+              Book
             </Button>
           </div>
         </div>

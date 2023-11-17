@@ -5,11 +5,20 @@ import { makeStyles } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import BottomNavigation from "@material-ui/core/BottomNavigation";
 import BottomNavigationAction from "@material-ui/core/BottomNavigationAction";
-import Button from "@material-ui/core/Button";
 import FlightTakeoffIcon from "@material-ui/icons/FlightTakeoff";
 import FlightLandIcon from "@material-ui/icons/FlightLand";
 import FlightIcon from "@material-ui/icons/Flight";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
+import Paper from "@material-ui/core/Paper";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemText from "@material-ui/core/ListItemText";
+import ListItemIcon from "@material-ui/core/ListItemIcon";
+import PersonIcon from "@material-ui/icons/Person";
+import EventSeatIcon from "@material-ui/icons/EventSeat";
+import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
+
+// import seat ico
 
 const numRows = 13;
 
@@ -156,27 +165,77 @@ const AirAgentDashboard = () => {
   const classes = useStyles();
   const [selectedSeat, setSelectedSeat] = useState("");
   const seatOptions = ["ordinary", "comfort", "business"];
-  const [selectedSeatType, setSelectedSeatType] = useState("all");
   const [selectedPage, setSelectedPage] = useState("passengerList");
-
-  const soldOutSeats = ["A1", "A3", "B2", "G12", "D7"]; // Need to get this from the backend
   const seatPrices = {
     // Need to get this from the backend
     ordinary: 100,
     comfort: 140,
     business: 250,
   };
+  const [passengerList, setPassengerList] = useState([
+    // Need to get this from the backend
+    {
+      name: "John Doe",
+      seat: "A1",
+      seatType: "business",
+    },
+    {
+      name: "Jane Doe",
+      seat: "A3",
+      seatType: "comfort",
+    },
+    {
+      name: "Sarah Doe",
+      seat: "B2",
+      seatType: "comfort",
+    },
+    {
+      name: "John Doe",
+      seat: "G12",
+      seatType: "ordinary",
+    },
+    {
+      name: "Jane Doe",
+      seat: "D7",
+      seatType: "ordinary",
+    },
+  ]);
+
+  const soldOutSeats = passengerList.map((passenger) => passenger.seat) || [];
 
   const getSeatNumber = (row, seat) => {
     const seatLetter = String.fromCharCode(64 + seat);
     return `${seatLetter}${row}`;
   };
 
-  const convertSeatFormat = (seatKey) => {
-    const seat = seatKey.split("-")[1];
-    const row = seatKey.split("-")[0];
-    const seatLetter = String.fromCharCode(64 + parseInt(seat));
-    return `${seatLetter}${row}`;
+  const getPassegerName = (seat) => {
+    const passenger = passengerList.find(
+      (passenger) => passenger.seat === seat
+    );
+    return passenger && passenger.name;
+  };
+
+  const getSeatType = (seat) => {
+    const passenger = passengerList.find(
+      (passenger) => passenger.seat === seat
+    );
+    return passenger && passenger.seatType;
+  };
+
+  const getIconColor = (passenger) => {
+    const seatType = passenger;
+    if (seatType === "business") {
+      return "#0d369d";
+    } else if (seatType === "comfort") {
+      return "#0086f3";
+    } else {
+      return "#b4d9ff";
+    }
+  };
+
+  const getSeatPrice = (seat) => {
+    const seatType = getSeatType(seat);
+    return seatPrices[seatType];
   };
 
   // Function to check if a seat is sold out
@@ -190,6 +249,11 @@ const AirAgentDashboard = () => {
   const handleSeatClick = (rowIndex, seatIndex) => {
     // Convert the row and seat index into a seat number
     const seatKey = getSeatNumber(rowIndex, seatIndex);
+
+    // Cannot select a seat that is NOT sold out
+    if (!isSoldOut(rowIndex, seatIndex)) {
+      return;
+    }
 
     setSelectedSeat(seatKey);
   };
@@ -361,12 +425,67 @@ const AirAgentDashboard = () => {
             }}
           >
             <BottomNavigationAction label="Passenger" value="passenger" />
-            <BottomNavigationAction label="Passenger List" value="passengerList" />
+            <BottomNavigationAction
+              label="Passenger List"
+              value="passengerList"
+            />
           </BottomNavigation>
-          
-          {/* Display Single Passenger Info, based on selected seat */}
-          {/* Display Passenger List */}
 
+          {/* Display Single Passenger Info, based on selected seat */}
+          {selectedPage === "passenger" && (
+            <div className={classes.selectedSeatsContainer}>
+              <Paper elevation={3} className={classes.passengerDetailPaper}>
+                <List>
+                  <ListItem>
+                    <ListItemIcon style={{ color: getIconColor(getSeatType(selectedSeat)) }}>
+                      <PersonIcon />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={getPassegerName(selectedSeat)}
+                      secondary={`Seat: ${selectedSeat}`}
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemIcon>
+                      <EventSeatIcon />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={`Seat Type: ${getSeatType(selectedSeat)}`}
+                    />
+                  </ListItem>
+                  <ListItem>
+                    <ListItemIcon>
+                      <AttachMoneyIcon />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={`Price: ${getSeatPrice(selectedSeat)}`}
+                    />
+                  </ListItem>
+                  {/* Add more details as needed */}
+                </List>
+              </Paper>
+            </div>
+          )}
+          {/* Display Passenger List */}
+          {selectedPage === "passengerList" && (
+            <div className={classes.selectedSeatsContainer}>
+              <Paper elevation={3} className={classes.passengerListPaper}>
+                <List style={{ overflow: "auto", maxHeight: "300px" }}>
+                  {passengerList.map((passenger) => (
+                    <ListItem key={passenger.name}>
+                      <ListItemIcon style={{ color: getIconColor(passenger.seatType) }}>
+                        <PersonIcon />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={passenger.name}
+                        secondary={`Seat: ${passenger.seat}`}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              </Paper>
+            </div>
+          )}
         </div>
       </div>
     </div>
