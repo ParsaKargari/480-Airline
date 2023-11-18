@@ -452,6 +452,7 @@ const DefaultDashboard = () => {
             <Button
               variant="contained"
               color="primary"
+              disabled={selectedSeats.length === 0}
               style={{ marginTop: "20px" }}
               onClick={() => {
                 // You can implement the checkout logic here
