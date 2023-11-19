@@ -14,7 +14,7 @@ import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import PersonIcon from "@material-ui/icons/Person";
 import ListItemText from "@material-ui/core/ListItemText";
-
+import CheckoutModal from "./CheckoutModal";
 
 const numRows = 13;
 
@@ -162,6 +162,7 @@ const DefaultDashboard = () => {
   const [selectedSeats, setSelectedSeats] = useState([]);
   const seatOptions = ["ordinary", "comfort", "business"];
   const [selectedSeatType, setSelectedSeatType] = useState("all");
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
 
   const soldOutSeats = ["A1", "A3", "B2", "G12", "D7"]; // Need to get this from the backend
   const seatPrices = {
@@ -423,18 +424,18 @@ const DefaultDashboard = () => {
           <div className={classes.selectedSeatsContainer}>
             <div className={classes.text}>
               <ListItem>
-                    <ListItemIcon>
-                      <PersonIcon />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={`Selected Seats:`}
-                      secondary={selectedSeats.map((seat, index) =>
-                        index === selectedSeats.length - 1
-                          ? convertSeatFormat(seat)
-                          : convertSeatFormat(seat) + ", "
-                      )}
-                    />
-                  </ListItem>
+                <ListItemIcon>
+                  <PersonIcon />
+                </ListItemIcon>
+                <ListItemText
+                  primary={`Selected Seats:`}
+                  secondary={selectedSeats.map((seat, index) =>
+                    index === selectedSeats.length - 1
+                      ? convertSeatFormat(seat)
+                      : convertSeatFormat(seat) + ", "
+                  )}
+                />
+              </ListItem>
             </div>
           </div>
           {/* Checkout button and total price */}
@@ -455,14 +456,17 @@ const DefaultDashboard = () => {
               disabled={selectedSeats.length === 0}
               style={{ marginTop: "20px" }}
               onClick={() => {
-                // You can implement the checkout logic here
-                alert(
-                  `Checkout Successful! Total Price: $${calculateTotalPrice()}`
-                );
+                setIsCheckoutModalOpen(true);
               }}
             >
               Book
             </Button>
+
+            <CheckoutModal
+              isOpen={isCheckoutModalOpen}
+              onClose={() => setIsCheckoutModalOpen(false)}
+              totalAmount={calculateTotalPrice()}
+            />
           </div>
         </div>
       </div>

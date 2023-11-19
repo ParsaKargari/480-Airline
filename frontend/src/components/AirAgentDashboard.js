@@ -19,8 +19,6 @@ import EventSeatIcon from "@material-ui/icons/EventSeat";
 import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 
-// import seat ico
-
 const numRows = 13;
 
 const useStyles = makeStyles((theme) => ({
