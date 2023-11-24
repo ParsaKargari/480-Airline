@@ -456,7 +456,13 @@ const DefaultDashboard = () => {
               disabled={selectedSeats.length === 0}
               style={{ marginTop: "20px" }}
               onClick={() => {
-                setIsCheckoutModalOpen(true);
+                setIsCheckoutModalOpen({
+                  isOpen: true,
+                  onClose: () => setIsCheckoutModalOpen(false),
+                  totalAmount: calculateTotalPrice(),
+                  selectedFlight: selectedFlight,
+                  selectedSeats: selectedSeats,
+                });
               }}
             >
               Book
@@ -466,6 +472,8 @@ const DefaultDashboard = () => {
               isOpen={isCheckoutModalOpen}
               onClose={() => setIsCheckoutModalOpen(false)}
               totalAmount={calculateTotalPrice()}
+              selectedFlight={selectedFlight}
+              selectedSeats={selectedSeats}
             />
           </div>
         </div>
