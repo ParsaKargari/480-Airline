@@ -8,8 +8,10 @@ import {
   Link,
 } from "@material-ui/core";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
+import RegisterModal from "../RegisterModal";
 import LoginModal from "../LoginModal";
 import { AuthContext } from "../contexts/AuthContext";
+
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -35,6 +37,7 @@ export default function Header() {
   const navigate = useNavigate();
 
   const [isLoginOpen, setLoginOpen] = useState(false);
+  const [isRegisterOpen, setRegisterOpen] = useState(false); // State for the registration modal
 
   const handleLoginOpen = () => {
     setLoginOpen(true);
@@ -42,6 +45,14 @@ export default function Header() {
 
   const handleLoginClose = () => {
     setLoginOpen(false);
+  };
+
+  const handleRegisterOpen = () => {
+    setRegisterOpen(true);
+  };
+
+  const handleRegisterClose = () => {
+    setRegisterOpen(false);
   };
 
   const handleTitleClick = () => {
@@ -79,11 +90,17 @@ export default function Header() {
               </Button>
             </>
           ) : (
-            <Button color="inherit" onClick={handleLoginOpen}>
-              Login
-            </Button>
+            <>
+              <Button color="inherit" onClick={handleLoginOpen}>
+                Login
+              </Button>
+              <Button color="inherit" onClick={handleRegisterOpen}>
+                Register
+              </Button>
+            </>
           )}
           <LoginModal open={isLoginOpen} handleClose={handleLoginClose} />
+          <RegisterModal open={isRegisterOpen} handleClose={handleRegisterClose} />
         </Toolbar>
       </AppBar>
     </div>

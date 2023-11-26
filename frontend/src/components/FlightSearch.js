@@ -16,7 +16,6 @@ import MuiAlert from "@material-ui/lab/Alert";
 import { AuthContext } from "./contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
-
 const useStyles = makeStyles((theme) => ({
   root: {
     display: "flex",
@@ -158,7 +157,6 @@ export default function FlightSearch() {
     if (!searchResults) {
       setOpenSnackbar(true);
     } else {
-      console.log("Selected flight:", searchResults);
 
       if (user && user.role === "Admin") {
         navigate("/admin-dashboard", {
@@ -180,11 +178,37 @@ export default function FlightSearch() {
     }
   };
 
+  const handleSearchAdmin = () => {
+    // Navigate to admin dashboard
+    navigate("/admin-dashboard");
+  };
+
   const handleCloseSnackbar = (event, reason) => {
     if (reason === "clickaway") {
       return;
     }
     setOpenSnackbar(false);
+  };
+
+  const loginCheck = () => {
+    // Return False if not logged in
+    // Return False if user role is admin
+    // Return True if user logged in
+    if (!user) {
+      return false;
+    }
+    if (user.role === "Admin") {
+      return false;
+    }
+    return true;
+  };
+
+  const adminCheck = () => {
+    // Return true if user role is admin
+    // Return false if user role is not admin
+    if (user && user.role === "Admin") {
+      return true;
+    }
   };
 
   return (
@@ -218,10 +242,21 @@ export default function FlightSearch() {
             variant="contained"
             color="primary"
             onClick={handleSearch}
-            disabled={!user}
+            disabled={!loginCheck()}
           >
             {user ? "Search" : "Login to Book Flight"}
           </Button>
+          {adminCheck() && (
+            <Button
+              className={classes.button}
+              fullWidth
+              variant="contained"
+              color="primary"
+              onClick={handleSearchAdmin}
+            >
+              Admin Dashboard
+            </Button>
+          )}
         </CardContent>
       </Card>
       <Snackbar

@@ -6,14 +6,24 @@ export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
   // Mock user accounts
+  // Need to call API to confirm user credentials
+  // We won't be using this mockUsers in the final project as we will be calling API to confirm user credentials
+  // Send to backend: username, password
+  // Receive from backend: user, role
+
   const mockUsers = [
-    { username: "Admin", password: "Admin", role: "Admin" },
-    { username: "User", password: "User", role: "User" },
-    { username: "AirAgent", password: "AirAgent", role: "AirAgent" },
-    { username: "TourAgent", password: "TourAgent", role: "TourAgent" },
+    // Single user with each role
+    { username: "Admin", password: "Admin", role: "Admin", registered: false },
+    { username: "AirAgent", password: "AirAgent", role: "AirAgent", registered: false },
+    { username: "TourAgent", password: "TourAgent", role: "TourAgent", registered: false },
+
+    // Multiple users with the same role
+    { username: "User", password: "User", role: "User", registered: true },
+    { username: "User2", password: "User2", role: "User", registered: false },
+    { username: "User3", password: "User3", role: "User", registered: false },
+    { username: "User4", password: "User4", role: "User", registered: true },
   ];
 
-  // Default User is User
   const [user, setUser] = useState(null);
 
   const login = (username, password) => {
@@ -25,7 +35,7 @@ export const AuthProvider = ({ children }) => {
       setUser({ username: matchedUser.username, role: matchedUser.role });
       return true;
     } else {
-      setUser(null); // default to User role if credentials are not matching
+      setUser(null);
       return false;
     }
   };
