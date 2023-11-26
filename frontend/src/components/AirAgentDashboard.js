@@ -18,6 +18,7 @@ import PersonIcon from "@material-ui/icons/Person";
 import EventSeatIcon from "@material-ui/icons/EventSeat";
 import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
+import CheckoutModalEmail from "./CheckoutModalEmail";
 
 const numRows = 13;
 
@@ -170,7 +171,8 @@ const AirAgentDashboard = () => {
   const [selectedSeat, setSelectedSeat] = useState("");
   const [viewMode, setViewMode] = useState(true);
   const seatOptions = ["ordinary", "comfort", "business"];
-  const [selectedPage, setSelectedPage] = useState("passengerList");
+  const [selectedPage, setSelectedPage] = useState("passenger");
+  const [seatToBook, setSeatToBook] = useState(null);
   const seatPrices = {
     // Need to get this from the backend
     ordinary: 100,
@@ -181,32 +183,38 @@ const AirAgentDashboard = () => {
     // Need to get this from the backend
     {
       name: "John Doe",
+      email: "johndoe@gmail.com",
       seat: "A1",
       seatType: "business",
     },
     {
       name: "Jane Doe",
+      email: "janedoe@gmail.com",
       seat: "A3",
       seatType: "comfort",
     },
     {
       name: "Sarah Doe",
+      email: "sarahdoe@gmail.com",
       seat: "B2",
       seatType: "comfort",
     },
     {
       name: "John Doe",
+      email: "johndoe@gmail.com",
       seat: "G12",
       seatType: "ordinary",
     },
     {
       name: "Jane Doe",
+      email: "janedoe@gmail.com",
       seat: "D7",
       seatType: "ordinary",
     },
   ]);
 
   const soldOutSeats = passengerList.map((passenger) => passenger.seat) || [];
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
 
   const getSeatNumber = (row, seat) => {
     const seatLetter = String.fromCharCode(64 + seat);
@@ -221,10 +229,18 @@ const AirAgentDashboard = () => {
   };
 
   const getSeatType = (seat) => {
-    const passenger = passengerList.find(
-      (passenger) => passenger.seat === seat
-    );
-    return passenger && passenger.seatType;
+    // return business is seat is in first 3 rows
+    // return comfort if seat is in first 5 rows
+    // return ordinary if seat is in first 13 rows
+    const row = seat.split("")[1];
+    if (row < 2) {
+      return seatOptions[2];
+    } else if (row < 5) {
+      return seatOptions[1];
+    } else {
+      return seatOptions[0];
+    }
+
   };
 
   const getIconColor = (passenger) => {
@@ -249,6 +265,11 @@ const AirAgentDashboard = () => {
     const seatKey = getSeatNumber(rowIndex, seatIndex);
     return soldOutSeats.includes(seatKey);
   };
+
+  const isSoldOut2 = (seatKey) => {
+    return soldOutSeats.includes(seatKey);
+  };
+
 
   // Updated handleSeatClick function
   const handleSeatClick = (rowIndex, seatIndex) => {
@@ -529,14 +550,16 @@ const AirAgentDashboard = () => {
                 color="primary"
                 style={{ marginTop: "20px" }}
                 disabled={
-                  !(
-                    getSeatPrice(selectedSeat) === undefined &&
-                    getSeatType(selectedSeat) === undefined
-                  )
+                  viewMode || !selectedSeat || isSoldOut2(selectedSeat)
                 }
                 onClick={() => {
-                  // You can implement the checkout logic here
-                  alert(`Checkout Successful! Total Price:`);
+                  setIsCheckoutModalOpen({
+                    isOpen: true,
+                    onClose: () => setIsCheckoutModalOpen(false),
+                    totalAmount: getSeatPrice(selectedSeat),
+                    selectedFlight: selectedFlight,
+                    selectedSeats: [selectedSeat],
+                  });
                 }}
               >
                 Book Now
@@ -557,7 +580,7 @@ const AirAgentDashboard = () => {
                       </ListItemIcon>
                       <ListItemText
                         primary={passenger.name}
-                        secondary={`Seat: ${passenger.seat}`}
+                        secondary={`Seat: ${passenger.seat} | ${passenger.seatType} ${passenger.email}`}
                       />
                     </ListItem>
                   ))}
@@ -565,6 +588,13 @@ const AirAgentDashboard = () => {
               </Paper>
             </div>
           )}
+          <CheckoutModalEmail
+            isOpen={isCheckoutModalOpen}
+            onClose={() => setIsCheckoutModalOpen(false)}
+            totalAmount={getSeatPrice(selectedSeat)}
+            selectedFlight={selectedFlight}
+            selectedSeats={[selectedSeat]}
+          />
         </div>
       </div>
     </div>

@@ -45,7 +45,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CheckoutModal = ({
+const CheckoutModalEmail = ({
   isOpen,
   onClose,
   totalAmount,
@@ -58,6 +58,8 @@ const CheckoutModal = ({
   const classes = useStyles();
   const [insuranceSelected, setInsuranceSelected] = useState(false);
   const [creditCard, setCreditCard] = useState("");
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
   const [totalPrice, setTotalPrice] = useState(totalAmount);
 
   useEffect(() => {
@@ -75,6 +77,8 @@ const CheckoutModal = ({
     // Implement your payment logic here
     if (creditCard.trim() === "") {
       alert("Please enter credit card information.");
+    } else if (email.trim() === "" || name.trim() === "") {
+      alert("Please enter email and name.");
     } else {
       // This is just a placeholder
       alert("Payment Successful!");
@@ -105,12 +109,12 @@ const CheckoutModal = ({
           <h2>Checkout</h2>
           {selectedFlight && (
             <>
-              <p>Selected Flight:</p>
               <div
                 style={{
                   display: "flex",
                   alignItems: "center",
                   marginBottom: "20px",
+                  justifyContent: "center",
                 }}
               >
                 <FlightTakeoffIcon
@@ -145,19 +149,7 @@ const CheckoutModal = ({
             </>
           )}
           <p>Selected Seats:</p>
-          <div>
-            {Array.isArray(selectedSeats) && selectedSeats.length > 0 ? (
-              selectedSeats.map((seat, index) => (
-                <span key={seat}>
-                  {index === selectedSeats.length - 1
-                    ? convertSeatFormat(seat)
-                    : convertSeatFormat(seat) + ", "}
-                </span>
-              ))
-            ) : (
-              <span>No seats selected</span>
-            )}
-          </div>
+          <div>{selectedSeats}</div>
           <FormControlLabel
             control={
               <Checkbox
@@ -169,7 +161,21 @@ const CheckoutModal = ({
             }
             label="Ticket Cancellation Insurance (+$10)"
           />
-          <p>Make payment, using a credit card.</p>
+          <TextField
+            label="Email"
+            variant="outlined"
+            className={classes.formControl}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            style={{ marginTop: "20px" }}
+          />
+          <TextField
+            label="Name"
+            variant="outlined"
+            className={classes.formControl}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
           <TextField
             label="Credit Card"
             variant="outlined"
@@ -197,4 +203,4 @@ const CheckoutModal = ({
   );
 };
 
-export default CheckoutModal;
+export default CheckoutModalEmail;

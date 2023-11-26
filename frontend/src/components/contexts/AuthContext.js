@@ -5,21 +5,24 @@ import React, { createContext, useState } from "react";
 export const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
+  // Mock user accounts
+  const mockUsers = [
+    { username: "Admin", password: "Admin", role: "Admin" },
+    { username: "User", password: "User", role: "User" },
+    { username: "AirAgent", password: "AirAgent", role: "AirAgent" },
+    { username: "TourAgent", password: "TourAgent", role: "TourAgent" },
+  ];
+
   // Default User is User
-  const [user, setUser] = useState({ username: "User", role: "User" });
+  const [user, setUser] = useState(null);
 
   const login = (username, password) => {
-    if (username === "Admin" && password === "Admin") {
-      setUser({ username: "Admin", role: "Admin" });
-      return true;
-    } else if (username === "User" && password === "User") {
-      setUser({ username: "User", role: "User" });
-      return true;
-    } else if (username === "AirAgent" && password === "AirAgent") {
-      setUser({ username: "AirAgent", role: "AirAgent" });
-      return true;
-    } else if (username === "TourAgent" && password === "TourAgent") {
-      setUser({ username: "TourAgent", role: "TourAgent" });
+    const matchedUser = mockUsers.find(
+      (user) => user.username === username && user.password === password
+    );
+
+    if (matchedUser) {
+      setUser({ username: matchedUser.username, role: matchedUser.role });
       return true;
     } else {
       setUser(null); // default to User role if credentials are not matching
