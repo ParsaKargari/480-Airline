@@ -24,4 +24,12 @@ public class FlightService {
         return flights;
 
     }
+
+    // Add a flight
+    public String addFlight(Flight flight) {
+        System.out.println("Flight added: " + flight.getLabel());
+        System.out.println("Destination: " + flight.getDestination());
+        System.out.println("Origin: " + flight.getOrigin());
+        return "Flight added: " + flight.getLabel();
+    }
 }
