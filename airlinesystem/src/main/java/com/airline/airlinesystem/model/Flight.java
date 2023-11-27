@@ -1,6 +1,6 @@
 package com.airline.airlinesystem.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 public class Flight {
@@ -17,5 +17,4 @@ public class Flight {
 
     public Flight() {
     }
-
 }
