@@ -13,6 +13,7 @@ public class FlightController {
     @Autowired
     private FlightService flightService;
 
+    // Returns list of flights
     @GetMapping
     public ResponseEntity<List<Flight>> getAllFlights() {
         return ResponseEntity.ok(flightService.getFlights());

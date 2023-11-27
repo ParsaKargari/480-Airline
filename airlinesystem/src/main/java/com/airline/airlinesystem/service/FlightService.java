@@ -7,11 +7,13 @@ import java.util.ArrayList;
 
 @Service
 public class FlightService {
+    // Returns list of flights
     public List<Flight> getFlights() {
 
         // Hardcoded flights for now
         // TODO: Fetch flights from database
 
+        // TODO: Add other relevant flight information
         List<Flight> flights = new ArrayList<>();
         flights.add(new Flight(1, "Flight 1", "Destination 1", "Origin 1", "Flight Number 1", "Duration 1"));
         flights.add(new Flight(2, "Flight 2", "Destination 2", "Origin 2", "Flight Number 2", "Duration 2"));
