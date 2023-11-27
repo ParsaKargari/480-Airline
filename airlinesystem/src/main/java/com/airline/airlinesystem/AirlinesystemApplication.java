@@ -2,10 +2,9 @@ package com.airline.airlinesystem;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 
-// Remove the Exclude for DataSourceAutoConfiguration to add the database back in
-@SpringBootApplication(exclude = { DataSourceAutoConfiguration.class })
+
+@SpringBootApplication
 public class AirlinesystemApplication {
 
 	public static void main(String[] args) {

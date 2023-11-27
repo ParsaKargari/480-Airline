@@ -9,6 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/flights")
+@CrossOrigin
 public class FlightController {
     @Autowired
     private FlightService flightService;
@@ -17,13 +18,6 @@ public class FlightController {
     @GetMapping // GET /api/flights
     public ResponseEntity<List<Flight>> getAllFlights() {
         System.out.println("GET /api/flights");
-        return ResponseEntity.ok(flightService.getFlights());
-    }
-
-    // Add a flight
-    @PostMapping("/add") // POST /api/flights/add
-    public String addFlight(@RequestBody Flight flight) {
-        System.out.println("POST /api/flights/add");
-        return flightService.addFlight(flight);
+        return ResponseEntity.ok(flightService.getAllFlights());
     }
 }
