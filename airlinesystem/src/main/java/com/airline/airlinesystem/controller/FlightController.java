@@ -14,8 +14,9 @@ public class FlightController {
     private FlightService flightService;
 
     // Returns list of flights
-    @GetMapping
+    @GetMapping // GET /api/flights
     public ResponseEntity<List<Flight>> getAllFlights() {
+        System.out.println("GET /api/flights");
         return ResponseEntity.ok(flightService.getFlights());
     }
 }
