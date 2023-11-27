@@ -1,12 +1,21 @@
 package com.airline.airlinesystem.core;
 
 public class Login {
+    private static Login instance;
+
     private String username;
     private String password;
 
-    public Login(String username, String password) {
+    private Login(String username, String password) {
         this.username = username;
         this.password = password;
+    }
+
+    public static Login getInstance(String username, String password) {
+        if (instance == null) {
+            instance = new Login(username, password);
+        }
+        return instance;
     }
 
     // Getters and setters
@@ -32,3 +41,4 @@ public class Login {
         return this.username.equals(enteredUsername) && this.password.equals(enteredPassword);
     }
 }
+
