@@ -48,6 +48,7 @@ export default function FlightSearch() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [flights, setFlights] = useState([]);
+  const [flightID, setFlightID] = useState();
 
   useEffect(() => {
     fetchFlights();
@@ -72,7 +73,13 @@ export default function FlightSearch() {
   const handleSearch = () => {
     // Here you would handle the actual search logic
     const searchResults = flights.find(
-      (flight) => flight.flightNo === searchTerm
+      (flight) =>
+        flight.flightNo +
+          " - Origin: " +
+          flight.origin +
+          " - Destination: " +
+          flight.destination ===
+        searchTerm
     );
 
     if (!searchResults) {
@@ -151,6 +158,7 @@ export default function FlightSearch() {
                 flight.destination
             )}
             onInputChange={(event, newInputValue) => {
+              console.log(newInputValue);
               setSearchTerm(newInputValue);
             }}
             renderInput={(params) => (

@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
+
 
 @RestController
 @RequestMapping("/api/flights")
@@ -41,7 +43,7 @@ public class FlightController {
         return ResponseEntity.ok(soldOutSeats);
     }
 
-    // Book seats for a flight
+    // Book seats for a flight by id
     // Works
     @PostMapping("/{id}/seats/book") // POST /api/flights/{id}/seats/book
     public ResponseEntity<Flight> bookSeats(@PathVariable Long id, @RequestBody List<String> seatNumbers) {
@@ -49,6 +51,18 @@ public class FlightController {
         flight.selectSeats(seatNumbers);
         Flight updatedFlight = flightService.saveFlight(flight);
         return ResponseEntity.ok(updatedFlight);
+    }
+
+    // Get id of flight by flightNo
+    // Works
+    @GetMapping("/{flightNo}/id")
+    public ResponseEntity<Long> getFlightIdByFlightNo(@PathVariable String flightNo) {
+        try {
+            Flight flight = flightService.getFlightByFlightNo(flightNo);
+            return ResponseEntity.ok(flight.getId());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 }

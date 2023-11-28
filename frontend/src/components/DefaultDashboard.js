@@ -164,7 +164,14 @@ const DefaultDashboard = () => {
   const [selectedSeatType, setSelectedSeatType] = useState("all");
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
 
-  const soldOutSeats = ["A1", "A3", "B2", "G12", "D7"]; // Need to get this from the backend
+  // Sold out seats, go through a loop and add them to the array
+  const soldOutSeats = selectedFlight.soldOutSeats.map((seat) => {
+    return seat.seatNumber;
+  });
+
+
+
+  console.log(soldOutSeats);
   const seatPrices = {
     // Need to get this from the backend
     ordinary: 100,
@@ -369,7 +376,7 @@ const DefaultDashboard = () => {
             style={{ margin: "0 10px", marginLeft: "30px" }}
           />
           <Typography variant="subtitle1">
-            {selectedFlight.flightNumber}
+            {selectedFlight.flightNo}
           </Typography>
           <FlightLandIcon
             fontSize="large"

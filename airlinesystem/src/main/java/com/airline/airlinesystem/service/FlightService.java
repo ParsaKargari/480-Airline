@@ -1,9 +1,8 @@
 package com.airline.airlinesystem.service;
 
-
 import com.airline.airlinesystem.core.Flight;
 import com.airline.airlinesystem.repository.FlightRepository;
-
+import javax.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -31,5 +30,11 @@ public class FlightService {
     // Return flight by id
     public Flight getFlightById(Long id) {
         return flightRepository.findById(id).orElseThrow();
+    }
+
+    // Return flight by flightNo
+    public Flight getFlightByFlightNo(String flightNo) {
+        return flightRepository.findByFlightNo(flightNo)
+                .orElseThrow(() -> new EntityNotFoundException("Flight not found with flightNo: " + flightNo));
     }
 }

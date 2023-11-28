@@ -23,6 +23,7 @@ public class Flight {
     private String destination;
     private String origin;
     private String departureTime;
+    private String duration;
 
     @Transient
     private List<String> crew;
@@ -58,7 +59,7 @@ public class Flight {
         // First class
         for (int i = 0; i < 2; i++) {
             for (char j = 'A'; j <= 'G'; j++) {
-                String seatNumber = (i + 1) + String.valueOf(j);
+                String seatNumber = String.valueOf(j) + (i + 1);
                 Seat seat = new Seat(seatNumber, "Business Class", 250);
                 seats.add(seat); // No need to setFlight
             }
@@ -67,7 +68,7 @@ public class Flight {
         // Comfort class
         for (int i = 2; i < 5; i++) {
             for (char j = 'A'; j <= 'G'; j++) {
-                String seatNumber = (i + 1) + String.valueOf(j);
+                String seatNumber = String.valueOf(j) + (i + 1);
                 Seat seat = new Seat(seatNumber, "Comfort Class", 140);
                 seats.add(seat); // No need to setFlight
             }
@@ -76,7 +77,7 @@ public class Flight {
         // Economy class
         for (int i = 5; i < 13; i++) {
             for (char j = 'A'; j <= 'G'; j++) {
-                String seatNumber = (i + 1) + String.valueOf(j);
+                String seatNumber = String.valueOf(j) + (i + 1);
                 Seat seat = new Seat(seatNumber, "Ordinary Class", 100);
                 seats.add(seat); // No need to setFlight
             }
@@ -99,6 +100,14 @@ public class Flight {
 
     public String getDepartureTime() {
         return departureTime;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
+
+    public String getDuration() {
+        return duration;
     }
 
     public FlightViewStrategy getFlightStrategy() {
@@ -203,5 +212,10 @@ public class Flight {
         }
 
         return availableSeats;
+    }
+
+    // Return Id
+    public Long getId() {
+        return id;
     }
 }

@@ -15,6 +15,7 @@ import FlightTakeoffIcon from "@material-ui/icons/FlightTakeoff";
 import FlightIcon from "@material-ui/icons/Flight";
 import FlightLandIcon from "@material-ui/icons/FlightLand";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
+import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -59,6 +60,7 @@ const CheckoutModal = ({
   const [insuranceSelected, setInsuranceSelected] = useState(false);
   const [creditCard, setCreditCard] = useState("");
   const [totalPrice, setTotalPrice] = useState(totalAmount);
+  const navigate = useNavigate();
 
   useEffect(() => {
     setTotalPrice(totalAmount);
@@ -71,12 +73,62 @@ const CheckoutModal = ({
     );
   };
 
+  const fetchFlightID = async () => {
+    try {
+      const response = await fetch(
+        `http://localhost:8080/api/flights/${selectedFlight.flightNo}/id`
+      );
+      if (response.ok) {
+        const data = await response.json();
+        return data;
+      } else {
+        throw new Error("Failed to fetch flightID");
+      }
+    } catch (error) {
+      console.error("Error fetching flightID:", error);
+      // Handle errors here
+    }
+  };
+
+  const bookFlight = async () => {
+    try {
+      const flightID = await fetchFlightID();
+      // Convert seats using convertSeatFormat
+      const selectedSeatsCOR = selectedSeats.map((seat) =>
+        convertSeatFormat(seat)
+      );
+      console.log(selectedSeatsCOR);
+
+      const response = await fetch(
+        `http://localhost:8080/api/flights/${flightID}/seats/book`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(selectedSeatsCOR),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        navigate("/")
+      } else {
+        throw new Error("Failed to book flight");
+      }
+    } catch (error) {
+      console.error("Error booking flight:", error);
+      // Handle errors here
+    }
+  };
+
   const handlePayment = () => {
     // Implement your payment logic here
     if (creditCard.trim() === "") {
       alert("Please enter credit card information.");
     } else {
       // This is just a placeholder
+      bookFlight();
       alert("Payment Successful!");
       onClose(); // Close the modal after successful payment
     }
