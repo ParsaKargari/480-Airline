@@ -2,8 +2,12 @@ package com.airline.airlinesystem.core;
 
 import jakarta.persistence.*;
 
-// @Entity
+@Entity
 public class Passenger {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    
     private String name;
     private String flightNo;
     private String seatNo;
@@ -38,6 +42,12 @@ public class Passenger {
     }
     public void setEmail(String email) {
         this.email = email;
+    }
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
     }
 
 }

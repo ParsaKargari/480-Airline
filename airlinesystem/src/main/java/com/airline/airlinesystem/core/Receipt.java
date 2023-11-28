@@ -2,32 +2,39 @@ package com.airline.airlinesystem.core;
 
 import java.util.Properties;
 
-import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+
+import jakarta.persistence.*;
+
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+@Entity
 public class Receipt implements Email {
-    private String transactionId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    private int paymentId;
     private double amount;
     private String recipientEmail;
 
-    public Receipt(String transactionId, double amount, String recipientEmail) {
-        this.transactionId = transactionId;
+    public Receipt(int paymentId, double amount, String recipientEmail) {
+        this.paymentId = paymentId;
         this.amount = amount;
         this.recipientEmail = recipientEmail;
     }
 
     // Getters and setters...
 
-    public String getTransactionId() {
-        return transactionId;
+    public int getId() {
+        return id;
     }
 
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
+    public void setId(int transactionId) {
+        this.id = transactionId;
     }
 
     public double getAmount() {
@@ -91,5 +98,13 @@ public class Receipt implements Email {
         } catch (MessagingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public int getPaymentId() {
+        return paymentId;
+    }
+
+    public void setPaymentId(int paymentId) {
+        this.paymentId = paymentId;
     }
 }

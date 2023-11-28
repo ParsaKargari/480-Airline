@@ -14,12 +14,14 @@ public class Seat {
     private String seatClass;
     private boolean isAvailable;
     private double price;
+    private String flightNo;
 
     // Default constructor
     public Seat() {
     }
 
-    public Seat(String seatNumber, String seatClass, double price) {
+    public Seat(String flightNo, String seatNumber, String seatClass, double price) {
+        this.flightNo = flightNo;
         this.seatNumber = seatNumber;
         this.seatClass = seatClass;
         this.isAvailable = true;
@@ -58,6 +60,22 @@ public class Seat {
 
     public void setPrice(double price) {
         this.price = price;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getFlightNo() {
+        return flightNo;
+    }
+
+    public void setFlightNo(String flightNo) {
+        this.flightNo = flightNo;
     }
 }
 
