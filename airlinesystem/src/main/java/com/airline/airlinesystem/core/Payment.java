@@ -8,10 +8,19 @@ import java.util.*;
 
 // @Entity
 public class Payment {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    @Transient
     private List<Ticket> tickets;
+    @Transient
     private Passenger passenger;
+    @Transient
     private List<Seat> seats;
+    @Transient
     private Flight flight;
+    @Transient
+    private Receipt receipt;
 
     private String name;
     private String email;                       
@@ -37,7 +46,6 @@ public class Payment {
         this.cvv = cvv;
         this.timestamp = timestamp;
         this.approved = processPayment();
-
     }
     public boolean processPayment() {
         if(cardNumber == null || cardNumber.length() != 16){
@@ -59,7 +67,7 @@ public class Payment {
             return false;
         }
         for (Seat seat : seats) {
-            Ticket ticket = new Ticket(flight, passenger, seat, amount);
+            Ticket ticket = new Ticket(id, flight, passenger, seat, amount);
             tickets.add(ticket);
             String emailSubject = "Congratulations! Your Flight Booking and Payment are Confirmed";
             String emailBody = "Dear " + name + ",\n\n" +
@@ -79,6 +87,20 @@ public class Payment {
                     "Moussavi Airlines";
             ticket.sendEmail(email, emailSubject, emailBody);
         }   
+
+        this.receipt = new Receipt(id, amount, email);
+        String emailSubject = "Receipt For Your Recent Booking With Moussavi Airlines";
+        String emailBody = "Dear " + name + ",\n\n" +
+        "Thank you for choosing Moussavi Airlines! We are pleased to provide you with the receipt for your recent booking.\n\n" +
+        "Booking Details:\n" +
+        "- Transaction ID: " + id + "\n" +
+        "- Total Amount Paid: $" + amount + "\n\n" +
+        "We hope you have a pleasant journey with Moussavi Airlines. If you have any questions or need further assistance, feel free to contact our customer support.\n\n" +
+        "Thank you for flying with us!\n\n" +
+        "Best regards,\n" +
+        "Moussavi Airlines";
+        receipt.sendEmail(email, emailSubject, emailBody);
+
 
         return true;
     }
@@ -171,5 +193,17 @@ public class Payment {
 
     public void setFlight(Flight flight) {
         this.flight = flight;
+    }
+    public int getId() {
+        return id;
+    }
+    public void setId(int id) {
+        this.id = id;
+    }
+    public Boolean getApproved() {
+        return approved;
+    }
+    public void setApproved(Boolean approved) {
+        this.approved = approved;
     }
 }

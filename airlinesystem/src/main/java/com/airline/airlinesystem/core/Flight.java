@@ -60,7 +60,7 @@ public class Flight {
         for (int i = 0; i < 2; i++) {
             for (char j = 'A'; j <= 'G'; j++) {
                 String seatNumber = String.valueOf(j) + (i + 1);
-                Seat seat = new Seat(seatNumber, "Business Class", 250);
+                Seat seat = new Seat(flightNo, seatNumber, "Business Class", 250);
                 seats.add(seat); // No need to setFlight
             }
         }
@@ -69,7 +69,7 @@ public class Flight {
         for (int i = 2; i < 5; i++) {
             for (char j = 'A'; j <= 'G'; j++) {
                 String seatNumber = String.valueOf(j) + (i + 1);
-                Seat seat = new Seat(seatNumber, "Comfort Class", 140);
+                Seat seat = new Seat(flightNo, seatNumber, "Comfort Class", 140);
                 seats.add(seat); // No need to setFlight
             }
         }
@@ -78,7 +78,7 @@ public class Flight {
         for (int i = 5; i < 13; i++) {
             for (char j = 'A'; j <= 'G'; j++) {
                 String seatNumber = String.valueOf(j) + (i + 1);
-                Seat seat = new Seat(seatNumber, "Ordinary Class", 100);
+                Seat seat = new Seat(flightNo, seatNumber, "Ordinary Class", 100);
                 seats.add(seat); // No need to setFlight
             }
         }
@@ -180,6 +180,17 @@ public class Flight {
             for (Seat seat : seats) {
                 if (seat.getSeatNumber().equals(seatNumber)) {
                     seat.setAvailable(false);
+                }
+            }
+        }
+    }
+
+        // Method to select seats (for booking)
+    public void addSeats(List<String> seatNumbers) {
+        for (String seatNumber : seatNumbers) {
+            for (Seat seat : seats) {
+                if (seat.getSeatNumber().equals(seatNumber)) {
+                    seat.setAvailable(true);
                 }
             }
         }

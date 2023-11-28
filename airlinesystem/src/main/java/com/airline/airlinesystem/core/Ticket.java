@@ -26,8 +26,9 @@ public class Ticket implements Email {
     private String seatNo;
     private double price;
     private String seatClass;
+    private int paymentId;
 
-    public Ticket(Flight flight, Passenger passenger, Seat seat, double price) {
+    public Ticket(int paymentId, Flight flight, Passenger passenger, Seat seat, double price) {
         this.flight = flight;
         this.passenger = passenger;
         this.seat = seat;
@@ -37,6 +38,7 @@ public class Ticket implements Email {
         this.name = passenger.getName();
         this.email = passenger.getEmail();
         this.flightNo = flight.getFlightNo();
+        this.paymentId = paymentId;
     }
 
     // Getters and setters...
@@ -159,5 +161,21 @@ public class Ticket implements Email {
 
     public void setSeatClass(String seatClass) {
         this.seatClass = seatClass;
+    }
+
+    public int getTicketNumber() {
+        return ticketNumber;
+    }
+
+    public void setTicketNumber(int ticketNumber) {
+        this.ticketNumber = ticketNumber;
+    }
+
+    public int getPaymentId() {
+        return paymentId;
+    }
+
+    public void setPaymentId(int paymentId) {
+        this.paymentId = paymentId;
     }
 }
