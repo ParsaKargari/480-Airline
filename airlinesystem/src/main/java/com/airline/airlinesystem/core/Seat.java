@@ -1,10 +1,23 @@
 package com.airline.airlinesystem.core;
 
+// Seat Database
+
+import jakarta.persistence.*;
+
+@Entity
 public class Seat {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id; // Primary key do not include in constructor
+
     private String seatNumber;
     private String seatClass;
     private boolean isAvailable;
     private double price;
+
+    // Default constructor
+    public Seat() {
+    }
 
     public Seat(String seatNumber, String seatClass, double price) {
         this.seatNumber = seatNumber;
