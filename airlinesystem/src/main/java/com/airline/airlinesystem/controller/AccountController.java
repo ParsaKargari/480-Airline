@@ -1,8 +1,11 @@
 package com.airline.airlinesystem.controller;
 
 import com.airline.airlinesystem.core.User;
+import com.airline.airlinesystem.core.UsernamePasswordAuthenticationStrategy;
+import com.airline.airlinesystem.core.AuthenticationStrategy;
 import com.airline.airlinesystem.core.CreditCard;
 import com.airline.airlinesystem.core.Login;
+import com.airline.airlinesystem.core.TokenAuthenticationStrategy;
 import com.airline.airlinesystem.service.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,5 +17,12 @@ import java.util.List;
 @RequestMapping("/api/accounts")
 @CrossOrigin
 public class AccountController {
+
+    private final AccountService accountService;
+
+    @Autowired
+    public AccountController(AccountService accountService) {
+        this.accountService = accountService;
+    }
 
 }
