@@ -9,27 +9,26 @@ export const AuthContext = createContext(null);
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
-  const login = async (username, password) => {
+  const login = async (username, password, token) => {
     try {
       // Define the API endpoint
-      const endpoint = 'http://localhost:8080/api/accounts/login'; // Adjust the URL as per your API
-      
+      const endpoint = "http://localhost:8080/api/accounts/login"; // Adjust the URL as per your API
+
       // Prepare the request body
-      const body = JSON.stringify({ username, password });
+      const body = JSON.stringify({ username, password, token });
 
       // For fetch
       const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: body
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: body,
       });
 
       // For axios (uncomment if using axios)
       // const response = await axios.post(endpoint, { username, password });
 
-      if (response.ok) {
+      if (response) {
         const data = await response.json();
-        console.log(data);
         setUser(data); // Assuming the backend sends back the user's role
         return true;
       } else {
