@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 import jakarta.persistence.*;
 import java.util.*;
 
-// @Entity
+@Entity
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

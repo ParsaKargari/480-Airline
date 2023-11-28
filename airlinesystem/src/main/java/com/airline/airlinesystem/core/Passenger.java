@@ -10,12 +10,12 @@ public class Passenger {
     
     private String name;
     private String flightNo;
-    private String seatNo;
+    private String seatNumber;
     private String email;
     
     public Passenger(String flightNo, String seatNo, String name, String email) {
         this.flightNo = flightNo;
-        this.seatNo = seatNo;
+        this.seatNumber = seatNo;
         this.name = name;
         this.email = email;
     }
@@ -26,10 +26,10 @@ public class Passenger {
         this.flightNo = flightNo;
     }
     public String getSeatNo() {
-        return seatNo;
+        return seatNumber;
     }
     public void setSeatNo(String seatNo) {
-        this.seatNo = seatNo;
+        this.seatNumber = seatNo;
     }
     public String getName() {
         return name;
