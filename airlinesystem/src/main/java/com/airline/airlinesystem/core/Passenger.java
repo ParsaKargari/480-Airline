@@ -2,7 +2,7 @@ package com.airline.airlinesystem.core;
 
 import jakarta.persistence.*;
 
-@Entity
+// @Entity
 public class Passenger {
     private String name;
     private String flightNo;
