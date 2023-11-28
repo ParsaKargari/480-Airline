@@ -18,6 +18,7 @@ public class User {
     private String address;
     private String dob;
     private String role;
+    private String token;
 
     // Default constructor
     public User() {
@@ -25,7 +26,7 @@ public class User {
 
     // Constructor with fields
     public User(String username, String password, String email,
-            String name, String address, String dob, String role) {
+            String name, String address, String dob, String role, String token) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -33,6 +34,7 @@ public class User {
         this.address = address;
         this.dob = dob;
         this.role = role;
+        this.token = token;
     }
 
     // Getters and setters
@@ -101,21 +103,29 @@ public class User {
         return role;
     }
 
+    public String setToken(String token) {
+        return this.token = token;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
     // ... Other getters and setters
 
     // Method to initialize default users
     public static List<User> initializeDefaultUsers() {
         List<User> defaultUsers = new ArrayList<>();
         defaultUsers.add(new User("admin", "adminpass", "admin@example.com",
-                "Admin", "Admin Address", "1970-01-01", "ADMIN"));
+                "Admin", "Admin Address", "1970-01-01", "ADMIN", "admin-token"));
         defaultUsers.add(new User("user", "userpass", "user@example.com",
-                "User", "User Address", "1970-01-01", "USER"));
+                "User", "User Address", "1970-01-01", "USER", "user-token"));
         defaultUsers.add(new User("touragent", "touragentpass", "touragent@example.com",
-                "Tour Agent", "Tour Agent Address", "1970-01-01", "TOUR_AGENT"));
+                "Tour Agent", "Tour Agent Address", "1970-01-01", "TOUR_AGENT", "touragent-token"));
         defaultUsers.add(new User("airlineagent", "airlineagentpass", "airlineagent@example.com",
-                "Airline Agent", "Airline Agent Address", "1970-01-01", "AIRLINE_AGENT"));
+                "Airline Agent", "Airline Agent Address", "1970-01-01", "AIRLINE_AGENT", "airlineagent-token"));
         defaultUsers.add(new User("flightattendant", "flightattendantpass", "flightattendant@example.com",
-                "Flight Attendant", "Flight Attendant Address", "1970-01-01", "FLIGHT_ATTENDANT"));
+                "Flight Attendant", "Flight Attendant Address", "1970-01-01", "FLIGHT_ATTENDANT", "flightattendant-token"));
         // Add other default users similarly for Tour Agent, Airline Agent, Flight
         // Attendant
         return defaultUsers;

@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 import jakarta.persistence.*;
 import java.util.*;
 
-@Entity
+// @Entity
 public class Payment {
     private List<Ticket> tickets;
     private Passenger passenger;
@@ -14,7 +14,7 @@ public class Payment {
     private Flight flight;
 
     private String name;
-    private String email;
+    private String email;                       
     private double amount;
     private String cardNumber;
     private String expirationDate;
