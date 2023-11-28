@@ -1,13 +1,18 @@
 package com.airline.airlinesystem.core;
 
+import jakarta.persistence.*;
+
+@Entity
 public class Aircraft {
-    private String aircraftId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
     private String model;
     private int capacity;
     private String airline;
 
-    public Aircraft(String aircraftId, String model, int capacity, String airline) {
-        this.aircraftId = aircraftId;
+    public Aircraft(String model, int capacity, String airline) {
         this.model = model;
         this.capacity = capacity;
         this.airline = airline;
@@ -15,12 +20,12 @@ public class Aircraft {
 
     // Getters and setters
 
-    public String getAircraftId() {
-        return aircraftId;
+    public int getId() {
+        return id;
     }
 
-    public void setAircraftId(String aircraftId) {
-        this.aircraftId = aircraftId;
+    public void setId(int aircraftId) {
+        this.id = aircraftId;
     }
 
     public String getModel() {
