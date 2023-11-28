@@ -2,6 +2,9 @@ package com.airline.airlinesystem.core;
 
 import java.util.Random;
 
+import jakarta.persistence.Entity;
+
+@Entity
 public class CreditCard {
     private String cvv;
     private String cardHolder;

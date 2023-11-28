@@ -2,11 +2,14 @@ package com.airline.airlinesystem.controller;
 
 import com.airline.airlinesystem.core.Flight;
 import com.airline.airlinesystem.core.Seat;
+import com.airline.airlinesystem.core.Passenger;
 import com.airline.airlinesystem.service.FlightService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -44,11 +47,19 @@ public class FlightController {
     // Book seats for a flight
     // Works
     @PostMapping("/{id}/seats/book") // POST /api/flights/{id}/seats/book
-    public ResponseEntity<Flight> bookSeats(@PathVariable Long id, @RequestBody List<String> seatNumbers) {
+    public ResponseEntity<Flight> bookSeats(@PathVariable Long id, @RequestBody String name, @RequestBody String email, @RequestBody List<String> seatNumbers, @RequestBody String seatType) {
         Flight flight = flightService.getFlightById(id);
         flight.selectSeats(seatNumbers);
+        List<Passenger> existingPassengers = flight.getPassengers();
+        List<Passenger> passengers = new ArrayList<>();
+        for (String seatNumber : seatNumbers) {
+            Passenger passenger = new Passenger(flight.getFlightNo(), seatNumber, name, email);
+            passengers.add(passenger);
+        }   
+        existingPassengers.addAll(passengers);
+        flight.setPassengers(existingPassengers);
         Flight updatedFlight = flightService.saveFlight(flight);
+
         return ResponseEntity.ok(updatedFlight);
     }
-
 }

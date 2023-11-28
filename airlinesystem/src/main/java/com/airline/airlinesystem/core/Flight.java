@@ -14,9 +14,6 @@ public class Flight {
     private Long id; // Primary key do not include in constructor
 
     @Transient // Do not include in database
-    private Login login;
-
-    @Transient // Do not include in database
     private FlightViewStrategy flightStrategy;
 
     private String flightNo;
@@ -26,6 +23,9 @@ public class Flight {
 
     @Transient
     private List<String> crew;
+
+    @Transient
+    private List<Passenger> passengers;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "flight_id")
@@ -37,16 +37,16 @@ public class Flight {
         initializeSeats();
     }
 
-    public Flight(Login login, FlightViewStrategy flightStrategy, String flightNo, String destination, String origin,
-            List<String> crew, List<Seat> seats) {
+    public Flight(FlightViewStrategy flightStrategy, String flightNo, String destination, String origin,
+            List<String> crew, List<Seat> seats, List<Passenger> passengers) {
 
-        this.login = login;
         this.flightStrategy = flightStrategy;
         this.flightNo = flightNo;
         this.destination = destination;
         this.origin = origin;
         this.crew = crew;
         this.seats = seats;
+        this.passengers = passengers;
     }
 
     // Initialize Seats
@@ -84,14 +84,6 @@ public class Flight {
     }
 
     // Getters and setters...
-
-    public Login getLogin() {
-        return login;
-    }
-
-    public void setLogin(Login login) {
-        this.login = login;
-    }
 
     public void setDepartureTime(String departureTime) {
         this.departureTime = departureTime;
@@ -203,5 +195,29 @@ public class Flight {
         }
 
         return availableSeats;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public List<Passenger> getPassengers() {
+        return passengers;
+    }
+
+    public void setPassengers(List<Passenger> passengers) {
+        this.passengers = passengers;
+    }
+
+    public List<Seat> getSeats() {
+        return seats;
+    }
+
+    public void setSeats(List<Seat> seats) {
+        this.seats = seats;
     }
 }
