@@ -141,9 +141,6 @@ public class Flight {
     public void setCrew(List<String> crew) {
         this.crew = crew;
     }
-    public List<Seat> getSeats() {
-        return seats;
-    }
  
 
 

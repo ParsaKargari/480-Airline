@@ -3,14 +3,14 @@ package com.airline.airlinesystem.core;
 public class Ticket implements Email {
     private String ticketNumber;
     private Flight flight;
-    // private Passenger passenger;
+    private Passenger passenger;
     private Seat seat;  // Add Seat field
     private double price;
 
-    public Ticket(String ticketNumber, Flight flight, Seat seat, double price) {
+    public Ticket(String ticketNumber, Flight flight, Passenger passenger, Seat seat, double price) {
         this.ticketNumber = ticketNumber;
         this.flight = flight;
-        // this.passenger = passenger;
+        this.passenger = passenger;
         this.seat = seat;
         this.price = price;
     }
@@ -33,13 +33,13 @@ public class Ticket implements Email {
         this.flight = flight;
     }
 
-    // public Passenger getPassenger() {
-    //     return passenger;
-    // }
+    public Passenger getPassenger() {
+        return passenger;
+    }
 
-    // public void setPassenger(Passenger passenger) {
-    //     this.passenger = passenger;
-    // }
+    public void setPassenger(Passenger passenger) {
+        this.passenger = passenger;
+    }
 
     public Seat getSeat() {
         return seat;

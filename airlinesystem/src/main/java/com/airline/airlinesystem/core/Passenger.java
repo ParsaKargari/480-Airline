@@ -8,6 +8,7 @@ public class Passenger {
     private String flightNo;
     private String seatNo;
     private String email;
+    
     public Passenger(String flightNo, String seatNo, String name, String email) {
         this.flightNo = flightNo;
         this.seatNo = seatNo;
