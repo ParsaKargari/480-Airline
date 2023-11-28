@@ -1,5 +1,6 @@
 package com.airline.airlinesystem.core;
 
 public interface AuthenticationStrategy {
-    boolean authenticate(User user, String credential);
+
+    public User authenticate(String user, String password, String token);
 }

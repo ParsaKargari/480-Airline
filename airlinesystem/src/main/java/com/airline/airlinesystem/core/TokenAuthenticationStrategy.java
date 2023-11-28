@@ -1,7 +1,6 @@
 package com.airline.airlinesystem.core;
 
 import com.airline.airlinesystem.repository.AccountRepository;
-import com.airline.airlinesystem.core.User;
 
 public class TokenAuthenticationStrategy implements AuthenticationStrategy {
 
@@ -12,8 +11,9 @@ public class TokenAuthenticationStrategy implements AuthenticationStrategy {
     }
 
     @Override
-    public boolean authenticate(User user, String token) {
-        User foundUser = accountRepository.findByToken(token);
-        return foundUser != null;
+    public User authenticate(String user, String password, String token) {
+        User foundUser = accountRepository.findByToken(user);
+        return foundUser;
     }
+    
 }

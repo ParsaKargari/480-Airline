@@ -21,10 +21,12 @@ public class AccountService {
         accountRepository.saveAll(defaultUsers);
     }
 
-    public boolean loginUser(String username, String credential, AuthenticationStrategy strategy) {
-        User user = new User();
-        user.setUsername(username);
-        return strategy.authenticate(user, credential);
+    public AccountRepository getAccountRepository() {
+        return accountRepository;
+    }
+
+    public User authenticate(String user, String password, String token, AuthenticationStrategy authenticationStrategy) {
+        return authenticationStrategy.authenticate(user, password, token);
     }
 
 }

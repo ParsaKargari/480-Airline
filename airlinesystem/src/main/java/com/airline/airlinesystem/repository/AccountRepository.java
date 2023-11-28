@@ -6,5 +6,6 @@ import com.airline.airlinesystem.core.User;
 
 @Repository
 public interface AccountRepository extends JpaRepository<User, Integer>{
-
+    User findByUsernameAndPassword(String username, String password);
+    User findByToken(String token);
 }

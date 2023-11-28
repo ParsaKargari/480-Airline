@@ -6,7 +6,7 @@ import java.time.format.DateTimeFormatter;
 import jakarta.persistence.*;
 import java.util.*;
 
-@Entity
+// @Entity
 public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +23,7 @@ public class Payment {
     private Receipt receipt;
 
     private String name;
-    private String email;
+    private String email;                       
     private double amount;
     private String cardNumber;
     private String expirationDate;
