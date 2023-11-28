@@ -1,20 +1,40 @@
 package com.airline.airlinesystem.core;
 
+import jakarta.persistence.*;
+
+@Entity
 public class Account {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @Transient
+    private CreditCard creditCard;
+
+    @Transient
     private Login login;
-    private String accountID;
+
+    private String username;
     private String name;
     private String address;
     private String dob;
-    private CreditCard creditCard;
+
+
+    private String creditCardNum;
+    private String creditCardExp;
+    private String creditCardCvv;
     
-    public Account(Login login, String accountID, String name, String address, String dob, CreditCard creditCard) {
+    public Account(Login login, String name, String address, String dob, CreditCard creditCard) {
         this.login = login;
-        this.accountID = accountID;
+        this.username = login.getUsername();
         this.name = name;
         this.address = address;
         this.dob = dob;
         this.creditCard = creditCard;
+        this.creditCardNum = creditCard.getNumber();
+        this.creditCardExp = creditCard.getExpDate();
+        this.creditCardCvv = creditCard.getCVV();
     }
         // Getters and setters
     
@@ -26,12 +46,12 @@ public class Account {
         this.login = login;
     }
 
-    public String getAccountID() {
-        return accountID;
+    public String getUsername() {
+        return username;
     }
 
-    public void setAccountID(String accountID) {
-        this.accountID = accountID;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public String getName() {
@@ -64,5 +84,32 @@ public class Account {
 
     public void setCreditCard(CreditCard creditCard) {
         this.creditCard = creditCard;
+    }
+
+    public String getCreditCardNum() {
+        return creditCardNum;
+    }
+    public void setCreditCardNum(String creditCardNum) {
+        this.creditCardNum = creditCardNum;
+    }
+    public String getCreditCardExp() {
+        return creditCardExp;
+    }
+    public void setCreditCardExp(String creditCardExp) {
+        this.creditCardExp = creditCardExp;
+    }
+    public String getCreditCardCvv() {
+        return creditCardCvv;
+    }
+    public void setCreditCardCvv(String creditCardCvv) {
+        this.creditCardCvv = creditCardCvv;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
