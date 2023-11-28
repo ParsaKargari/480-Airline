@@ -4,10 +4,8 @@ package com.airline.airlinesystem.controller;
 import com.airline.airlinesystem.core.Flight;
 import com.airline.airlinesystem.core.Seat;
 import com.airline.airlinesystem.core.Passenger;
-import com.airline.airlinesystem.core.Receipt;
 import com.airline.airlinesystem.service.FlightService;
 import com.airline.airlinesystem.service.PassengerService;
-import com.airline.airlinesystem.service.ReceiptService;
 
 
 import org.springframework.beans.factory.annotation.Autowired;

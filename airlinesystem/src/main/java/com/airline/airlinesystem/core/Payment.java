@@ -15,11 +15,6 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    @Autowired
-    TicketService ticketService;
-    @Autowired
-    ReceiptService receiptService;
     @Transient
     private List<Ticket> tickets;
     @Transient
@@ -78,7 +73,6 @@ public class Payment {
         for (Seat seat : seats) {
             Ticket ticket = new Ticket(id, flight, passenger, seat, amount);
             tickets.add(ticket);
-            ticketService.saveTicket(ticket);
             String emailSubject = "Congratulations! Your Flight Booking and Payment are Confirmed";
             String emailBody = "Dear " + name + ",\n\n" +
                     "We are delighted to inform you that your payment for the flight booking has been successfully processed. " +
@@ -99,7 +93,6 @@ public class Payment {
         }   
 
         this.receipt = new Receipt(id, amount, email);
-        receiptService.saveReceipt(receipt);
         String emailSubject = "Receipt For Your Recent Booking With Moussavi Airlines";
         String emailBody = "Dear " + name + ",\n\n" +
         "Thank you for choosing Moussavi Airlines! We are pleased to provide you with the receipt for your recent booking.\n\n" +

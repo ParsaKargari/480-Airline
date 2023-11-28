@@ -1,7 +1,6 @@
 package com.airline.airlinesystem.controller;
 
 import com.airline.airlinesystem.core.Payment;
-import com.airline.airlinesystem.service.FlightService;
 import com.airline.airlinesystem.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

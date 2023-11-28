@@ -6,8 +6,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.airline.airlinesystem.service.SeatService;
 
-import com.airline.airlinesystem.service.PassengerService;
-
 import jakarta.persistence.*;
 
 // Flight Database
@@ -17,9 +15,6 @@ public class Flight {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // Primary key do not include in constructor
-
-    @Autowired
-    private SeatService seatService;
 
     @Transient // Do not include in database
     private FlightViewStrategy flightStrategy;
@@ -69,7 +64,7 @@ public class Flight {
             for (char j = 'A'; j <= 'G'; j++) {
                 String seatNumber = String.valueOf(j) + (i + 1);
                 Seat seat = new Seat(flightNo, seatNumber, "Business Class", 250);
-                seatService.saveSeat(seat);
+                
                 seats.add(seat); // No need to setFlight
             }
         }
@@ -79,7 +74,7 @@ public class Flight {
             for (char j = 'A'; j <= 'G'; j++) {
                 String seatNumber = String.valueOf(j) + (i + 1);
                 Seat seat = new Seat(flightNo, seatNumber, "Comfort Class", 140);
-                seatService.saveSeat(seat);
+                
                 seats.add(seat); // No need to setFlight
             }
         }
@@ -89,7 +84,7 @@ public class Flight {
             for (char j = 'A'; j <= 'G'; j++) {
                 String seatNumber = String.valueOf(j) + (i + 1);
                 Seat seat = new Seat(flightNo, seatNumber, "Ordinary Class", 100);
-                seatService.saveSeat(seat);
+                
                 seats.add(seat); // No need to setFlight
             }
         }
@@ -191,7 +186,7 @@ public class Flight {
             for (Seat seat : seats) {
                 if (seat.getSeatNumber().equals(seatNumber)) {
                     seat.setAvailable(false);
-                    seatService.saveSeat(seat);
+                    
                 }
             }
         }
@@ -203,7 +198,6 @@ public class Flight {
             for (Seat seat : seats) {
                 if (seat.getSeatNumber().equals(seatNumber)) {
                     seat.setAvailable(true);
-                    seatService.saveSeat(seat);
                 }
             }
         }

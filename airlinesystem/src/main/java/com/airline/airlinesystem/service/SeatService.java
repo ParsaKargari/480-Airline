@@ -1,7 +1,7 @@
 package com.airline.airlinesystem.service;
-
 import com.airline.airlinesystem.core.Seat;
 import com.airline.airlinesystem.repository.SeatRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

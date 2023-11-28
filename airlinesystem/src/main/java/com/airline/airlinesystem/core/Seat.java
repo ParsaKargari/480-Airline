@@ -1,14 +1,13 @@
 package com.airline.airlinesystem.core;
 
-// Seat Database
-
 import jakarta.persistence.*;
 
 @Entity
 public class Seat {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // Primary key do not include in constructor
+    private int id; 
 
     private String seatNumber;
     private String seatClass;
@@ -62,11 +61,11 @@ public class Seat {
         this.price = price;
     }
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
