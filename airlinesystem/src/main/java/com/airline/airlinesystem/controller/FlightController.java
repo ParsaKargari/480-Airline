@@ -9,8 +9,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ArrayList;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6ee3ef1643d1540b5410cd350cac43fedc66ad65
 
 @RestController
 @RequestMapping("/api/flights")
