@@ -1,6 +1,6 @@
 // src/components/FlightSearch.js
 
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Box,
@@ -37,10 +37,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// Mock flight data
-const mockFlights = [
-];
-
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -51,17 +47,37 @@ export default function FlightSearch() {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [flights, setFlights] = useState([]);
+
+  useEffect(() => {
+    fetchFlights();
+  }, []);
+
+  const fetchFlights = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/flights");
+      if (response.ok) {
+        const data = await response.json();
+        setFlights(data);
+        console.log(data);
+      } else {
+        throw new Error("Failed to fetch flights");
+      }
+    } catch (error) {
+      console.error("Error fetching flights:", error);
+      // Handle errors here
+    }
+  };
 
   const handleSearch = () => {
     // Here you would handle the actual search logic
-    const searchResults = mockFlights.find(
-      (flight) => flight.label === searchTerm
+    const searchResults = flights.find(
+      (flight) => flight.flightNo === searchTerm
     );
 
     if (!searchResults) {
       setOpenSnackbar(true);
     } else {
-
       if (user && user.role === "Admin") {
         navigate("/admin-dashboard", {
           state: { selectedFlight: searchResults },
@@ -126,7 +142,14 @@ export default function FlightSearch() {
             freeSolo
             id="flight-search"
             disableClearable
-            options={mockFlights.map((option) => option.label)}
+            options={flights.map(
+              (flight) =>
+                flight.flightNo +
+                " - Origin: " +
+                flight.origin +
+                " - Destination: " +
+                flight.destination
+            )}
             onInputChange={(event, newInputValue) => {
               setSearchTerm(newInputValue);
             }}
