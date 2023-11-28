@@ -22,6 +22,7 @@ public class Flight {
     private String flightNo;
     private String destination;
     private String origin;
+    private String departureTime;
 
     @Transient
     private List<String> crew;
@@ -92,6 +93,14 @@ public class Flight {
         this.login = login;
     }
 
+    public void setDepartureTime(String departureTime) {
+        this.departureTime = departureTime;
+    }
+
+    public String getDepartureTime() {
+        return departureTime;
+    }
+
     public FlightViewStrategy getFlightStrategy() {
         return flightStrategy;
     }
@@ -156,7 +165,6 @@ public class Flight {
     public void removeDestination() {
         this.destination = null;
     }
-
 
     // seat methods
     public void addSeat(Seat seat) {
