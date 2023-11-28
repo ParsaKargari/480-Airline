@@ -3,7 +3,7 @@ import { AuthContext } from "./contexts/AuthContext";
 import Modal from "@material-ui/core/Modal";
 import Snackbar from "@material-ui/core/Snackbar";
 import { makeStyles } from "@material-ui/core/styles";
-import Alert from '@material-ui/lab/Alert';
+import Alert from "@material-ui/lab/Alert";
 
 import {
   Card,
@@ -59,10 +59,20 @@ export default function LoginModal({ open, handleClose }) {
   const { login } = useContext(AuthContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [token, setToken] = useState(""); // New state for token
   const [snackbarOpen, setSnackbarOpen] = useState(false);
 
-  const handleLoginClick = (u, p) => {
-    if (login(u, p)) {
+  const handleLoginClick = () => {
+    let success = false;
+    if (token) {
+      // Token-based login
+      success = login(null, null, token); // Adjust this call as per your login method signature
+    } else {
+      // Username/password login
+      success = login(username, password); // Adjust this call as per your login method signature
+    }
+
+    if (success) {
       setSnackbarOpen(true);
       handleClose();
     } else {
@@ -78,7 +88,6 @@ export default function LoginModal({ open, handleClose }) {
   };
 
   const [modalStyle] = React.useState(getModalStyle);
-
   const body = (
     <div style={modalStyle} className={classes.paper}>
       <Card>
@@ -88,7 +97,7 @@ export default function LoginModal({ open, handleClose }) {
           </Typography>
           <TextField
             margin="normal"
-            required
+            required={!token}
             fullWidth
             id="username"
             label="Username"
@@ -96,10 +105,11 @@ export default function LoginModal({ open, handleClose }) {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             autoFocus
+            disabled={!!token}
           />
           <TextField
             margin="normal"
-            required
+            required={!token}
             fullWidth
             name="password"
             label="Password"
@@ -107,16 +117,28 @@ export default function LoginModal({ open, handleClose }) {
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            disabled={!!token}
           />
-          {/* Implement your login logic here */}
+          <TextField
+            margin="normal"
+            fullWidth
+            name="token"
+            label="Token (optional)"
+            type="text"
+            id="token"
+            value={token}
+            onChange={(e) => setToken(e.target.value)}
+            disabled={!!(username || password)}
+          />
         </CardContent>
         <CardActions className={classes.actions}>
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
           <Button
-            onClick={() => handleLoginClick(username, password)}
+            onClick={handleLoginClick}
             color="primary"
+            disabled={!username && !token} // Disable if neither username nor token is provided
           >
             Login
           </Button>
@@ -141,7 +163,7 @@ export default function LoginModal({ open, handleClose }) {
         onClose={handleSnackbarClose}
       >
         <Alert onClose={handleSnackbarClose} severity="success">
-          {`Logged in, ${username}!`}
+          {`Logged in as ${username || "via token"}!`}
         </Alert>
       </Snackbar>
     </>

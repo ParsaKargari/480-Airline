@@ -12,7 +12,7 @@ public class TokenAuthenticationStrategy implements AuthenticationStrategy {
 
     @Override
     public User authenticate(String user, String password, String token) {
-        User foundUser = accountRepository.findByToken(user);
+        User foundUser = accountRepository.findByToken(token);
         return foundUser;
     }
     

@@ -34,9 +34,11 @@ public class AccountController {
 
         if (token != null && !token.isEmpty()) {
             // Use token authentication strategy
+            System.err.println("Token authentication strategy");
             strategy = new TokenAuthenticationStrategy(accountService.getAccountRepository());
         } else {
             // Use username/password authentication strategy
+            System.err.println("Username/password authentication strategy");
             strategy = new UsernamePasswordAuthenticationStrategy(accountService.getAccountRepository());
         }
 
