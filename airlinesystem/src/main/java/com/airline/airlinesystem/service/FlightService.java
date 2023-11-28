@@ -79,23 +79,28 @@ public class FlightService {
         return saveFlight(existingFlight);
     }
 
-//     public Flight cancelFlightOperations(int paymentId, String flightNo){
-//         // Retrieve ticket information
-//         List<Ticket> tickets = ticketRepository.findAllByPaymentId(paymentId);
-//         Receipt receipt = receiptRepository.findByPaymentId(paymentId).orElseThrow(() -> new EntityNotFoundException("Reciept not found"));
-//         Payment payment = paymentRepository.findById(paymentId).orElseThrow(() -> new EntityNotFoundException("Payment not found"));
-//         List<String> canceledSeatNumbers = new ArrayList<>();
-//         List<Passenger> canceledPassengers = new ArrayList<>();
-//         for (Ticket ticket : tickets) {
-//             // Retrieve additional information for each ticket, e.g., seat number, passenger
-//             String seatNo = ticket.getSeatNo();
-//             canceledSeatNumbers.add(seatNo);
-//             Passenger passenger = passengerRepository.findBySeatNumberAndFlightNo(seatNo, flightNo).orElseThrow(() -> new EntityNotFoundException("Passenger not found"));
-//             canceledPassengers.add(passenger);
-//             passengerRepository.deleteById(passenger.getId());
-//             ticketRepository.deleteById(ticket.getTicketNumber());
-//         }
-//         Flight flight = flightRepository.findByFlightNo(flightNo).orElseThrow(() -> new EntityNotFoundException("Flight not found"));
-        
-// }
+    public Flight cancelFlightOperations(int paymentId, Flight flight){
+        // Retrieve ticket information
+        List<Ticket> tickets = ticketRepository.findAllByPaymentId(paymentId);
+        Receipt receipt = receiptRepository.findByPaymentId(paymentId).orElseThrow(() -> new EntityNotFoundException("Reciept not found"));
+        Payment payment = paymentRepository.findById(paymentId).orElseThrow(() -> new EntityNotFoundException("Payment not found"));
+        List<String> canceledSeatNumbers = new ArrayList<>();
+        List<Passenger> canceledPassengers = new ArrayList<>();
+        for (Ticket ticket : tickets) {
+            // Retrieve additional information for each ticket, e.g., seat number, passenger
+            String seatNo = ticket.getSeatNo();
+            canceledSeatNumbers.add(seatNo);
+            Passenger passenger = passengerRepository.findBySeatNumberAndFlightNo(seatNo, flight.getFlightNo()).orElseThrow(() -> new EntityNotFoundException("Passenger not found"));
+            canceledPassengers.add(passenger);
+            passengerRepository.deleteById(passenger.getId());
+            ticketRepository.deleteById(ticket.getTicketNumber());
+        }
+        flight.addSeats(canceledSeatNumbers);
+        List<Passenger> passengers = flight.getPassengers();
+        passengers.removeAll(canceledPassengers);
+        flight.setPassengers(passengers);
+        paymentRepository.delete(payment);
+        receiptRepository.delete(receipt);
+        return saveFlight(flight);
+}
 }
