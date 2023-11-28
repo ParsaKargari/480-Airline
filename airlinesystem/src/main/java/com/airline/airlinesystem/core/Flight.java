@@ -3,25 +3,83 @@ package com.airline.airlinesystem.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.*;
+
+// Flight Database
+
+@Entity
 public class Flight {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id; // Primary key do not include in constructor
+
+    @Transient // Do not include in database
     private Login login;
+
+    @Transient // Do not include in database
     private FlightViewStrategy flightStrategy;
+
     private String flightNo;
     private String destination;
     private String origin;
-    private ArrayList<String> crew;
-    private ArrayList<String> info;
+
+    @Transient
+    private List<String> crew;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "flight_id")
     private List<Seat> seats;
 
-    public Flight(Login login, FlightViewStrategy flightStrategy, String flightNo, String destination, String origin, ArrayList<String> crew, ArrayList<String> info, List<Seat> seats) {
+    // Default constructor
+    public Flight() {
+        // Add mock Flight data
+        initializeSeats();
+    }
+
+    public Flight(Login login, FlightViewStrategy flightStrategy, String flightNo, String destination, String origin,
+            List<String> crew, List<Seat> seats) {
+
         this.login = login;
         this.flightStrategy = flightStrategy;
         this.flightNo = flightNo;
         this.destination = destination;
         this.origin = origin;
         this.crew = crew;
-        this.info = info;
         this.seats = seats;
+    }
+
+    // Initialize Seats
+    public void initializeSeats() {
+        this.seats = new ArrayList<>();
+
+        // Your logic to add seats...
+
+        // First class
+        for (int i = 0; i < 2; i++) {
+            for (char j = 'A'; j <= 'G'; j++) {
+                String seatNumber = (i + 1) + String.valueOf(j);
+                Seat seat = new Seat(seatNumber, "Business Class", 250);
+                seats.add(seat); // No need to setFlight
+            }
+        }
+
+        // Comfort class
+        for (int i = 2; i < 5; i++) {
+            for (char j = 'A'; j <= 'G'; j++) {
+                String seatNumber = (i + 1) + String.valueOf(j);
+                Seat seat = new Seat(seatNumber, "Comfort Class", 140);
+                seats.add(seat); // No need to setFlight
+            }
+        }
+
+        // Economy class
+        for (int i = 5; i < 13; i++) {
+            for (char j = 'A'; j <= 'G'; j++) {
+                String seatNumber = (i + 1) + String.valueOf(j);
+                Seat seat = new Seat(seatNumber, "Ordinary Class", 100);
+                seats.add(seat); // No need to setFlight
+            }
+        }
     }
 
     // Getters and setters...
@@ -66,20 +124,12 @@ public class Flight {
         this.origin = origin;
     }
 
-    public ArrayList<String> getCrew() {
+    public List<String> getCrew() {
         return crew;
     }
 
-    public void setCrew(ArrayList<String> crew) {
+    public void setCrew(List<String> crew) {
         this.crew = crew;
-    }
-
-    public ArrayList<String> getInfo() {
-        return info;
-    }
-
-    public void setInfo(ArrayList<String> info) {
-        this.info = info;
     }
 
     // Method to add a crew member
@@ -107,44 +157,31 @@ public class Flight {
         this.destination = null;
     }
 
-    // Method to add information
-    public void addInfo(String newInfo) {
-        if (info == null) {
-            info = new ArrayList<>();
-        }
-        info.add(newInfo);
-    }
-
-    // Method to remove information
-    public void removeInfo(String information) {
-        if (info != null) {
-            info.remove(information);
-        }
-    }
-
 
     // seat methods
     public void addSeat(Seat seat) {
         seats.add(seat);
     }
 
-    
     // Method to select seats (for booking)
-    public List<Seat> selectSeats(int numberOfSeats) {
-        List<Seat> selectedSeats = new ArrayList<>();
-
-        for (Seat seat : seats) {
-            if (seat.isAvailable()) {
-                seat.setAvailable(false);
-                selectedSeats.add(seat);
-
-                if (selectedSeats.size() == numberOfSeats) {
-                    break; // Stop selecting seats once the desired number is reached
+    public void selectSeats(List<String> seatNumbers) {
+        for (String seatNumber : seatNumbers) {
+            for (Seat seat : seats) {
+                if (seat.getSeatNumber().equals(seatNumber)) {
+                    seat.setAvailable(false);
                 }
             }
         }
+    }
 
-        return selectedSeats;
+    public List<Seat> getSoldOutSeats() {
+        List<Seat> soldOutSeats = new ArrayList<>();
+        for (Seat seat : seats) {
+            if (!seat.isAvailable()) {
+                soldOutSeats.add(seat);
+            }
+        }
+        return soldOutSeats;
     }
 
     // Method to browse available seats

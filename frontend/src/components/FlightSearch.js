@@ -1,6 +1,6 @@
 // src/components/FlightSearch.js
 
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import {
   Box,
@@ -37,106 +37,6 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-// Mock flight data
-const mockFlights = [
-  {
-    id: 1,
-    label: "Flight A to New York",
-    destination: "New York",
-    origin: "San Francisco",
-    flightNumber: "EK 226",
-    duration: "5h 30m",
-  },
-  {
-    id: 2,
-    label: "Flight B to Los Angeles",
-    destination: "Los Angeles",
-    origin: "San Francisco",
-    flightNumber: "EK 227",
-    duration: "5h 30m",
-  },
-  {
-    id: 3,
-    label: "Flight C to Miami",
-    destination: "Miami",
-    origin: "San Francisco",
-    flightNumber: "EK 228",
-    duration: "5h 30m",
-  },
-  {
-    id: 4,
-    label: "Flight D to Chicago",
-    destination: "Chicago",
-    origin: "San Francisco",
-    flightNumber: "EK 229",
-    duration: "5h 30m",
-  },
-  {
-    id: 5,
-    label: "Flight E to San Francisco",
-    destination: "San Francisco",
-    origin: "New York",
-    flightNumber: "EK 230",
-    duration: "5h 30m",
-  },
-  {
-    id: 6,
-    label: "Flight F to Seattle",
-    destination: "Seattle",
-    origin: "New York",
-    flightNumber: "EK 231",
-    duration: "5h 30m",
-  },
-  {
-    id: 7,
-    label: "Flight G to Boston",
-    destination: "Boston",
-    origin: "New York",
-    flightNumber: "EK 232",
-    duration: "5h 30m",
-  },
-  {
-    id: 8,
-    label: "Flight H to Washington D.C.",
-    destination: "Washington D.C.",
-    origin: "New York",
-    flightNumber: "EK 233",
-    duration: "5h 30m",
-  },
-  {
-    id: 9,
-    label: "Flight I to Las Vegas",
-    destination: "Las Vegas",
-    origin: "San Francisco",
-    flightNumber: "EK 234",
-    duration: "5h 30m",
-  },
-  {
-    id: 10,
-    label: "Flight J to Denver",
-    destination: "Denver",
-    origin: "San Francisco",
-    flightNumber: "EK 235",
-    duration: "5h 30m",
-  },
-  {
-    id: 11,
-    label: "Flight K to San Diego",
-    destination: "San Diego",
-    origin: "San Francisco",
-    flightNumber: "EK 236",
-    duration: "5h 30m",
-  },
-  {
-    id: 12,
-    label: "Flight L to Honolulu",
-    destination: "Honolulu",
-    origin: "San Francisco",
-    flightNumber: "EK 237",
-    duration: "5h 30m",
-  },
-];
-
 function Alert(props) {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 }
@@ -147,17 +47,37 @@ export default function FlightSearch() {
   const [openSnackbar, setOpenSnackbar] = useState(false);
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [flights, setFlights] = useState([]);
+
+  useEffect(() => {
+    fetchFlights();
+  }, []);
+
+  const fetchFlights = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/flights");
+      if (response.ok) {
+        const data = await response.json();
+        setFlights(data);
+        console.log(data);
+      } else {
+        throw new Error("Failed to fetch flights");
+      }
+    } catch (error) {
+      console.error("Error fetching flights:", error);
+      // Handle errors here
+    }
+  };
 
   const handleSearch = () => {
     // Here you would handle the actual search logic
-    const searchResults = mockFlights.find(
-      (flight) => flight.label === searchTerm
+    const searchResults = flights.find(
+      (flight) => flight.flightNo === searchTerm
     );
 
     if (!searchResults) {
       setOpenSnackbar(true);
     } else {
-
       if (user && user.role === "Admin") {
         navigate("/admin-dashboard", {
           state: { selectedFlight: searchResults },
@@ -222,7 +142,14 @@ export default function FlightSearch() {
             freeSolo
             id="flight-search"
             disableClearable
-            options={mockFlights.map((option) => option.label)}
+            options={flights.map(
+              (flight) =>
+                flight.flightNo +
+                " - Origin: " +
+                flight.origin +
+                " - Destination: " +
+                flight.destination
+            )}
             onInputChange={(event, newInputValue) => {
               setSearchTerm(newInputValue);
             }}
