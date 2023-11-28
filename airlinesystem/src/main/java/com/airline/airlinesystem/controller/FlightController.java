@@ -4,8 +4,10 @@ package com.airline.airlinesystem.controller;
 import com.airline.airlinesystem.core.Flight;
 import com.airline.airlinesystem.core.Seat;
 import com.airline.airlinesystem.core.Passenger;
+import com.airline.airlinesystem.core.Receipt;
 import com.airline.airlinesystem.service.FlightService;
 import com.airline.airlinesystem.service.PassengerService;
+import com.airline.airlinesystem.service.ReceiptService;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,7 @@ public class FlightController {
     private FlightService flightService;
     @Autowired
     private PassengerService passengerService;
+
     // Returns list of flights
     // Works
     @GetMapping // GET /api/flights
@@ -67,12 +70,11 @@ public class FlightController {
         for (String seatNumber : seatNumbers) {
             Passenger passenger = new Passenger(flight.getFlightNo(), seatNumber, name, email);
             passengers.add(passenger);
+            passengerService.savePassenger(passenger);
         }  
         existingPassengers.addAll(passengers);
         flight.setPassengers(existingPassengers);
         Flight updatedFlight = flightService.saveFlight(flight);
-
-
         return ResponseEntity.ok(updatedFlight);
     }
 
