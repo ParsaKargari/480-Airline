@@ -25,7 +25,7 @@ public class AccountController {
 
     // Login
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody Map<String, String> credentials) {
+    public ResponseEntity<User> login(@RequestBody Map<String, String> credentials) {
         String username = credentials.get("username");
         String password = credentials.get("password");
         String token = credentials.get("token");
@@ -43,9 +43,9 @@ public class AccountController {
         User authenticatedUser = accountService.authenticate(username, password, token, strategy);
 
         if (authenticatedUser != null) {
-            return ResponseEntity.ok("User authenticated successfully");
+            return ResponseEntity.ok(authenticatedUser);
         } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
     }
 
