@@ -41,7 +41,7 @@ public class AccountController {
         return ResponseEntity.ok(accountService.getAllAccounts());
     }
 
-    @GetMapping
+    @GetMapping("/{login}")
     public ResponseEntity<Account> getAccount(@RequestBody Login login){
         Account account = accountService.getAccount(login.getUsername());
         return ResponseEntity.ok(account);
