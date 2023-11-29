@@ -125,29 +125,5 @@ public class FlightController {
             return ResponseEntity.ok(updated);
     }
 
-    private String determineSeatClass(String seatNumber) {
-        int rowNumber;
-    
-        try {
-            // Extract the row number from the seat number
-            rowNumber = Integer.parseInt(seatNumber.substring(1));
-        } catch (NumberFormatException e) {
-            // Handle the case where the row number is not a valid integer
-            throw new IllegalArgumentException("Invalid seat number format: " + seatNumber);
-        }
-    
-        // Assuming row 1 and 2 for First Class, 3 to 5 for Comfort Class, and 6 to 13 for Ordinary Class
-        if (rowNumber >= 1 && rowNumber <= 2) {
-            return "Business Class";
-        } else if (rowNumber >= 3 && rowNumber <= 5) {
-            return "Comfort Class";
-        } else if (rowNumber >= 6 && rowNumber <= 13) {
-            return "Ordinary Class";
-        } else {
-            // Handle the case where the row number does not fall into any recognized range
-            throw new IllegalArgumentException("Unknown seat class for seat number: " + seatNumber);
-        }
-    }
-
 
 }

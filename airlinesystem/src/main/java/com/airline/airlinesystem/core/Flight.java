@@ -13,14 +13,14 @@ public class Flight {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // Primary key do not include in constructor
 
-    @Transient // Do not include in database
-    private FlightViewStrategy flightStrategy;
-
     private String flightNo;
     private String destination;
     private String origin;
     private String departureTime;
     private String duration;
+
+    @Transient // Do not include in database
+    private FlightViewStrategy flightStrategy;
 
     @Transient
     private List<String> crew;
@@ -61,7 +61,6 @@ public class Flight {
             for (char j = 'A'; j <= 'G'; j++) {
                 String seatNumber = String.valueOf(j) + (i + 1);
                 Seat seat = new Seat(flightNo, seatNumber, "Business Class", 250);
-                
                 seats.add(seat); // No need to setFlight
             }
         }
