@@ -9,6 +9,10 @@ public class Seat {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id; 
 
+    @ManyToOne
+    @JoinColumn(name = "flight_id")
+    private Flight flight;
+
     private String seatNumber;
     private String seatClass;
     private boolean isAvailable;

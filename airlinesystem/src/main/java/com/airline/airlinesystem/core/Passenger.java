@@ -12,6 +12,8 @@ public class Passenger {
     private String flightNo;
     private String seatNumber;
     private String email;
+
+    public Passenger(){}
     
     public Passenger(String flightNo, String seatNo, String name, String email) {
         this.flightNo = flightNo;

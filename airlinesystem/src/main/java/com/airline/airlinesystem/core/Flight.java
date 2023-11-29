@@ -16,7 +16,7 @@ public class Flight {
     private String flightNo;
     private String destination;
     private String origin;
-    private String departureTime;
+    private String departureDate;
     private String duration;
 
     @Transient // Do not include in database
@@ -28,8 +28,7 @@ public class Flight {
     @Transient
     private List<Passenger> passengers;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "flight_id")
+    @OneToMany(mappedBy = "flight", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Seat> seats;
 
     // Default constructor
@@ -88,11 +87,11 @@ public class Flight {
     // Getters and setters...
 
     public void setDepartureTime(String departureTime) {
-        this.departureTime = departureTime;
+        this.departureDate = departureTime;
     }
 
     public String getDepartureTime() {
-        return departureTime;
+        return departureDate;
     }
 
     public void setDuration(String duration) {

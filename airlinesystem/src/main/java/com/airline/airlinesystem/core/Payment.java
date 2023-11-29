@@ -29,13 +29,13 @@ public class Payment {
     private String cardNumber;
     private String expirationDate;
     private String cvv;
-    private String timestamp;
+
     private Boolean approved;
     
 
     // Constructors, getters, and setters...
-
-    public Payment(Passenger passenger, Flight flight, List<String> seatsNo, double amount, String cardNumber, String expirationDate, String cvv, String timestamp) {
+    public Payment(){}
+    public Payment(Passenger passenger, Flight flight, List<String> seatsNo, double amount, String cardNumber, String expirationDate, String cvv) {
         this.passenger = passenger;
         this.seats = seatsNo;
         this.email = passenger.getEmail();
@@ -45,7 +45,7 @@ public class Payment {
         this.cardNumber = cardNumber;
         this.expirationDate = expirationDate;
         this.cvv = cvv;
-        this.timestamp = timestamp;
+        this.tickets = new ArrayList<>();
         this.approved = processPayment();
     }
     public boolean processPayment() {
@@ -62,13 +62,13 @@ public class Payment {
         }
 
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/yy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yy");
         LocalDate expiration = LocalDate.parse("01/" + expirationDate, formatter);
         if(expiration.isBefore(LocalDate.now())){
             return false;
         }
         for (String seatNo : seats) {
-            Ticket ticket = new Ticket(id, flight, passenger, seatNo);
+            Ticket ticket = new Ticket(id + 1, flight, passenger, seatNo);
             tickets.add(ticket);
             String emailSubject = "Congratulations! Your Flight Booking and Payment are Confirmed";
             String emailBody = "Dear " + name + ",\n\n" +
@@ -89,7 +89,7 @@ public class Payment {
             ticket.sendEmail(email, emailSubject, emailBody);
         }   
 
-        this.receipt = new Receipt(id, amount, email);
+        this.receipt = new Receipt(id + 1, amount, email);
         String emailSubject = "Receipt For Your Recent Booking With Moussavi Airlines";
         String emailBody = "Dear " + name + ",\n\n" +
         "Thank you for choosing Moussavi Airlines! We are pleased to provide you with the receipt for your recent booking.\n\n" +
@@ -138,14 +138,6 @@ public class Payment {
 
     public void setCvv(String cvv) {
         this.cvv = cvv;
-    }
-
-    public String getTimestamp() {
-        return timestamp;
-    }
-
-    public void setTimestamp(String timestamp) {
-        this.timestamp = timestamp;
     }
 
     public Passenger getPassenger() {

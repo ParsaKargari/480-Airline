@@ -75,12 +75,50 @@ public class FlightService {
         existingFlight.setOrigin(updatedFlight.getOrigin());
         existingFlight.setDepartureTime(updatedFlight.getDepartureTime());
         existingFlight.setDuration(updatedFlight.getDuration());
-        existingFlight.setCrew(updatedFlight.getCrew());
-        existingFlight.setSeats(updatedFlight.getSeats());
-        existingFlight.setPassengers(updatedFlight.getPassengers());
-
         // Save the updated flight
         return saveFlight(existingFlight);
+    }
+
+    public Flight bookFlight(Flight flight, List<String> seatNumbers, String email, String name, String creditCardNum, String cvv, String expDate){
+        flight.selectSeats(seatNumbers);
+        List<Passenger> existingPassengers = flight.getPassengers();
+        if (existingPassengers == null) {
+            existingPassengers = new ArrayList<>();
+        }
+        List<Passenger> passengers = new ArrayList<>();
+        double amount = 0;
+        for (String seatNumber : seatNumbers) {
+            int rowNumber = Integer.parseInt(seatNumber.substring(1));
+            if (rowNumber >= 1 && rowNumber <= 2) {
+                Seat newSeat = new Seat(flight.getFlightNo(), seatNumber, "Business Class", 250);
+                amount += 250;
+                seatRepository.save(newSeat);
+            } else if (rowNumber >= 3 && rowNumber <= 5) {
+                Seat newSeat = new Seat(flight.getFlightNo(), seatNumber, "Comfort Class", 140);
+                seatRepository.save(newSeat);
+                amount += 140;
+            } else if (rowNumber >= 6 && rowNumber <= 13) {
+                Seat newSeat = new Seat(flight.getFlightNo(), seatNumber, "Ordinary Class", 100);
+                seatRepository.save(newSeat);
+                amount += 100;
+            }
+            else {
+                throw new IllegalArgumentException("Unknown seat class for seat number: " + seatNumber);
+                }
+            Passenger passenger = new Passenger(flight.getFlightNo(), seatNumber, name, email);
+            passengers.add(passenger);
+            passengerRepository.save(passenger);
+        }  
+        Payment payment = new Payment(passengers.get(0),flight,seatNumbers, amount, creditCardNum, expDate, cvv);
+        paymentRepository.save(payment);
+        for(Ticket ticket : payment.getTickets()){
+            ticketRepository.save(ticket);
+        }
+        receiptRepository.save(payment.getReceipt());
+        existingPassengers.addAll(passengers);
+        flight.setPassengers(existingPassengers);
+        Flight updatedFlight = saveFlight(flight);
+        return updatedFlight;
     }
 
     public Flight cancelFlightOperations(int paymentId, Flight flight){
