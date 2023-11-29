@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import java.util.UUID;
+
 @Entity
 @Table(name = "accounts")
 public class User {
@@ -22,6 +24,7 @@ public class User {
 
     // Default constructor
     public User() {
+        this.token = generateRandomToken();
     }
 
     // Constructor with fields
@@ -111,6 +114,10 @@ public class User {
         return token;
     }
 
+    public static String generateRandomToken() {
+        return UUID.randomUUID().toString();
+    }
+
     // ... Other getters and setters
 
     // Method to initialize default users
@@ -125,7 +132,8 @@ public class User {
         defaultUsers.add(new User("airlineagent", "airlineagentpass", "airlineagent@example.com",
                 "Airline Agent", "Airline Agent Address", "1970-01-01", "AIRLINE_AGENT", "airlineagent-token"));
         defaultUsers.add(new User("flightattendant", "flightattendantpass", "flightattendant@example.com",
-                "Flight Attendant", "Flight Attendant Address", "1970-01-01", "FLIGHT_ATTENDANT", "flightattendant-token"));
+                "Flight Attendant", "Flight Attendant Address", "1970-01-01", "FLIGHT_ATTENDANT",
+                "flightattendant-token"));
         // Add other default users similarly for Tour Agent, Airline Agent, Flight
         // Attendant
         return defaultUsers;

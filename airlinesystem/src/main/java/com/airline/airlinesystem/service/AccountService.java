@@ -34,8 +34,8 @@ public class AccountService {
         return authenticationStrategy.authenticate(user, password, token);
     }
 
-    public void registerUser(User user) {
-        accountRepository.save(user);
+    public User registerUser(User user) {
+        return accountRepository.save(user);
     }
 
 }

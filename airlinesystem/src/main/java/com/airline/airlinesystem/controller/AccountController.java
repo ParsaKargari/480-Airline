@@ -1,12 +1,9 @@
 package com.airline.airlinesystem.controller;
 
-import com.airline.airlinesystem.core.User;
-import com.airline.airlinesystem.core.UsernamePasswordAuthenticationStrategy;
-import com.airline.airlinesystem.core.AuthenticationStrategy;
-import com.airline.airlinesystem.core.CreditCard;
-import com.airline.airlinesystem.core.RegisteredUser;
-import com.airline.airlinesystem.core.TokenAuthenticationStrategy;
+import com.airline.airlinesystem.core.*;
 import com.airline.airlinesystem.service.AccountService;
+import java.util.*;
+import java.util.HashMap;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -57,7 +54,7 @@ public class AccountController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody Map<String, Object> payload) {
+    public ResponseEntity<Map<String, Object>> register(@RequestBody Map<String, Object> payload) {
         try {
             Map<String, Object> userInfo = (Map<String, Object>) payload.get("userInfo");
             User newUser;
@@ -77,11 +74,25 @@ public class AccountController {
                 newUser = objectMapper.convertValue(userInfo, User.class);
             }
 
-            accountService.registerUser(newUser);
-            return ResponseEntity.ok("Registration successful");
+            User savedUser = accountService.registerUser(newUser);
+
+            // Prepare the response
+            Map<String, Object> response = new HashMap<>();
+            response.put("token", savedUser.getToken());
+
+            if (savedUser instanceof RegisteredUser && ((RegisteredUser) savedUser).getCreditCard() != null) {
+                CreditCard savedCreditCard = ((RegisteredUser) savedUser).getCreditCard();
+                Map<String, String> creditCardDetails = new HashMap<>();
+                creditCardDetails.put("number", savedCreditCard.getNumber());
+                creditCardDetails.put("cvv", savedCreditCard.getCVV());
+                creditCardDetails.put("expDate", savedCreditCard.getExpDate());
+                response.put("creditCard", creditCardDetails);
+            }
+
+            return ResponseEntity.ok(response);
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.badRequest().body("Error processing registration");
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Error processing registration"));
         }
     }
 

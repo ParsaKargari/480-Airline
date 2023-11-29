@@ -60,23 +60,39 @@ export default function LoginModal({ open, handleClose }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [token, setToken] = useState(""); // New state for token
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarOpenSuccess, setSnackbarOpenSuccess] = useState(false);
+  const [snackbarOpenFailure, setSnackbarOpenFailure] = useState(false);
+  const [loginSuccessful, setLoginSuccessful] = useState(false);
 
-  const handleLoginClick = () => {
+  // Reset states when handleClose is called
+  React.useEffect(() => {
+    if (!open) {
+      setUsername("");
+      setPassword("");
+      setToken("");
+      setLoginSuccessful(false);
+    }
+  }, [open]);
+
+  const handleLoginClick = async () => {
     let success = false;
     if (token) {
-      // Token-based login
-      success = login(null, null, token); // Adjust this call as per your login method signature
+      // Token-based login (adjust as per your login method)
+      success = await login(null, null, token);
     } else {
-      // Username/password login
-      success = login(username, password); // Adjust this call as per your login method signature
+      // Username/password login (adjust as per your login method)
+      success = await login(username, password);
     }
 
+    setLoginSuccessful(true);
+    console.log(loginSuccessful);
     if (success) {
-      setSnackbarOpen(true);
+      setSnackbarOpenSuccess(true);
       handleClose();
     } else {
-      // TODO: Handle login failure
+      // Handle login failure
+      setLoginSuccessful(false);
+      setSnackbarOpenFailure(true);
     }
   };
 
@@ -84,7 +100,8 @@ export default function LoginModal({ open, handleClose }) {
     if (reason === "clickaway") {
       return;
     }
-    setSnackbarOpen(false);
+    setSnackbarOpenFailure(false);
+    setSnackbarOpenSuccess(false);
   };
 
   const [modalStyle] = React.useState(getModalStyle);
@@ -138,7 +155,7 @@ export default function LoginModal({ open, handleClose }) {
           <Button
             onClick={handleLoginClick}
             color="primary"
-            disabled={!username && !token} // Disable if neither username nor token is provided
+            disabled={(!username || !password) && !token} // Updated condition
           >
             Login
           </Button>
@@ -157,15 +174,26 @@ export default function LoginModal({ open, handleClose }) {
       >
         {body}
       </Modal>
+
       <Snackbar
-        open={snackbarOpen}
+        open={snackbarOpenSuccess}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
       >
-        <Alert onClose={handleSnackbarClose} severity="success">
-          {`Logged in as ${username || "via token"}!`}
+        <Alert onClose={handleSnackbarClose} severity={"success"}>
+          {`Logged in!`}
         </Alert>
       </Snackbar>
+      <Snackbar
+        open={snackbarOpenFailure}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert onClose={handleSnackbarClose} severity={"error"}>
+          {"Login failed"}
+        </Alert>
+      </Snackbar>
+
     </>
   );
 }
