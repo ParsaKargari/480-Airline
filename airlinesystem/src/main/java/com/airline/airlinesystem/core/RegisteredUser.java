@@ -13,6 +13,10 @@ public class RegisteredUser extends User {
         super();
     }
 
+    public RegisteredUser(String username, String password, String email,
+            String name, String address, String dob, String role, String token) {
+        super(username, password, email, name, address, dob, role, token);
+    }
 
     public CreditCard getCreditCard() {
         return creditCard;
@@ -21,4 +25,5 @@ public class RegisteredUser extends User {
     public void setCreditCard(CreditCard creditCard) {
         this.creditCard = creditCard;
     }
+
 }

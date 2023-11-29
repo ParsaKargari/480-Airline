@@ -17,6 +17,9 @@ public class CreditCard {
     private String expDate;
     private String number;
 
+    public CreditCard() {
+    }
+
     public CreditCard(String name, String address) {
         this.cardHolder = name;
         this.billingAddress = address;

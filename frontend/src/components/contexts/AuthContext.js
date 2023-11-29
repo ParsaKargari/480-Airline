@@ -29,6 +29,7 @@ export const AuthProvider = ({ children }) => {
 
       if (response) {
         const data = await response.json();
+        console.log(data);
         setUser(data); // Assuming the backend sends back the user's role
         return true;
       } else {
