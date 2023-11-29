@@ -85,16 +85,20 @@ export default function FlightSearch() {
     if (!searchResults) {
       setOpenSnackbar(true);
     } else {
-      if (user && user.role === "Admin") {
-        navigate("/admin-dashboard", {
-          state: { selectedFlight: searchResults },
-        });
-      } else if (user && user.role === "AirAgent") {
+      if (user && user.role === "ADMIN") {
         navigate("/air-agent-dashboard", {
           state: { selectedFlight: searchResults },
         });
-      } else if (user && user.role === "TourAgent") {
-        navigate("/tour-agent-dashboard", {
+      } else if (user && user.role === "AIRLINE_AGENT") {
+        navigate("/air-agent-dashboard", {
+          state: { selectedFlight: searchResults },
+        });
+      } else if (user && user.role === "FLIGHT_ATTENDANT") {
+        navigate("/air-agent-dashboard", {
+          state: { selectedFlight: searchResults },
+        });
+      } else if (user && user.role === "TOUR_AGENT") {
+        navigate("/air-agent-dashboard", {
           state: { selectedFlight: searchResults },
         });
       } else {
@@ -117,23 +121,10 @@ export default function FlightSearch() {
     setOpenSnackbar(false);
   };
 
-  const loginCheck = () => {
-    // Return False if not logged in
-    // Return False if user role is admin
-    // Return True if user logged in
-    if (!user) {
-      return false;
-    }
-    if (user.role === "Admin") {
-      return false;
-    }
-    return true;
-  };
-
   const adminCheck = () => {
     // Return true if user role is admin
     // Return false if user role is not admin
-    if (user && user.role === "Admin") {
+    if (user && user.role === "ADMIN") {
       return true;
     }
   };
@@ -177,7 +168,6 @@ export default function FlightSearch() {
             variant="contained"
             color="primary"
             onClick={handleSearch}
-            disabled={!loginCheck()}
           >
             {user ? "Search" : "Login to Book Flight"}
           </Button>
