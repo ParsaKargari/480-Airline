@@ -86,11 +86,11 @@ public class Flight {
 
     // Getters and setters...
 
-    public void setDepartureTime(String departureTime) {
-        this.departureDate = departureTime;
+    public void setDepartureDate(String departureDate) {
+        this.departureDate = departureDate;
     }
 
-    public String getDepartureTime() {
+    public String getDepartureDate() {
         return departureDate;
     }
 

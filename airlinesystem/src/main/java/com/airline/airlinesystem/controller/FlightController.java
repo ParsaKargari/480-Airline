@@ -39,6 +39,14 @@ public class FlightController {
         return ResponseEntity.status(HttpStatus.CREATED).body(savedFlight);
     }
 
+    // Delete a flight by ID
+    // Works
+    @DeleteMapping("/{id}") // DELETE /api/flights/{id}
+    public ResponseEntity<Void> deleteFlight(@PathVariable Long id) {
+        flightService.deleteFlight(id);
+        return ResponseEntity.noContent().build();
+    }
+
 
     // Returns sold out seats for a flight
     // Works

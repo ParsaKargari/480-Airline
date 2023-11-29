@@ -49,6 +49,11 @@ public class FlightService {
         return flightRepository.save(flight);
     }
 
+    // Delete flight from database
+    public void deleteFlight(Long id) {
+        flightRepository.deleteById(id);
+    }
+
     // Return all flights
     public List<Flight> getAllFlights() {
         return flightRepository.findAll();
@@ -73,7 +78,7 @@ public class FlightService {
         existingFlight.setFlightNo(updatedFlight.getFlightNo());
         existingFlight.setDestination(updatedFlight.getDestination());
         existingFlight.setOrigin(updatedFlight.getOrigin());
-        existingFlight.setDepartureTime(updatedFlight.getDepartureTime());
+        existingFlight.setDepartureDate(updatedFlight.getDepartureDate());
         existingFlight.setDuration(updatedFlight.getDuration());
         // Save the updated flight
         return saveFlight(existingFlight);

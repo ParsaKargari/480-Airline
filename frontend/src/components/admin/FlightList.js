@@ -56,6 +56,47 @@ const FlightList = () => {
     }
   };
 
+  const addOrUpdateFlight = async (flight) => {
+    const url = flight.id
+      ? `http://localhost:8080/api/flights/${flight.id}` // Edit existing flight
+      : "http://localhost:8080/api/flights"; // Add new flight
+
+    try {
+      const response = await fetch(url, {
+        method: flight.id ? "PUT" : "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(flight),
+      });
+
+      if (response.ok) {
+        fetchFlights(); // Refresh flights list
+      } else {
+        console.error("Failed to save flight");
+      }
+    } catch (error) {
+      console.error("Error saving flight:", error);
+    }
+  };
+
+  // Delete flight
+  const deleteFlight = async (id) => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/flights/${id}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        fetchFlights(); // Refresh flights list
+      } else {
+        console.error("Failed to delete flight");
+      }
+    } catch (error) {
+      console.error("Error deleting flight:", error);
+    }
+  };
+
   // Fetch flights on component mount
   useEffect(() => {
     fetchFlights();
@@ -71,7 +112,7 @@ const FlightList = () => {
 
   const filterFlights = () => {
     return flights.filter((flight) => {
-      const [month, day, year] = flight.departureDate.split("-");
+      const [month, day, year] = flight.departureDate?.split("-");
       const flightDate = new Date(`${year}-${month}-${day}`);
 
       const startDate = filterStartDate
@@ -88,7 +129,15 @@ const FlightList = () => {
   const filteredFlights = filterFlights();
 
   const openDialog = (flight) => {
-    setCurrentFlight(flight);
+    setCurrentFlight(
+      flight || {
+        flightNo: "",
+        origin: "",
+        duration: "",
+        destination: "",
+        departureDate: "",
+      }
+    );
     setDialogOpen(true);
   };
 
@@ -99,26 +148,30 @@ const FlightList = () => {
 
   const handleSave = () => {
     if (currentFlight) {
-      if (currentFlight.id) {
-        // Edit mode
-        setFlights(
-          flights.map((flight) =>
-            flight.id === currentFlight.id ? currentFlight : flight
-          )
-        );
-      } else {
-        // Add mode
-        setFlights([
-          ...flights,
-          { ...currentFlight, id: `FL${flights.length + 1}` },
-        ]);
-      }
+      const formattedDate = currentFlight.departureDate
+        .split("-")
+        .reverse()
+        .join("-");
+      const flightData = {
+        ...currentFlight,
+        departureDate: formattedDate,
+        crew: [],
+        seats: [],
+      };
+      addOrUpdateFlight(flightData);
     }
     closeDialog();
   };
 
+  const formatDate = (date) => {
+    const [year, month, day] = date.split("-");
+    return `${month}-${day}-${year}`;
+  };
+
   const handleDelete = (id) => {
-    setFlights(flights.filter((flight) => flight.id !== id));
+    if (window.confirm("Are you sure you want to delete this flight?")) {
+      deleteFlight(id);
+    }
   };
 
   return (
@@ -161,6 +214,7 @@ const FlightList = () => {
               <TableCell>Origin</TableCell>
               <TableCell>Destination</TableCell>
               <TableCell>Departure Date</TableCell>
+              <TableCell>Duration</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -172,6 +226,7 @@ const FlightList = () => {
                 <TableCell>{flight.origin}</TableCell>
                 <TableCell>{flight.destination}</TableCell>
                 <TableCell>{flight.departureDate}</TableCell>
+                <TableCell>{flight.duration}</TableCell>
                 <TableCell>
                   <Button color="primary" onClick={() => openDialog(flight)}>
                     Edit
@@ -196,12 +251,12 @@ const FlightList = () => {
           <TextField
             autoFocus
             margin="dense"
-            label="Label"
+            label="Flight Number"
             type="text"
             fullWidth
-            value={currentFlight?.label || ""}
+            value={currentFlight?.flightNo || ""}
             onChange={(e) =>
-              setCurrentFlight({ ...currentFlight, label: e.target.value })
+              setCurrentFlight({ ...currentFlight, flightNo: e.target.value })
             }
           />
           <TextField
@@ -229,12 +284,25 @@ const FlightList = () => {
           />
           <TextField
             margin="dense"
-            label="Date"
+            label="Duration"
+            type="text"
+            fullWidth
+            value={currentFlight?.duration || ""}
+            onChange={(e) =>
+              setCurrentFlight({ ...currentFlight, duration: e.target.value })
+            }
+          />
+          <TextField
+            margin="dense"
+            label="Departure Date"
             type="date"
             fullWidth
-            value={currentFlight?.date || ""}
+            value={currentFlight?.departureDate || ""}
             onChange={(e) =>
-              setCurrentFlight({ ...currentFlight, date: e.target.value })
+              setCurrentFlight({
+                ...currentFlight,
+                departureDate: e.target.value,
+              })
             }
             InputLabelProps={{
               shrink: true,
