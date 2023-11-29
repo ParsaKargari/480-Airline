@@ -86,7 +86,12 @@ public class Payment {
                     "Thank you for choosing Moussavi Airlines! Have a pleasant journey.\n\n" +
                     "Best regards,\n" +
                     "Moussavi Airlines";
+            try {
             ticket.sendEmail(email, emailSubject, emailBody);
+            }
+            catch(Exception e){
+                e.printStackTrace();
+            }
         }   
 
         this.receipt = new Receipt(id + 1, amount, email);
@@ -94,15 +99,18 @@ public class Payment {
         String emailBody = "Dear " + name + ",\n\n" +
         "Thank you for choosing Moussavi Airlines! We are pleased to provide you with the receipt for your recent booking.\n\n" +
         "Booking Details:\n" +
-        "- Transaction ID: " + id + "\n" +
+        "- Transaction ID: " + id + 1 + "\n" +
         "- Total Amount Paid: $" + amount + "\n\n" +
         "We hope you have a pleasant journey with Moussavi Airlines. If you have any questions or need further assistance, feel free to contact our customer support.\n\n" +
         "Thank you for flying with us!\n\n" +
         "Best regards,\n" +
         "Moussavi Airlines";
-        receipt.sendEmail(email, emailSubject, emailBody);
-
-
+        try {
+            receipt.sendEmail(email, emailSubject, emailBody);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
         return true;
     }
 
