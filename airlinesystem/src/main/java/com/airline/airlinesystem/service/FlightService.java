@@ -132,17 +132,19 @@ public class FlightService {
             // Retrieve additional information for each ticket, e.g., seat number, passenger
             String seatNo = ticket.getSeatNumber();
             Seat seat = seatRepository.findBySeatNumberAndFlightNo(seatNo, flight.getFlightNo()).orElseThrow(() -> new EntityNotFoundException("Seat not found"));
-            seatRepository.deleteById(seat.getId());
             canceledSeatNumbers.add(seatNo);
             Passenger passenger = passengerRepository.findBySeatNumberAndFlightNo(seatNo, flight.getFlightNo()).orElseThrow(() -> new EntityNotFoundException("Passenger not found"));
             canceledPassengers.add(passenger);
             passengerRepository.deleteById(passenger.getId());
             ticketRepository.deleteById(ticket.getTicketNumber());
+            seatRepository.deleteById(seat.getId());
         }
         flight.addSeats(canceledSeatNumbers);
         List<Passenger> passengers = flight.getPassengers();
-        passengers.removeAll(canceledPassengers);
-        flight.setPassengers(passengers);
+        if(passengers != null){
+            passengers.removeAll(canceledPassengers);
+            flight.setPassengers(passengers);
+        }
         paymentRepository.delete(payment);
         receiptRepository.delete(receipt);
         return saveFlight(flight);
