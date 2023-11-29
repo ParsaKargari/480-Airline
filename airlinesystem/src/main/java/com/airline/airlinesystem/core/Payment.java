@@ -76,7 +76,7 @@ public class Payment {
                     "Your seats for the upcoming flight have been confirmed, and the electronic tickets are attached to this email.\n\n" +
                     "Flight Details:\n" +
                     "- Flight Number: " + flight.getFlightNo() + "\n" +
-                    "- Departure Date and Time: " + flight.getDepartureTime() + "\n" +
+                    "- Departure Date: " + flight.getDepartureDate() + "\n" +
                     "- Duration: " + flight.getDuration() + "\n" +
                     "- Seat Number: " + seatNo + "\n\n" +
                     "Passenger Details:\n" +
