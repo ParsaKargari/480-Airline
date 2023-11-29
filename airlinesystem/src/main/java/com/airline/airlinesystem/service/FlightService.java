@@ -5,12 +5,13 @@ import com.airline.airlinesystem.core.Ticket;
 import com.airline.airlinesystem.core.Passenger;
 import com.airline.airlinesystem.core.Payment;
 import com.airline.airlinesystem.core.Receipt;
+import com.airline.airlinesystem.core.Seat;
 import com.airline.airlinesystem.repository.FlightRepository;
 import com.airline.airlinesystem.repository.PassengerRepository;
 import com.airline.airlinesystem.repository.PaymentRepository;
 import com.airline.airlinesystem.repository.TicketRepository;
 import com.airline.airlinesystem.repository.ReceiptRepository;
-
+import com.airline.airlinesystem.repository.SeatRepository;
 import javax.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,9 @@ public class FlightService {
     @Autowired
     private TicketRepository ticketRepository;
     
+    @Autowired
+    private SeatRepository seatRepository;
+
     @Autowired
     private PassengerRepository passengerRepository;
     
@@ -88,7 +92,9 @@ public class FlightService {
         List<Passenger> canceledPassengers = new ArrayList<>();
         for (Ticket ticket : tickets) {
             // Retrieve additional information for each ticket, e.g., seat number, passenger
-            String seatNo = ticket.getSeatNo();
+            String seatNo = ticket.getSeatNumber();
+            Seat seat = seatRepository.findBySeatNumberAndFlightNo(seatNo, flight.getFlightNo()).orElseThrow(() -> new EntityNotFoundException("Seat not found"));
+            seatRepository.deleteById(seat.getId());
             canceledSeatNumbers.add(seatNo);
             Passenger passenger = passengerRepository.findBySeatNumberAndFlightNo(seatNo, flight.getFlightNo()).orElseThrow(() -> new EntityNotFoundException("Passenger not found"));
             canceledPassengers.add(passenger);

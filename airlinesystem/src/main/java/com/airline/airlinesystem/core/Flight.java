@@ -3,9 +3,6 @@ package com.airline.airlinesystem.core;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import com.airline.airlinesystem.service.SeatService;
-
 import jakarta.persistence.*;
 
 // Flight Database
@@ -74,7 +71,6 @@ public class Flight {
             for (char j = 'A'; j <= 'G'; j++) {
                 String seatNumber = String.valueOf(j) + (i + 1);
                 Seat seat = new Seat(flightNo, seatNumber, "Comfort Class", 140);
-                
                 seats.add(seat); // No need to setFlight
             }
         }

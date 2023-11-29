@@ -13,8 +13,6 @@ public class Ticket implements Email {
     private Flight flight;
     @Transient
     private Passenger passenger;
-    @Transient
-    private Seat seat;  // Add Seat field
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,22 +21,34 @@ public class Ticket implements Email {
     private String flightNo;
     private String email;
     private String name;
-    private String seatNo;
+    private String seatNumber;
     private double price;
     private String seatClass;
     private int paymentId;
 
-    public Ticket(int paymentId, Flight flight, Passenger passenger, Seat seat, double price) {
+    public Ticket(int paymentId, Flight flight, Passenger passenger, String seatNumber) {
         this.flight = flight;
         this.passenger = passenger;
-        this.seat = seat;
-        this.price = price;
-        this.seatNo = seat.getSeatNumber();
-        this.seatClass = seat.getSeatClass();
+        this.seatNumber = seatNumber;
         this.name = passenger.getName();
         this.email = passenger.getEmail();
         this.flightNo = flight.getFlightNo();
         this.paymentId = paymentId;
+
+        int rowNumber = Integer.parseInt(seatNumber.substring(1));
+        if (rowNumber >= 1 && rowNumber <= 2) {
+            this.seatClass = "Business Class";
+            this.price = 250;
+        } else if (rowNumber >= 3 && rowNumber <= 5) {
+            this.seatClass = "Comfort Class";
+            this.price = 140;
+        } else if (rowNumber >= 6 && rowNumber <= 13) {
+            this.seatClass = "Ordinary Class";
+            this.price = 100;
+        }
+        else {
+            throw new IllegalArgumentException("Unknown seat class for seat number: " + seatNumber);
+            }
     }
 
     // Getters and setters...
@@ -57,14 +67,6 @@ public class Ticket implements Email {
 
     public void setPassenger(Passenger passenger) {
         this.passenger = passenger;
-    }
-
-    public Seat getSeat() {
-        return seat;
-    }
-
-    public void setSeat(Seat seat) {
-        this.seat = seat;
     }
 
     public double getPrice() {
@@ -147,14 +149,6 @@ public class Ticket implements Email {
         this.name = name;
     }
 
-    public String getSeatNo() {
-        return seatNo;
-    }
-
-    public void setSeatNo(String seatNo) {
-        this.seatNo = seatNo;
-    }
-
     public String getSeatClass() {
         return seatClass;
     }
@@ -177,5 +171,13 @@ public class Ticket implements Email {
 
     public void setPaymentId(int paymentId) {
         this.paymentId = paymentId;
+    }
+
+    public String getSeatNumber() {
+        return seatNumber;
+    }
+
+    public void setSeatNumber(String seatNumber) {
+        this.seatNumber = seatNumber;
     }
 }

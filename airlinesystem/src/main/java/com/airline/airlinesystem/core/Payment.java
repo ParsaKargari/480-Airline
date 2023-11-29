@@ -2,13 +2,10 @@ package com.airline.airlinesystem.core;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import com.airline.airlinesystem.service.TicketService;
-import com.airline.airlinesystem.service.ReceiptService;
 
 import jakarta.persistence.*;
 import java.util.*;
 
-import org.springframework.beans.factory.annotation.Autowired;
 
 @Entity
 public class Payment {
@@ -20,7 +17,7 @@ public class Payment {
     @Transient
     private Passenger passenger;
     @Transient
-    private List<Seat> seats;
+    private List<String> seats;
     @Transient
     private Flight flight;
     @Transient
@@ -38,9 +35,9 @@ public class Payment {
 
     // Constructors, getters, and setters...
 
-    public Payment(Passenger passenger, Flight flight, double amount, String cardNumber, String expirationDate, String cvv, String timestamp) {
+    public Payment(Passenger passenger, Flight flight, List<String> seatsNo, double amount, String cardNumber, String expirationDate, String cvv, String timestamp) {
         this.passenger = passenger;
-        this.seats = flight.getSeats();
+        this.seats = seatsNo;
         this.email = passenger.getEmail();
         this.name = passenger.getName();
         this.flight = flight;
@@ -70,8 +67,8 @@ public class Payment {
         if(expiration.isBefore(LocalDate.now())){
             return false;
         }
-        for (Seat seat : seats) {
-            Ticket ticket = new Ticket(id, flight, passenger, seat, amount);
+        for (String seatNo : seats) {
+            Ticket ticket = new Ticket(id, flight, passenger, seatNo);
             tickets.add(ticket);
             String emailSubject = "Congratulations! Your Flight Booking and Payment are Confirmed";
             String emailBody = "Dear " + name + ",\n\n" +
@@ -81,7 +78,7 @@ public class Payment {
                     "- Flight Number: " + flight.getFlightNo() + "\n" +
                     "- Departure Date and Time: " + flight.getDepartureTime() + "\n" +
                     "- Duration: " + flight.getDuration() + "\n" +
-                    "- Seat Number: " + seat.getSeatNumber() + "\n\n" +
+                    "- Seat Number: " + seatNo + "\n\n" +
                     "Passenger Details:\n" +
                     "- Name: " + name + "\n" +
                     "- Email: " + email + "\n\n" +
@@ -183,14 +180,6 @@ public class Payment {
         this.tickets = tickets;
     }
 
-    public List<Seat> getSeats() {
-        return seats;
-    }
-
-    public void setSeats(List<Seat> seats) {
-        this.seats = seats;
-    }
-
     public Flight getFlight() {
         return flight;
     }
@@ -209,5 +198,17 @@ public class Payment {
     }
     public void setApproved(Boolean approved) {
         this.approved = approved;
+    }
+    public List<String> getSeats() {
+        return seats;
+    }
+    public void setSeats(List<String> seats) {
+        this.seats = seats;
+    }
+    public Receipt getReceipt() {
+        return receipt;
+    }
+    public void setReceipt(Receipt receipt) {
+        this.receipt = receipt;
     }
 }

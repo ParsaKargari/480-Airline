@@ -6,7 +6,7 @@ import com.airline.airlinesystem.core.Seat;
 import com.airline.airlinesystem.core.Passenger;
 import com.airline.airlinesystem.service.FlightService;
 import com.airline.airlinesystem.service.PassengerService;
-
+import com.airline.airlinesystem.service.SeatService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.ArrayList;
 
 
 
@@ -28,6 +27,8 @@ public class FlightController {
     private FlightService flightService;
     @Autowired
     private PassengerService passengerService;
+    @Autowired
+    private SeatService seatService;
 
     // Returns list of flights
     // Works
@@ -66,6 +67,20 @@ public class FlightController {
         List<Passenger> existingPassengers = flight.getPassengers();
         List<Passenger> passengers = new ArrayList<>();
         for (String seatNumber : seatNumbers) {
+            int rowNumber = Integer.parseInt(seatNumber.substring(1));
+            if (rowNumber >= 1 && rowNumber <= 2) {
+                Seat newSeat = new Seat(flight.getFlightNo(), seatNumber, "Business Class", 250);
+                seatService.saveSeat(newSeat);
+            } else if (rowNumber >= 3 && rowNumber <= 5) {
+                Seat newSeat = new Seat(flight.getFlightNo(), seatNumber, "Comfort Class", 140);
+                seatService.saveSeat(newSeat);
+            } else if (rowNumber >= 6 && rowNumber <= 13) {
+                Seat newSeat = new Seat(flight.getFlightNo(), seatNumber, "Ordinary Class", 100);
+                seatService.saveSeat(newSeat);
+            }
+            else {
+                throw new IllegalArgumentException("Unknown seat class for seat number: " + seatNumber);
+                }
             Passenger passenger = new Passenger(flight.getFlightNo(), seatNumber, name, email);
             passengers.add(passenger);
             passengerService.savePassenger(passenger);
@@ -108,6 +123,30 @@ public class FlightController {
             Flight flight = flightService.getFlightById(id);
             Flight updated = flightService.cancelFlightOperations(paymentId, flight);
             return ResponseEntity.ok(updated);
+    }
+
+    private String determineSeatClass(String seatNumber) {
+        int rowNumber;
+    
+        try {
+            // Extract the row number from the seat number
+            rowNumber = Integer.parseInt(seatNumber.substring(1));
+        } catch (NumberFormatException e) {
+            // Handle the case where the row number is not a valid integer
+            throw new IllegalArgumentException("Invalid seat number format: " + seatNumber);
+        }
+    
+        // Assuming row 1 and 2 for First Class, 3 to 5 for Comfort Class, and 6 to 13 for Ordinary Class
+        if (rowNumber >= 1 && rowNumber <= 2) {
+            return "Business Class";
+        } else if (rowNumber >= 3 && rowNumber <= 5) {
+            return "Comfort Class";
+        } else if (rowNumber >= 6 && rowNumber <= 13) {
+            return "Ordinary Class";
+        } else {
+            // Handle the case where the row number does not fall into any recognized range
+            throw new IllegalArgumentException("Unknown seat class for seat number: " + seatNumber);
+        }
     }
 
 
