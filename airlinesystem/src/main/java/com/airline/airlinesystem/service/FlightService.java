@@ -6,6 +6,7 @@ import com.airline.airlinesystem.core.Passenger;
 import com.airline.airlinesystem.core.Payment;
 import com.airline.airlinesystem.core.Receipt;
 import com.airline.airlinesystem.core.Seat;
+import com.airline.airlinesystem.core.Aircraft;
 import com.airline.airlinesystem.core.Crew;
 import com.airline.airlinesystem.repository.CrewRepository;
 import com.airline.airlinesystem.repository.FlightRepository;
@@ -26,16 +27,16 @@ public class FlightService {
 
     @Autowired
     private TicketRepository ticketRepository;
-    
+
     @Autowired
     private SeatRepository seatRepository;
 
     @Autowired
     private PassengerRepository passengerRepository;
-    
+
     @Autowired
     private PaymentRepository paymentRepository;
-    
+
     @Autowired
     private ReceiptRepository receiptRepository;
 
@@ -49,9 +50,40 @@ public class FlightService {
         this.flightRepository = flightRepository;
     }
 
+    public FlightRepository getFlightRepository() {
+        return flightRepository;
+    }
+
     // Save flight to database
     public Flight saveFlight(Flight flight) {
         return flightRepository.save(flight);
+    }
+
+    public void initializeDefaultFlights(List<Aircraft> aircrafts) {
+        List<Flight> flights = new ArrayList<>();
+
+        // Realistic flight examples
+        flights.add(new Flight(null, "UA303", "San Francisco", "New York", "12-01-2023", "5h 30m", null, null, null,
+                aircrafts.get(0)));
+        flights.add(new Flight(null, "DL105", "Atlanta", "London", "12-05-2023", "8h 15m", null, null, null,
+                aircrafts.get(1)));
+        flights.add(new Flight(null, "AA786", "Dallas", "Tokyo", "12-08-2023", "13h 45m", null, null, null,
+                aircrafts.get(2)));
+        flights.add(new Flight(null, "LH455", "Berlin", "San Francisco", "12-20-2023", "11h 20m", null, null, null,
+                aircrafts.get(0)));
+        flights.add(new Flight(null, "QF12", "Sydney", "Los Angeles", "11-29-2023", "14h 30m", null, null, null,
+                aircrafts.get(1)));
+        flights.add(new Flight(null, "EK241", "Dubai", "Toronto", "11-28-2023", "14h 00m", null, null, null,
+                aircrafts.get(2)));
+        flights.add(new Flight(null, "SQ26", "Singapore", "Frankfurt", "12-03-2023", "12h 10m", null, null, null,
+                aircrafts.get(0)));
+        flights.add(new Flight(null, "AF83", "Paris", "San Francisco", "12-02-2023", "11h 35m", null, null, null,
+                aircrafts.get(1)));
+        flights.add(new Flight(null, "BA75", "London", "Lagos", "12-08-2023", "6h 50m", null, null, null,
+                aircrafts.get(2)));
+
+        // Save the flights to the database
+        flightRepository.saveAll(flights);
     }
 
     // Delete flight from database
@@ -60,30 +92,31 @@ public class FlightService {
         List<Passenger> passengers = flight.getPassengers();
         List<Crew> crew = flight.getCrew();
         List<Seat> seats = seatRepository.findAllByFlightNo(flight.getFlightNo());
-        if(seats != null){
-            for(Seat seat: seats){
-                Ticket ticket = ticketRepository.findBySeatNumberAndFlightNo(seat.getSeatNumber(), flight.getFlightNo()).orElse(null);
-                if(ticket != null){
+        if (seats != null) {
+            for (Seat seat : seats) {
+                Ticket ticket = ticketRepository.findBySeatNumberAndFlightNo(seat.getSeatNumber(), flight.getFlightNo())
+                        .orElse(null);
+                if (ticket != null) {
                     Payment payment = paymentRepository.findById(ticket.getPaymentId()).orElse(null);
                     Receipt receipt = receiptRepository.findById(ticket.getPaymentId()).orElse(null);
-                    if(payment != null){
-                    paymentRepository.delete(payment);
+                    if (payment != null) {
+                        paymentRepository.delete(payment);
                     }
-                    if(receipt != null){
-                    receiptRepository.delete(receipt);
+                    if (receipt != null) {
+                        receiptRepository.delete(receipt);
                     }
                     ticketRepository.delete(ticket);
                 }
                 seatRepository.delete(seat);
             }
         }
-        if(passengers != null){
-            for(Passenger passenger: passengers){
+        if (passengers != null) {
+            for (Passenger passenger : passengers) {
                 passengerRepository.delete(passenger);
             }
         }
-        if(crew != null){
-            for(Crew crewMember : crew){
+        if (crew != null) {
+            for (Crew crewMember : crew) {
                 crewRepository.delete(crewMember);
             }
         }
@@ -93,25 +126,25 @@ public class FlightService {
     // Return all flights
     public List<Flight> getAllFlights() {
         List<Flight> flights = flightRepository.findAll();
-        for(Flight flight : flights){
+        for (Flight flight : flights) {
             List<Seat> seats = seatRepository.findAllByFlightNo(flight.getFlightNo());
             List<String> seatNo = new ArrayList<>();
             List<Passenger> passengers = passengerRepository.findAllByFlightNo(flight.getFlightNo());
-            List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
-            if(crew != null){
-                flight.setCrew(crew);
-            }
-            if(passengers != null){
+            // List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
+            // if(crew != null){
+            // flight.setCrew(crew);
+            // }
+            if (passengers != null) {
                 flight.setPassengers(passengers);
             }
-            if(seats != null){
-                for(Seat seat: seats){
+            if (seats != null) {
+                for (Seat seat : seats) {
                     seatNo.add(seat.getSeatNumber());
                 }
             }
             flight.initializeSeats();
             flight.selectSeats(seatNo);
-            }
+        }
         return flights;
     }
 
@@ -122,15 +155,15 @@ public class FlightService {
         List<Seat> seats = seatRepository.findAllByFlightNo(flight.getFlightNo());
         List<String> seatNo = new ArrayList<>();
         List<Passenger> passengers = passengerRepository.findAllByFlightNo(flight.getFlightNo());
-        List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
-            if(crew != null){
-                flight.setCrew(crew);
-            }
-            if(passengers != null){
-                flight.setPassengers(passengers);
-            }
-        if(seats != null){
-            for(Seat seat: seats){
+        // List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
+        // if(crew != null){
+        // flight.setCrew(crew);
+        // }
+        if (passengers != null) {
+            flight.setPassengers(passengers);
+        }
+        if (seats != null) {
+            for (Seat seat : seats) {
                 seatNo.add(seat.getSeatNumber());
             }
         }
@@ -140,20 +173,21 @@ public class FlightService {
 
     // Return flight by flightNo
     public Flight getFlightByFlightNo(String flightNo) {
-        Flight flight = flightRepository.findByFlightNo(flightNo).orElseThrow(() -> new EntityNotFoundException("Flight not found with flightNo: " + flightNo));
+        Flight flight = flightRepository.findByFlightNo(flightNo)
+                .orElseThrow(() -> new EntityNotFoundException("Flight not found with flightNo: " + flightNo));
         flight.initializeSeats();
         List<Seat> seats = seatRepository.findAllByFlightNo(flight.getFlightNo());
         List<String> seatNo = new ArrayList<>();
         List<Passenger> passengers = passengerRepository.findAllByFlightNo(flight.getFlightNo());
-        List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
-        if(crew != null){
-            flight.setCrew(crew);
-        }
-        if(passengers != null){
+        // List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
+        // if(crew != null){
+        // flight.setCrew(crew);
+        // }
+        if (passengers != null) {
             flight.setPassengers(passengers);
         }
-        if(seats != null){
-            for(Seat seat: seats){
+        if (seats != null) {
+            for (Seat seat : seats) {
                 seatNo.add(seat.getSeatNumber());
             }
         }
@@ -163,25 +197,24 @@ public class FlightService {
 
     public Flight updateFlight(int id, Flight updatedFlight) {
         Flight existingFlight = getFlightById(id);
-    
+
         existingFlight.setFlightNo(updatedFlight.getFlightNo());
         existingFlight.setDestination(updatedFlight.getDestination());
         existingFlight.setOrigin(updatedFlight.getOrigin());
         existingFlight.setDepartureDate(updatedFlight.getDepartureDate());
         existingFlight.setDuration(updatedFlight.getDuration());
-    
+
         // Update the seats collection without replacing it
         existingFlight.getSeats().clear();
         if (updatedFlight.getSeats() != null) {
             existingFlight.getSeats().addAll(updatedFlight.getSeats());
         }
-    
+
         return saveFlight(existingFlight);
     }
-    
-    
 
-    public Flight bookFlight(Flight flight, List<String> seatNumbers, String email, String name, String creditCardNum, String cvv, String expDate){
+    public Flight bookFlight(Flight flight, List<String> seatNumbers, String email, String name, String creditCardNum,
+            String cvv, String expDate) {
         flight.selectSeats(seatNumbers);
         List<Passenger> existingPassengers = flight.getPassengers();
         if (existingPassengers == null) {
@@ -206,17 +239,16 @@ public class FlightService {
                 newSeat.setAvailable(false);
                 seatRepository.save(newSeat);
                 amount += 100;
-            }
-            else {
+            } else {
                 throw new IllegalArgumentException("Unknown seat class for seat number: " + seatNumber);
-                }
+            }
             Passenger passenger = new Passenger(flight.getFlightNo(), seatNumber, name, email);
             passengers.add(passenger);
             passengerRepository.save(passenger);
-        }  
-        Payment payment = new Payment(passengers.get(0),flight,seatNumbers, amount, creditCardNum, expDate, cvv);
+        }
+        Payment payment = new Payment(passengers.get(0), flight, seatNumbers, amount, creditCardNum, expDate, cvv);
         paymentRepository.save(payment);
-        for(Ticket ticket : payment.getTickets()){
+        for (Ticket ticket : payment.getTickets()) {
             ticketRepository.save(ticket);
         }
         receiptRepository.save(payment.getReceipt());
@@ -226,19 +258,23 @@ public class FlightService {
         return updatedFlight;
     }
 
-    public Flight cancelFlightOperations(int paymentId, Flight flight){
+    public Flight cancelFlightOperations(int paymentId, Flight flight) {
         // Retrieve ticket information
         List<Ticket> tickets = ticketRepository.findAllByPaymentId(paymentId);
-        Receipt receipt = receiptRepository.findByPaymentId(paymentId).orElseThrow(() -> new EntityNotFoundException("Reciept not found"));
-        Payment payment = paymentRepository.findById(paymentId).orElseThrow(() -> new EntityNotFoundException("Payment not found"));
+        Receipt receipt = receiptRepository.findByPaymentId(paymentId)
+                .orElseThrow(() -> new EntityNotFoundException("Reciept not found"));
+        Payment payment = paymentRepository.findById(paymentId)
+                .orElseThrow(() -> new EntityNotFoundException("Payment not found"));
         List<String> canceledSeatNumbers = new ArrayList<>();
         List<Passenger> canceledPassengers = new ArrayList<>();
         for (Ticket ticket : tickets) {
             // Retrieve additional information for each ticket, e.g., seat number, passenger
             String seatNo = ticket.getSeatNumber();
-            Seat seat = seatRepository.findBySeatNumberAndFlightNo(seatNo, flight.getFlightNo()).orElseThrow(() -> new EntityNotFoundException("Seat not found"));
+            Seat seat = seatRepository.findBySeatNumberAndFlightNo(seatNo, flight.getFlightNo())
+                    .orElseThrow(() -> new EntityNotFoundException("Seat not found"));
             canceledSeatNumbers.add(seatNo);
-            Passenger passenger = passengerRepository.findBySeatNumberAndFlightNo(seatNo, flight.getFlightNo()).orElseThrow(() -> new EntityNotFoundException("Passenger not found"));
+            Passenger passenger = passengerRepository.findBySeatNumberAndFlightNo(seatNo, flight.getFlightNo())
+                    .orElseThrow(() -> new EntityNotFoundException("Passenger not found"));
             canceledPassengers.add(passenger);
             passengerRepository.deleteById(passenger.getId());
             ticketRepository.deleteById(ticket.getTicketNumber());
@@ -246,12 +282,12 @@ public class FlightService {
         }
         flight.addSeats(canceledSeatNumbers);
         List<Passenger> passengers = flight.getPassengers();
-        if(passengers != null){
+        if (passengers != null) {
             passengers.removeAll(canceledPassengers);
             flight.setPassengers(passengers);
         }
         paymentRepository.delete(payment);
         receiptRepository.delete(receipt);
         return saveFlight(flight);
-}
+    }
 }

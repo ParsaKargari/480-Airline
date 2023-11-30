@@ -1,6 +1,8 @@
 package com.airline.airlinesystem.core;
 
 import jakarta.persistence.*;
+import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 public class Aircraft {
@@ -64,5 +66,17 @@ public class Aircraft {
     public String getTailNumber() {
         return tailNumber;
     }
+
+    // Initialize default aircrafts
+    public static List<Aircraft> initializeDefaultAircrafts() {
+        List<Aircraft> aircrafts = new ArrayList<Aircraft>();
+        aircrafts.add(new Aircraft("N12345", "Boeing 737", 150, "Moussavi Airlines"));
+        aircrafts.add(new Aircraft("N23456", "Boeing 787 Dreamliner", 150, "Moussavi Airlines"));
+        aircrafts.add(new Aircraft("N34567", "Airbus A380", 150, "Moussavi Airlines"));
+
+
+        return aircrafts;
+    }
+
     
 }

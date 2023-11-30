@@ -18,8 +18,17 @@ public class AircraftService {
         this.aircraftRepository = aircraftRepository;
     }
 
+    public AircraftRepository getAircraftRepository() {
+        return aircraftRepository;
+    }
+
     public Aircraft saveAircraft(Aircraft aircraft) {
         return aircraftRepository.save(aircraft);
+    }
+
+    public void initializeDefaultAircrafts() {
+        List<Aircraft> defaultAircrafts = Aircraft.initializeDefaultAircrafts();
+        aircraftRepository.saveAll(defaultAircrafts);
     }
 
     public List<Aircraft> getAllAircraft() {

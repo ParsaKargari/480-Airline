@@ -32,7 +32,7 @@ public class Flight {
     private List<Seat> seats;
 
     @ManyToOne // Many flights can use one aircraft
-    @JoinColumn(name = "aircraft_id") // Foreign key in the Flight table
+    @JoinColumn(name = "aircraft_id")
     private Aircraft aircraft;
 
     // Default constructor
@@ -42,6 +42,7 @@ public class Flight {
     }
 
     public Flight(FlightViewStrategy flightStrategy, String flightNo, String destination, String origin,
+            String departureDate, String duration,
             List<Crew> crew, List<Seat> seats, List<Passenger> passengers, Aircraft aircraft) {
 
         this.flightStrategy = flightStrategy;
@@ -52,6 +53,8 @@ public class Flight {
         this.seats = seats;
         this.passengers = passengers;
         this.aircraft = aircraft;
+        this.departureDate = departureDate;
+        this.duration = duration;
     }
 
     // Initialize Seats
@@ -149,10 +152,10 @@ public class Flight {
 
     // Method to add a crew member
     // public void addCrewMember(String crewMember) {
-    //     if (crew == null) {
-    //         crew = new ArrayList<>();
-    //     }
-    //     crew.add(crewMember);
+    // if (crew == null) {
+    // crew = new ArrayList<>();
+    // }
+    // crew.add(crewMember);
     // }
 
     // Method to remove a crew member
