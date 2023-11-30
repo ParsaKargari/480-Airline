@@ -28,7 +28,7 @@ public class Flight {
     @Transient
     private List<Passenger> passengers;
 
-    @OneToMany(mappedBy = "flight", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "flight", cascade = CascadeType.REMOVE)
     private List<Seat> seats;
 
     @ManyToOne // Many flights can use one aircraft
@@ -244,7 +244,10 @@ public class Flight {
     }
 
     public void setSeats(List<Seat> seats) {
-        this.seats = seats;
+        this.seats.clear();
+        if (seats != null) {
+            this.seats.addAll(seats);
+        }
     }
 
     public Aircraft getAircraft() {

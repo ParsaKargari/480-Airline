@@ -203,7 +203,7 @@ const FlightList = () => {
   };
 
   const handleSave = () => {
-    if (currentFlight && aircraft) {
+    if (currentFlight) {
       const formattedDate = currentFlight.departureDate
         .split("-")
         .reverse()
@@ -212,10 +212,10 @@ const FlightList = () => {
         ...currentFlight,
         departureDate: formattedDate,
         aircraft: {
-          model: aircraft.model,
-          capacity: aircraft.capacity,
-          airline: aircraft.airline,
-          tailNumber: aircraft.tailNumber,
+          model: aircraft?.model,
+          capacity: aircraft?.capacity,
+          airline: aircraft?.airline,
+          tailNumber: aircraft?.tailNumber,
         },
         crew: [], // Assuming crew details are managed elsewhere
         seats: [], // Assuming seats details are managed elsewhere
@@ -307,21 +307,25 @@ const FlightList = () => {
           {currentFlight?.id ? "Edit Flight" : "Add Flight"}
         </DialogTitle>
         <DialogContent className={classes.dialogContent}>
-          <FormControl className={classes.formControl} fullWidth>
-            <InputLabel id="aircraft-label">Aircraft</InputLabel>
-            <Select
-              labelId="aircraft-select-label"
-              id="aircraft-select"
-              value={selectedAircraftId}
-              onChange={handleAircraftChange}
-            >
-              {aircrafts.map((aircraft) => (
-                <MenuItem key={aircraft.id} value={aircraft.id}>
-                  {aircraft.model} - {aircraft.airline} - {aircraft.tailNumber}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          {!currentFlight?.id && (
+            <FormControl className={classes.formControl} fullWidth>
+              <InputLabel id="aircraft-label">Aircraft</InputLabel>
+              <Select
+                labelId="aircraft-select-label"
+                id="aircraft-select"
+                value={selectedAircraftId}
+                onChange={handleAircraftChange}
+                disabled={!!currentFlight?.id}
+              >
+                {aircrafts.map((aircraft) => (
+                  <MenuItem key={aircraft.id} value={aircraft.id}>
+                    {aircraft.model} - {aircraft.airline} -{" "}
+                    {aircraft.tailNumber}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
           <TextField
             autoFocus
             margin="dense"
@@ -387,11 +391,7 @@ const FlightList = () => {
           <Button onClick={closeDialog} color="secondary">
             Cancel
           </Button>
-          <Button
-            onClick={handleSave}
-            color="primary"
-            disabled={!isFormValid()}
-          >
+          <Button onClick={handleSave} color="primary">
             Save
           </Button>
         </DialogActions>
