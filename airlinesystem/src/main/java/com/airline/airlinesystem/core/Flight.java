@@ -42,7 +42,7 @@ public class Flight {
     }
 
     public Flight(FlightViewStrategy flightStrategy, String flightNo, String destination, String origin,
-            List<String> crew, List<Seat> seats, List<Passenger> passengers, Aircraft aircraft) {
+            List<Crew> crew, List<Seat> seats, List<Passenger> passengers, Aircraft aircraft) {
 
         this.flightStrategy = flightStrategy;
         this.flightNo = flightNo;
@@ -148,12 +148,12 @@ public class Flight {
     }
 
     // Method to add a crew member
-    public void addCrewMember(String crewMember) {
-        if (crew == null) {
-            crew = new ArrayList<>();
-        }
-        crew.add(crewMember);
-    }
+    // public void addCrewMember(String crewMember) {
+    //     if (crew == null) {
+    //         crew = new ArrayList<>();
+    //     }
+    //     crew.add(crewMember);
+    // }
 
     // Method to remove a crew member
     public void removeCrewMember(String crewMember) {
