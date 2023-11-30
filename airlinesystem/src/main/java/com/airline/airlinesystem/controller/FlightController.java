@@ -1,10 +1,10 @@
 package com.airline.airlinesystem.controller;
 
-
 import com.airline.airlinesystem.core.Flight;
 import com.airline.airlinesystem.core.Seat;
 import com.airline.airlinesystem.service.FlightService;
-
+import com.airline.airlinesystem.core.Aircraft;
+import com.airline.airlinesystem.service.AircraftService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,7 +14,6 @@ import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Map;
 
-
 @RestController
 @RequestMapping("/api/flights")
 @CrossOrigin
@@ -22,19 +21,36 @@ public class FlightController {
     @Autowired
     private FlightService flightService;
 
+    @Autowired
+    private AircraftService aircraftService;
+
     // Returns list of flights
     // Works
     @GetMapping // GET /api/flights
     public ResponseEntity<List<Flight>> getAllFlights() {
-        System.out.println("GET /api/flights");
         return ResponseEntity.ok(flightService.getAllFlights());
     }
-
 
     // Add a flight
     // Works
     @PostMapping // POST /api/flights
     public ResponseEntity<Flight> addFlight(@RequestBody Flight flight) {
+        Aircraft aircraft = flight.getAircraft();
+
+        if (aircraft != null) {
+            // Lookup aircraft by tail number
+            Aircraft existingAircraft = aircraftService.findAircraftByTailNumber(aircraft.getTailNumber());
+
+            if (existingAircraft != null) {
+                // If aircraft exists, use it
+                flight.setAircraft(existingAircraft);
+            } else {
+                // If aircraft doesn't exist, create a new one
+                Aircraft newAircraft = aircraftService.saveAircraft(aircraft);
+                flight.setAircraft(newAircraft);
+            }
+        }
+
         Flight savedFlight = flightService.saveFlight(flight);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedFlight);
     }
@@ -47,7 +63,6 @@ public class FlightController {
         return ResponseEntity.noContent().build();
     }
 
-
     // Returns sold out seats for a flight
     // Works
     @GetMapping("/{id}/seats/sold-out") // GET /api/flights/{id}/seats/sold-out
@@ -56,7 +71,6 @@ public class FlightController {
         List<Seat> soldOutSeats = flight.getSoldOutSeats();
         return ResponseEntity.ok(soldOutSeats);
     }
-
 
     // Book seats for a flight by id
     // Works
@@ -73,7 +87,6 @@ public class FlightController {
         return ResponseEntity.ok(updatedFlight);
     }
 
-
     // Get id of flight by flightNo
     // Works
     @GetMapping("/{flightNo}/id")
@@ -86,7 +99,6 @@ public class FlightController {
         }
     }
 
-
     // Update a flight by ID
     @PutMapping("/{id}") // PUT /api/flights/{id}
     public ResponseEntity<Flight> updateFlight(@PathVariable int id, @RequestBody Flight updatedFlight) {
@@ -98,13 +110,13 @@ public class FlightController {
         }
     }
 
-
     // Remove passengers from a flight by ID
     @PutMapping("/{id}/cancel-flight") // PUT /api/flights/{id}/remove-passengers
-    public ResponseEntity<Flight> removePassengers(@PathVariable int id, @RequestBody Map<String, Integer> requestBody) {
-            int paymentId = requestBody.get("paymentId");
-            Flight flight = flightService.getFlightById(id);
-            Flight updated = flightService.cancelFlightOperations(paymentId, flight);
-            return ResponseEntity.ok(updated);
+    public ResponseEntity<Flight> removePassengers(@PathVariable int id,
+            @RequestBody Map<String, Integer> requestBody) {
+        int paymentId = requestBody.get("paymentId");
+        Flight flight = flightService.getFlightById(id);
+        Flight updated = flightService.cancelFlightOperations(paymentId, flight);
+        return ResponseEntity.ok(updated);
     }
 }

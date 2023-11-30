@@ -1,21 +1,77 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
 import {
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
-  Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField
-} from '@material-ui/core';
-
-const mockAircrafts = [
-  { id: 'AC001', model: 'Boeing 737', status: 'Active' },
-  // ... more mock aircrafts
-];
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+} from "@material-ui/core";
+import axios from "axios";
 
 const AircraftList = () => {
-  const [aircrafts, setAircrafts] = useState(mockAircrafts);
+  const [aircrafts, setAircrafts] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [currentAircraft, setCurrentAircraft] = useState({ id: '', model: '', status: '' });
+  const [currentAircraft, setCurrentAircraft] = useState({
+    model: "",
+    capacity: "",
+    tailNumber: "",
+    airline: "",
+  });
+
+  // Fetch all aircrafts from the database on initial render
+  useEffect(() => {
+    fetchAircrafts();
+  }, []);
+
+  const fetchAircrafts = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/api/aircraft");
+      setAircrafts(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Add a new aircraft to the database
+  const addAircraft = async (aircraft) => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/aircraft",
+        aircraft
+      );
+      fetchAircrafts();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Delete an aircraft from the database
+  const deleteAircraft = async (id) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:8080/api/aircraft/${id}`
+      );
+      fetchAircrafts();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const openDialog = () => {
-    setCurrentAircraft({ id: '', model: '', status: '' });
+    setCurrentAircraft({
+      model: "",
+      capacity: "",
+      tailNumber: "",
+      airline: "",
+    });
     setDialogOpen(true);
   };
 
@@ -24,12 +80,14 @@ const AircraftList = () => {
   };
 
   const handleSave = () => {
-    setAircrafts([...aircrafts, { ...currentAircraft, id: `AC${aircrafts.length + 1}` }]);
+    // TODO: Save currentAircraft to the database
+    addAircraft(currentAircraft);
     closeDialog();
   };
 
   const handleDelete = (id) => {
-    setAircrafts(aircrafts.filter(aircraft => aircraft.id !== id));
+    // TODO: Delete aircraft with the given id from the database
+    deleteAircraft(id);
   };
 
   return (
@@ -43,7 +101,9 @@ const AircraftList = () => {
             <TableRow>
               <TableCell>ID</TableCell>
               <TableCell>Model</TableCell>
-              <TableCell>Status</TableCell>
+              <TableCell>Capacity</TableCell>
+              <TableCell>Tail Number</TableCell>
+              <TableCell>Airline</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -52,9 +112,16 @@ const AircraftList = () => {
               <TableRow key={aircraft.id}>
                 <TableCell>{aircraft.id}</TableCell>
                 <TableCell>{aircraft.model}</TableCell>
-                <TableCell>{aircraft.status}</TableCell>
+                <TableCell>{aircraft.capacity}</TableCell>
+                <TableCell>{aircraft.tailNumber}</TableCell>
+                <TableCell>{aircraft.airline}</TableCell>
                 <TableCell>
-                  <Button color="secondary" onClick={() => handleDelete(aircraft.id)}>Delete</Button>
+                  <Button
+                    color="secondary"
+                    onClick={() => handleDelete(aircraft.id)}
+                  >
+                    Delete
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
@@ -71,15 +138,48 @@ const AircraftList = () => {
             type="text"
             fullWidth
             value={currentAircraft.model}
-            onChange={(e) => setCurrentAircraft({ ...currentAircraft, model: e.target.value })}
+            onChange={(e) =>
+              setCurrentAircraft({ ...currentAircraft, model: e.target.value })
+            }
           />
           <TextField
             margin="dense"
-            label="Status"
+            label="Capacity"
+            type="integer"
+            fullWidth
+            value={currentAircraft.capacity}
+            onChange={(e) =>
+              setCurrentAircraft({
+                ...currentAircraft,
+                capacity: e.target.value,
+              })
+            }
+          />
+          <TextField
+            margin="dense"
+            label="Tail Number"
             type="text"
             fullWidth
-            value={currentAircraft.status}
-            onChange={(e) => setCurrentAircraft({ ...currentAircraft, status: e.target.value })}
+            value={currentAircraft.tailNumber}
+            onChange={(e) =>
+              setCurrentAircraft({
+                ...currentAircraft,
+                tailNumber: e.target.value,
+              })
+            }
+          />
+          <TextField
+            margin="dense"
+            label="Airline"
+            type="text"
+            fullWidth
+            value={currentAircraft.airline}
+            onChange={(e) =>
+              setCurrentAircraft({
+                ...currentAircraft,
+                airline: e.target.value,
+              })
+            }
           />
         </DialogContent>
         <DialogActions>

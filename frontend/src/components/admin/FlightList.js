@@ -14,7 +14,6 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
-  Typography,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -161,11 +160,6 @@ const FlightList = () => {
       addOrUpdateFlight(flightData);
     }
     closeDialog();
-  };
-
-  const formatDate = (date) => {
-    const [year, month, day] = date.split("-");
-    return `${month}-${day}-${year}`;
   };
 
   const handleDelete = (id) => {
