@@ -3,7 +3,7 @@ import { AuthContext } from "./contexts/AuthContext";
 import Modal from "@material-ui/core/Modal";
 import Snackbar from "@material-ui/core/Snackbar";
 import { makeStyles } from "@material-ui/core/styles";
-import Alert from '@material-ui/lab/Alert';
+import Alert from "@material-ui/lab/Alert";
 
 import {
   Card,
@@ -59,14 +59,40 @@ export default function LoginModal({ open, handleClose }) {
   const { login } = useContext(AuthContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [token, setToken] = useState(""); // New state for token
+  const [snackbarOpenSuccess, setSnackbarOpenSuccess] = useState(false);
+  const [snackbarOpenFailure, setSnackbarOpenFailure] = useState(false);
+  const [loginSuccessful, setLoginSuccessful] = useState(false);
 
-  const handleLoginClick = (u, p) => {
-    if (login(u, p)) {
-      setSnackbarOpen(true);
+  // Reset states when handleClose is called
+  React.useEffect(() => {
+    if (!open) {
+      setUsername("");
+      setPassword("");
+      setToken("");
+      setLoginSuccessful(false);
+    }
+  }, [open]);
+
+  const handleLoginClick = async () => {
+    let success = false;
+    if (token) {
+      // Token-based login (adjust as per your login method)
+      success = await login(null, null, token);
+    } else {
+      // Username/password login (adjust as per your login method)
+      success = await login(username, password);
+    }
+
+    setLoginSuccessful(true);
+    console.log(loginSuccessful);
+    if (success) {
+      setSnackbarOpenSuccess(true);
       handleClose();
     } else {
-      // TODO: Handle login failure
+      // Handle login failure
+      setLoginSuccessful(false);
+      setSnackbarOpenFailure(true);
     }
   };
 
@@ -74,11 +100,11 @@ export default function LoginModal({ open, handleClose }) {
     if (reason === "clickaway") {
       return;
     }
-    setSnackbarOpen(false);
+    setSnackbarOpenFailure(false);
+    setSnackbarOpenSuccess(false);
   };
 
   const [modalStyle] = React.useState(getModalStyle);
-
   const body = (
     <div style={modalStyle} className={classes.paper}>
       <Card>
@@ -88,7 +114,7 @@ export default function LoginModal({ open, handleClose }) {
           </Typography>
           <TextField
             margin="normal"
-            required
+            required={!token}
             fullWidth
             id="username"
             label="Username"
@@ -96,10 +122,11 @@ export default function LoginModal({ open, handleClose }) {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
             autoFocus
+            disabled={!!token}
           />
           <TextField
             margin="normal"
-            required
+            required={!token}
             fullWidth
             name="password"
             label="Password"
@@ -107,16 +134,28 @@ export default function LoginModal({ open, handleClose }) {
             id="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            disabled={!!token}
           />
-          {/* Implement your login logic here */}
+          <TextField
+            margin="normal"
+            fullWidth
+            name="token"
+            label="Token (optional)"
+            type="text"
+            id="token"
+            value={token}
+            onChange={(e) => setToken(e.target.value)}
+            disabled={!!(username || password)}
+          />
         </CardContent>
         <CardActions className={classes.actions}>
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
           <Button
-            onClick={() => handleLoginClick(username, password)}
+            onClick={handleLoginClick}
             color="primary"
+            disabled={(!username || !password) && !token} // Updated condition
           >
             Login
           </Button>
@@ -135,15 +174,26 @@ export default function LoginModal({ open, handleClose }) {
       >
         {body}
       </Modal>
+
       <Snackbar
-        open={snackbarOpen}
+        open={snackbarOpenSuccess}
         autoHideDuration={6000}
         onClose={handleSnackbarClose}
       >
-        <Alert onClose={handleSnackbarClose} severity="success">
-          {`Logged in, ${username}!`}
+        <Alert onClose={handleSnackbarClose} severity={"success"}>
+          {`Logged in!`}
         </Alert>
       </Snackbar>
+      <Snackbar
+        open={snackbarOpenFailure}
+        autoHideDuration={6000}
+        onClose={handleSnackbarClose}
+      >
+        <Alert onClose={handleSnackbarClose} severity={"error"}>
+          {"Login failed"}
+        </Alert>
+      </Snackbar>
+
     </>
   );
 }

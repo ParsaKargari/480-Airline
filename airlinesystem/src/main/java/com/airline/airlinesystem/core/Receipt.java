@@ -1,24 +1,58 @@
 package com.airline.airlinesystem.core;
 
+import java.util.Properties;
+import jakarta.persistence.*;
+import com.google.api.client.auth.oauth2.Credential;
+import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
+import com.google.api.client.extensions.jetty.auth.oauth2.LocalServerReceiver;
+import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
+import com.google.api.client.googleapis.auth.oauth2.GoogleClientSecrets;
+import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+import com.google.api.client.util.store.FileDataStoreFactory;
+import com.google.api.services.gmail.Gmail;
+import com.google.api.services.gmail.model.Message;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.file.Paths;
+import javax.mail.Session;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.io.ByteArrayOutputStream;
+import java.util.Set;
+import com.google.api.client.googleapis.json.GoogleJsonError;
+import com.google.api.client.googleapis.json.GoogleJsonResponseException;
+import org.apache.commons.codec.binary.Base64;
+
+import static com.google.api.services.gmail.GmailScopes.GMAIL_SEND;
+import static javax.mail.Message.RecipientType.TO;
+
+@Entity
 public class Receipt implements Email {
-    private String transactionId;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    private int paymentId;
     private double amount;
     private String recipientEmail;
+    public Receipt(){}
 
-    public Receipt(String transactionId, double amount, String recipientEmail) {
-        this.transactionId = transactionId;
+    public Receipt(int paymentId, double amount, String recipientEmail) {
+        this.paymentId = paymentId;
         this.amount = amount;
         this.recipientEmail = recipientEmail;
     }
 
     // Getters and setters...
 
-    public String getTransactionId() {
-        return transactionId;
+    public int getId() {
+        return id;
     }
 
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
+    public void setId(int transactionId) {
+        this.id = transactionId;
     }
 
     public double getAmount() {
@@ -37,14 +71,67 @@ public class Receipt implements Email {
         this.recipientEmail = recipientEmail;
     }
 
+    private static Credential getCredentials(final NetHttpTransport httpTransport, GsonFactory jsonFactory)
+      throws IOException {
+    // Load client secrets.
+    GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(jsonFactory, new InputStreamReader(Ticket.class.getResourceAsStream("/client_secret_579755992935-q79vl8csio88t5g95lmq88cak87bai0q.apps.googleusercontent.com.json")));
+
+    // Build flow and trigger user authorization request.
+    GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+        httpTransport, jsonFactory, clientSecrets, Set.of(GMAIL_SEND))
+        .setDataStoreFactory(new FileDataStoreFactory(Paths.get("tokens").toFile()))
+        .setAccessType("offline")
+        .build();
+    LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
+    Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
+    //returns an authorized Credential object.
+    return credential;
+  }
+
+
+    // Implementation of the sendEmail method from the Email interface
     @Override
-    public void sendEmail(String to, String subject, String body) {
-        // Implement email sending logic here
-        System.out.println("Sending receipt email to: " + to);
-        System.out.println("Subject: " + subject);
-        System.out.println("Transaction ID: " + transactionId);
-        System.out.println("Amount: $" + amount);
-        System.out.println("Recipient Email: " + recipientEmail);
-        System.out.println("Email sent successfully!");
+    public void sendEmail(String to, String subject, String body) throws Exception{
+        NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
+        GsonFactory jsonFractory = GsonFactory.getDefaultInstance();
+        Gmail service = new Gmail.Builder(httpTransport, jsonFractory, getCredentials(httpTransport, jsonFractory))
+            .setApplicationName("Moussavi Airline Mailer")
+            .build();
+
+        Properties props = new Properties();
+        Session session = Session.getDefaultInstance(props, null);
+        MimeMessage email = new MimeMessage(session);
+        email.setFrom(new InternetAddress("moussaviairlines@gmail.com"));
+        email.addRecipient(TO, new InternetAddress(to));
+        email.setSubject(subject);
+        email.setText(body);
+
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        email.writeTo(buffer);
+        byte[] rawMessageBytes = buffer.toByteArray();
+        String encodedEmail = Base64.encodeBase64URLSafeString(rawMessageBytes);
+        Message msg = new Message();
+        msg.setRaw(encodedEmail);
+
+        try {
+            msg = service.users().messages().send("me", msg).execute();
+            System.out.println("Message id: " + msg.getId());
+            System.out.println(msg.toPrettyString());
+        } catch (GoogleJsonResponseException e) {
+            GoogleJsonError error = e.getDetails();
+            if (error.getCode() == 403) {
+                System.err.println("Unable to send message: " + e.getDetails());
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    public int getPaymentId() {
+        return paymentId;
+    }
+
+    public void setPaymentId(int paymentId) {
+        this.paymentId = paymentId;
     }
 }

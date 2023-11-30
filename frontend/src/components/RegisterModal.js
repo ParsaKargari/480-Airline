@@ -14,6 +14,7 @@ import Snackbar from "@material-ui/core/Snackbar";
 import Alert from "@material-ui/lab/Alert";
 import { makeStyles } from "@material-ui/core/styles";
 import { AuthContext } from "./contexts/AuthContext";
+import axios from "axios";
 
 function getModalStyle() {
   const top = 50;
@@ -56,27 +57,61 @@ const useStyles = makeStyles((theme) => ({
 
 export default function RegisterModal({ open, handleClose }) {
   const classes = useStyles();
-  const { register } = useContext(AuthContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [dob, setDob] = useState("");
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [address, setAddress] = useState("");
   const [wantToRegister, setWantToRegister] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [registrationResult, setRegistrationResult] = useState(null);
+
+  // reset form on close
+  React.useEffect(() => {
+    if (!open) {
+      setUsername("");
+      setPassword("");
+      setName("");
+      setEmail("");
+      setDob("");
+      setAddress("");
+      setWantToRegister(false);
+    }
+  }, [open]);
 
   const handleRegisterClick = async () => {
-    // Mock registration
-    console.log("Registering...");
-    const body = {
+    const userInfo = {
       username,
       password,
       name,
       email,
+      address,
       dob,
-      wantToRegister,
+      role: wantToRegister ? "REGISTERED_USER" : "USER",
     };
-    console.log(body);
+
+    let creditCard = {};
+    if (wantToRegister) {
+      creditCard = {
+        cardHolder: name,
+        billingAddress: address,
+      };
+    }
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/api/accounts/register",
+        { userInfo, creditCard }
+      );
+      setRegistrationResult(response.data);
+      handleClose();
+      setSnackbarOpen(true);
+    } catch (error) {
+      console.error("Registration failed:", error);
+      setSnackbarOpen(true);
+      setRegistrationResult(null);
+    }
   };
 
   const handleSnackbarClose = (event, reason) => {
@@ -115,6 +150,16 @@ export default function RegisterModal({ open, handleClose }) {
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+          />
+          <TextField
+            margin="normal"
+            required
+            fullWidth
+            id="address"
+            label="Address"
+            name="address"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
           />
           <TextField
             margin="normal"
@@ -167,7 +212,19 @@ export default function RegisterModal({ open, handleClose }) {
           <Button onClick={handleClose} color="primary">
             Cancel
           </Button>
-          <Button onClick={handleRegisterClick} color="primary">
+          <Button
+            onClick={handleRegisterClick}
+            color="primary"
+            disabled={
+              !username ||
+              !password ||
+              !name ||
+              !email ||
+              !dob ||
+              !address ||
+              (wantToRegister && (!name || !address)) // Additional check for registered users
+            }
+          >
             Register
           </Button>
         </CardActions>
@@ -187,11 +244,25 @@ export default function RegisterModal({ open, handleClose }) {
       </Modal>
       <Snackbar
         open={snackbarOpen}
-        autoHideDuration={6000}
+        autoHideDuration={20000}
         onClose={handleSnackbarClose}
       >
-        <Alert onClose={handleSnackbarClose} severity="success">
-          {`Registered, ${username}!`}
+        <Alert
+          onClose={handleSnackbarClose}
+          severity={registrationResult ? "success" : "error"}
+        >
+          {registrationResult
+            ? `Registered successfully! Token: ${registrationResult.token}`
+            : "Registration failed"}
+          {registrationResult && registrationResult.creditCard && (
+            <div>
+              <div>
+                Credit Card Number: {registrationResult.creditCard.number}
+              </div>
+              <div>Expiry Date: {registrationResult.creditCard.expDate}</div>
+              <div>CVV: {registrationResult.creditCard.cvv}</div>
+            </div>
+          )}
         </Alert>
       </Snackbar>
     </>

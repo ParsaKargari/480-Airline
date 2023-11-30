@@ -80,17 +80,9 @@ const CheckoutModalEmail = ({
     } else if (email.trim() === "" || name.trim() === "") {
       alert("Please enter email and name.");
     } else {
-      // This is just a placeholder
-      alert("Payment Successful!");
+      alert("Payment Success!");
       onClose(); // Close the modal after successful payment
     }
-  };
-
-  const convertSeatFormat = (seatKey) => {
-    const seat = seatKey.split("-")[1];
-    const row = seatKey.split("-")[0];
-    const seatLetter = String.fromCharCode(64 + parseInt(seat));
-    return `${seatLetter}${row}`;
   };
 
   return (

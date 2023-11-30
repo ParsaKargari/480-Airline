@@ -48,6 +48,7 @@ export default function FlightSearch() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [flights, setFlights] = useState([]);
+  const [flightID, setFlightID] = useState();
 
   useEffect(() => {
     fetchFlights();
@@ -72,22 +73,32 @@ export default function FlightSearch() {
   const handleSearch = () => {
     // Here you would handle the actual search logic
     const searchResults = flights.find(
-      (flight) => flight.flightNo === searchTerm
+      (flight) =>
+        flight.flightNo +
+          " - Origin: " +
+          flight.origin +
+          " - Destination: " +
+          flight.destination ===
+        searchTerm
     );
 
     if (!searchResults) {
       setOpenSnackbar(true);
     } else {
-      if (user && user.role === "Admin") {
-        navigate("/admin-dashboard", {
-          state: { selectedFlight: searchResults },
-        });
-      } else if (user && user.role === "AirAgent") {
+      if (user && user.role === "ADMIN") {
         navigate("/air-agent-dashboard", {
           state: { selectedFlight: searchResults },
         });
-      } else if (user && user.role === "TourAgent") {
-        navigate("/tour-agent-dashboard", {
+      } else if (user && user.role === "AIRLINE_AGENT") {
+        navigate("/air-agent-dashboard", {
+          state: { selectedFlight: searchResults },
+        });
+      } else if (user && user.role === "FLIGHT_ATTENDANT") {
+        navigate("/air-agent-dashboard", {
+          state: { selectedFlight: searchResults },
+        });
+      } else if (user && user.role === "TOUR_AGENT") {
+        navigate("/air-agent-dashboard", {
           state: { selectedFlight: searchResults },
         });
       } else {
@@ -110,23 +121,10 @@ export default function FlightSearch() {
     setOpenSnackbar(false);
   };
 
-  const loginCheck = () => {
-    // Return False if not logged in
-    // Return False if user role is admin
-    // Return True if user logged in
-    if (!user) {
-      return false;
-    }
-    if (user.role === "Admin") {
-      return false;
-    }
-    return true;
-  };
-
   const adminCheck = () => {
     // Return true if user role is admin
     // Return false if user role is not admin
-    if (user && user.role === "Admin") {
+    if (user && user.role === "ADMIN") {
       return true;
     }
   };
@@ -151,6 +149,7 @@ export default function FlightSearch() {
                 flight.destination
             )}
             onInputChange={(event, newInputValue) => {
+              console.log(newInputValue);
               setSearchTerm(newInputValue);
             }}
             renderInput={(params) => (
@@ -168,8 +167,8 @@ export default function FlightSearch() {
             fullWidth
             variant="contained"
             color="primary"
+            disabled={!user}
             onClick={handleSearch}
-            disabled={!loginCheck()}
           >
             {user ? "Search" : "Login to Book Flight"}
           </Button>

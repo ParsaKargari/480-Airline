@@ -1,13 +1,24 @@
 package com.airline.airlinesystem.core;
 
 import java.util.Random;
+import jakarta.persistence.*;
 
+@Entity
+@Table(name = "credit_cards")
 public class CreditCard {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
     private String cvv;
     private String cardHolder;
     private String billingAddress;
     private String expDate;
     private String number;
+
+    public CreditCard() {
+    }
 
     public CreditCard(String name, String address) {
         this.cardHolder = name;

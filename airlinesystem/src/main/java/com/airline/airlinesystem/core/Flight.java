@@ -11,23 +11,24 @@ import jakarta.persistence.*;
 public class Flight {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // Primary key do not include in constructor
-
-    @Transient // Do not include in database
-    private Login login;
-
-    @Transient // Do not include in database
-    private FlightViewStrategy flightStrategy;
+    private int id; // Primary key do not include in constructor
 
     private String flightNo;
     private String destination;
     private String origin;
+    private String departureDate;
+    private String duration;
+
+    @Transient // Do not include in database
+    private FlightViewStrategy flightStrategy;
 
     @Transient
     private List<String> crew;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "flight_id")
+    @Transient
+    private List<Passenger> passengers;
+
+    @OneToMany(mappedBy = "flight", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<Seat> seats;
 
     // Default constructor
@@ -36,16 +37,16 @@ public class Flight {
         initializeSeats();
     }
 
-    public Flight(Login login, FlightViewStrategy flightStrategy, String flightNo, String destination, String origin,
-            List<String> crew, List<Seat> seats) {
+    public Flight(FlightViewStrategy flightStrategy, String flightNo, String destination, String origin,
+            List<String> crew, List<Seat> seats, List<Passenger> passengers) {
 
-        this.login = login;
         this.flightStrategy = flightStrategy;
         this.flightNo = flightNo;
         this.destination = destination;
         this.origin = origin;
         this.crew = crew;
         this.seats = seats;
+        this.passengers = passengers;
     }
 
     // Initialize Seats
@@ -57,8 +58,8 @@ public class Flight {
         // First class
         for (int i = 0; i < 2; i++) {
             for (char j = 'A'; j <= 'G'; j++) {
-                String seatNumber = (i + 1) + String.valueOf(j);
-                Seat seat = new Seat(seatNumber, "Business Class", 250);
+                String seatNumber = String.valueOf(j) + (i + 1);
+                Seat seat = new Seat(flightNo, seatNumber, "Business Class", 250);
                 seats.add(seat); // No need to setFlight
             }
         }
@@ -66,8 +67,8 @@ public class Flight {
         // Comfort class
         for (int i = 2; i < 5; i++) {
             for (char j = 'A'; j <= 'G'; j++) {
-                String seatNumber = (i + 1) + String.valueOf(j);
-                Seat seat = new Seat(seatNumber, "Comfort Class", 140);
+                String seatNumber = String.valueOf(j) + (i + 1);
+                Seat seat = new Seat(flightNo, seatNumber, "Comfort Class", 140);
                 seats.add(seat); // No need to setFlight
             }
         }
@@ -75,8 +76,9 @@ public class Flight {
         // Economy class
         for (int i = 5; i < 13; i++) {
             for (char j = 'A'; j <= 'G'; j++) {
-                String seatNumber = (i + 1) + String.valueOf(j);
-                Seat seat = new Seat(seatNumber, "Ordinary Class", 100);
+                String seatNumber = String.valueOf(j) + (i + 1);
+                Seat seat = new Seat(flightNo, seatNumber, "Ordinary Class", 100);
+                
                 seats.add(seat); // No need to setFlight
             }
         }
@@ -84,12 +86,20 @@ public class Flight {
 
     // Getters and setters...
 
-    public Login getLogin() {
-        return login;
+    public void setDepartureDate(String departureDate) {
+        this.departureDate = departureDate;
     }
 
-    public void setLogin(Login login) {
-        this.login = login;
+    public String getDepartureDate() {
+        return departureDate;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
+
+    public String getDuration() {
+        return duration;
     }
 
     public FlightViewStrategy getFlightStrategy() {
@@ -131,6 +141,8 @@ public class Flight {
     public void setCrew(List<String> crew) {
         this.crew = crew;
     }
+ 
+
 
     // Method to add a crew member
     public void addCrewMember(String crewMember) {
@@ -157,7 +169,6 @@ public class Flight {
         this.destination = null;
     }
 
-
     // seat methods
     public void addSeat(Seat seat) {
         seats.add(seat);
@@ -169,6 +180,18 @@ public class Flight {
             for (Seat seat : seats) {
                 if (seat.getSeatNumber().equals(seatNumber)) {
                     seat.setAvailable(false);
+                    
+                }
+            }
+        }
+    }
+
+        // Method to add cancelled seats back to available(for booking)
+    public void addSeats(List<String> seatNumbers) {
+        for (String seatNumber : seatNumbers) {
+            for (Seat seat : seats) {
+                if (seat.getSeatNumber().equals(seatNumber)) {
+                    seat.setAvailable(true);
                 }
             }
         }
@@ -195,5 +218,29 @@ public class Flight {
         }
 
         return availableSeats;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public List<Passenger> getPassengers() {
+        return passengers;
+    }
+
+    public void setPassengers(List<Passenger> passengers) {
+        this.passengers = passengers;
+    }
+
+    public List<Seat> getSeats() {
+        return seats;
+    }
+
+    public void setSeats(List<Seat> seats) {
+        this.seats = seats;
     }
 }
