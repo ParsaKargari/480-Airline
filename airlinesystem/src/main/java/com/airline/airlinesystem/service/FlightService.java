@@ -50,28 +50,71 @@ public class FlightService {
     }
 
     // Delete flight from database
-    public void deleteFlight(Long id) {
+    public void deleteFlight(int id) {
         flightRepository.deleteById(id);
     }
 
     // Return all flights
     public List<Flight> getAllFlights() {
-        return flightRepository.findAll();
+        List<Flight> flights = flightRepository.findAll();
+        for(Flight flight : flights){
+            List<Seat> seats = seatRepository.findAllByFlightNo(flight.getFlightNo());
+            List<String> seatNo = new ArrayList<>();
+            List<Passenger> passengers = passengerRepository.findAllByFlightNo(flight.getFlightNo());
+            if(passengers != null){
+                flight.setPassengers(passengers);
+            }
+            if(seats != null){
+                for(Seat seat: seats){
+                    seatNo.add(seat.getSeatNumber());
+                }
+            }
+            flight.initializeSeats();
+            flight.selectSeats(seatNo);
+            }
+        return flights;
     }
 
     // Return flight by id
-    public Flight getFlightById(Long id) {
-        return flightRepository.findById(id).orElseThrow();
+    public Flight getFlightById(int id) {
+        Flight flight = flightRepository.findById(id).orElseThrow();
+        flight.initializeSeats();
+        List<Seat> seats = seatRepository.findAllByFlightNo(flight.getFlightNo());
+        List<String> seatNo = new ArrayList<>();
+        List<Passenger> passengers = passengerRepository.findAllByFlightNo(flight.getFlightNo());
+            if(passengers != null){
+                flight.setPassengers(passengers);
+            }
+        if(seats != null){
+            for(Seat seat: seats){
+                seatNo.add(seat.getSeatNumber());
+            }
+        }
+        flight.selectSeats(seatNo);
+        return flight;
     }
 
     // Return flight by flightNo
     public Flight getFlightByFlightNo(String flightNo) {
-        return flightRepository.findByFlightNo(flightNo)
-                .orElseThrow(() -> new EntityNotFoundException("Flight not found with flightNo: " + flightNo));
+        Flight flight = flightRepository.findByFlightNo(flightNo).orElseThrow(() -> new EntityNotFoundException("Flight not found with flightNo: " + flightNo));
+        flight.initializeSeats();
+        List<Seat> seats = seatRepository.findAllByFlightNo(flight.getFlightNo());
+        List<String> seatNo = new ArrayList<>();
+        List<Passenger> passengers = passengerRepository.findAllByFlightNo(flight.getFlightNo());
+        if(passengers != null){
+            flight.setPassengers(passengers);
+        }
+        if(seats != null){
+            for(Seat seat: seats){
+                seatNo.add(seat.getSeatNumber());
+            }
+        }
+        flight.selectSeats(seatNo);
+        return flight;
     }
 
     // Update flight
-    public Flight updateFlight(Long id, Flight updatedFlight) {
+    public Flight updateFlight(int id, Flight updatedFlight) {
         Flight existingFlight = getFlightById(id);
 
         // Update the fields of the existing flight with the values from the updatedFlight
@@ -96,14 +139,17 @@ public class FlightService {
             int rowNumber = Integer.parseInt(seatNumber.substring(1));
             if (rowNumber >= 1 && rowNumber <= 2) {
                 Seat newSeat = new Seat(flight.getFlightNo(), seatNumber, "Business Class", 250);
+                newSeat.setAvailable(false);
                 amount += 250;
                 seatRepository.save(newSeat);
             } else if (rowNumber >= 3 && rowNumber <= 5) {
                 Seat newSeat = new Seat(flight.getFlightNo(), seatNumber, "Comfort Class", 140);
+                newSeat.setAvailable(false);
                 seatRepository.save(newSeat);
                 amount += 140;
             } else if (rowNumber >= 6 && rowNumber <= 13) {
                 Seat newSeat = new Seat(flight.getFlightNo(), seatNumber, "Ordinary Class", 100);
+                newSeat.setAvailable(false);
                 seatRepository.save(newSeat);
                 amount += 100;
             }

@@ -42,7 +42,7 @@ public class FlightController {
     // Delete a flight by ID
     // Works
     @DeleteMapping("/{id}") // DELETE /api/flights/{id}
-    public ResponseEntity<Void> deleteFlight(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteFlight(@PathVariable int id) {
         flightService.deleteFlight(id);
         return ResponseEntity.noContent().build();
     }
@@ -51,7 +51,7 @@ public class FlightController {
     // Returns sold out seats for a flight
     // Works
     @GetMapping("/{id}/seats/sold-out") // GET /api/flights/{id}/seats/sold-out
-    public ResponseEntity<List<Seat>> getSoldOutSeats(@PathVariable Long id) {
+    public ResponseEntity<List<Seat>> getSoldOutSeats(@PathVariable int id) {
         Flight flight = flightService.getFlightById(id);
         List<Seat> soldOutSeats = flight.getSoldOutSeats();
         return ResponseEntity.ok(soldOutSeats);
@@ -61,7 +61,7 @@ public class FlightController {
     // Book seats for a flight by id
     // Works
     @PostMapping("/{id}/seats/book") // POST /api/flights/{id}/seats/book
-    public ResponseEntity<Flight> bookSeats(@PathVariable Long id, @RequestBody Map<String, Object> requestBody) {
+    public ResponseEntity<Flight> bookSeats(@PathVariable int id, @RequestBody Map<String, Object> requestBody) {
         String name = (String) requestBody.get("name");
         String email = (String) requestBody.get("email");
         List<String> seatNumbers = (List<String>) requestBody.get("seatNumbers");
@@ -77,7 +77,7 @@ public class FlightController {
     // Get id of flight by flightNo
     // Works
     @GetMapping("/{flightNo}/id")
-    public ResponseEntity<Long> getFlightIdByFlightNo(@PathVariable String flightNo) {
+    public ResponseEntity<Integer> getFlightIdByFlightNo(@PathVariable String flightNo) {
         try {
             Flight flight = flightService.getFlightByFlightNo(flightNo);
             return ResponseEntity.ok(flight.getId());
@@ -89,7 +89,7 @@ public class FlightController {
 
     // Update a flight by ID
     @PutMapping("/{id}") // PUT /api/flights/{id}
-    public ResponseEntity<Flight> updateFlight(@PathVariable Long id, @RequestBody Flight updatedFlight) {
+    public ResponseEntity<Flight> updateFlight(@PathVariable int id, @RequestBody Flight updatedFlight) {
         try {
             Flight updated = flightService.updateFlight(id, updatedFlight);
             return ResponseEntity.ok(updated);
@@ -101,7 +101,7 @@ public class FlightController {
 
     // Remove passengers from a flight by ID
     @PutMapping("/{id}/cancel-flight") // PUT /api/flights/{id}/remove-passengers
-    public ResponseEntity<Flight> removePassengers(@PathVariable Long id, @RequestBody Map<String, Integer> requestBody) {
+    public ResponseEntity<Flight> removePassengers(@PathVariable int id, @RequestBody Map<String, Integer> requestBody) {
             int paymentId = requestBody.get("paymentId");
             Flight flight = flightService.getFlightById(id);
             Flight updated = flightService.cancelFlightOperations(paymentId, flight);
