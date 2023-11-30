@@ -3,8 +3,6 @@ package com.airline.airlinesystem.service;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.airline.airlinesystem.core.AuthenticationStrategy;
-import com.airline.airlinesystem.core.CreditCard;
-import com.airline.airlinesystem.core.RegisteredUser;
 import com.airline.airlinesystem.core.User;
 import com.airline.airlinesystem.repository.AccountRepository;
 import org.springframework.stereotype.Service;
@@ -37,5 +35,4 @@ public class AccountService {
     public User registerUser(User user) {
         return accountRepository.save(user);
     }
-
 }

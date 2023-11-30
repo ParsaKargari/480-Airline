@@ -3,8 +3,7 @@ package com.airline.airlinesystem.controller;
 import com.airline.airlinesystem.core.*;
 import com.airline.airlinesystem.service.AccountService;
 import java.util.*;
-import java.util.HashMap;
-import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +22,25 @@ public class AccountController {
     public AccountController(AccountService accountService) {
         this.objectMapper = new ObjectMapper();
         this.accountService = accountService;
+    }
+
+    // Get all registered users
+    @GetMapping("/users") // GET /api/accounts/users
+    public ResponseEntity<List<User>> getAllRegisteredUsers() {
+        List<User> registeredUsers = accountService.getAccountRepository().findByRole("REGISTERED_USER");
+        return ResponseEntity.ok(registeredUsers);
+    }
+
+    // Delete a registered user
+    @DeleteMapping("/users/{id}") // DELETE /api/accounts/users/1
+    public ResponseEntity<Map<String, Object>> deleteRegisteredUser(@PathVariable int id) {
+        try {
+            accountService.getAccountRepository().deleteById(id);
+            return ResponseEntity.ok(Collections.singletonMap("success", "User deleted"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Error deleting user"));
+        }
     }
 
     // Login

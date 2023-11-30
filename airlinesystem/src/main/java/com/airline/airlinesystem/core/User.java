@@ -134,8 +134,6 @@ public class User {
         defaultUsers.add(new User("flightattendant", "flightattendantpass", "flightattendant@example.com",
                 "Flight Attendant", "Flight Attendant Address", "1970-01-01", "FLIGHT_ATTENDANT",
                 "flightattendant-token"));
-        // Add other default users similarly for Tour Agent, Airline Agent, Flight
-        // Attendant
         return defaultUsers;
     }
 }
