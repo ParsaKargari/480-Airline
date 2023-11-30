@@ -167,6 +167,7 @@ export default function FlightSearch() {
             fullWidth
             variant="contained"
             color="primary"
+            disabled={!user}
             onClick={handleSearch}
           >
             {user ? "Search" : "Login to Book Flight"}
