@@ -8,11 +8,16 @@ public class Aircraft {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    private String tailNumber;
     private String model;
     private int capacity;
     private String airline;
 
-    public Aircraft(String model, int capacity, String airline) {
+    public Aircraft() {
+    }
+
+    public Aircraft(String tailNumber, String model, int capacity, String airline) {
+        this.tailNumber = tailNumber;
         this.model = model;
         this.capacity = capacity;
         this.airline = airline;
@@ -51,4 +56,13 @@ public class Aircraft {
     public void setAirline(String airline) {
         this.airline = airline;
     }
+
+    public void setTailNumber(String tailNumber) {
+        this.tailNumber = tailNumber;
+    }
+
+    public String getTailNumber() {
+        return tailNumber;
+    }
+    
 }

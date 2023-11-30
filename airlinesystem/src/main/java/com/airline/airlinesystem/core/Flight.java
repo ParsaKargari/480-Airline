@@ -28,8 +28,12 @@ public class Flight {
     @Transient
     private List<Passenger> passengers;
 
-    @OneToMany(mappedBy = "flight", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "flight", cascade = CascadeType.REMOVE)
     private List<Seat> seats;
+
+    @ManyToOne // Many flights can use one aircraft
+    @JoinColumn(name = "aircraft_id") // Foreign key in the Flight table
+    private Aircraft aircraft;
 
     // Default constructor
     public Flight() {
@@ -38,7 +42,7 @@ public class Flight {
     }
 
     public Flight(FlightViewStrategy flightStrategy, String flightNo, String destination, String origin,
-            List<Crew> crew, List<Seat> seats, List<Passenger> passengers) {
+            List<String> crew, List<Seat> seats, List<Passenger> passengers, Aircraft aircraft) {
 
         this.flightStrategy = flightStrategy;
         this.flightNo = flightNo;
@@ -47,6 +51,7 @@ public class Flight {
         this.crew = crew;
         this.seats = seats;
         this.passengers = passengers;
+        this.aircraft = aircraft;
     }
 
     // Initialize Seats
@@ -78,7 +83,7 @@ public class Flight {
             for (char j = 'A'; j <= 'G'; j++) {
                 String seatNumber = String.valueOf(j) + (i + 1);
                 Seat seat = new Seat(flightNo, seatNumber, "Ordinary Class", 100);
-                
+
                 seats.add(seat); // No need to setFlight
             }
         }
@@ -141,8 +146,6 @@ public class Flight {
     public void setCrew(List<Crew> crew) {
         this.crew = crew;
     }
- 
-
 
     // Method to add a crew member
     public void addCrewMember(String crewMember) {
@@ -180,13 +183,13 @@ public class Flight {
             for (Seat seat : seats) {
                 if (seat.getSeatNumber().equals(seatNumber)) {
                     seat.setAvailable(false);
-                    
+
                 }
             }
         }
     }
 
-        // Method to add cancelled seats back to available(for booking)
+    // Method to add cancelled seats back to available(for booking)
     public void addSeats(List<String> seatNumbers) {
         for (String seatNumber : seatNumbers) {
             for (Seat seat : seats) {
@@ -241,6 +244,17 @@ public class Flight {
     }
 
     public void setSeats(List<Seat> seats) {
-        this.seats = seats;
+        this.seats.clear();
+        if (seats != null) {
+            this.seats.addAll(seats);
+        }
+    }
+
+    public Aircraft getAircraft() {
+        return aircraft;
+    }
+
+    public void setAircraft(Aircraft aircraft) {
+        this.aircraft = aircraft;
     }
 }

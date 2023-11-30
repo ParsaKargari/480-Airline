@@ -16,6 +16,9 @@ public class DatabaseInitializer implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        accountService.initializeDefaultUsers();
+        // Initialize default users if not already initialized
+        if (accountService.getAccountRepository().count() == 0) {
+            accountService.initializeDefaultUsers();
+        }
     }
 }

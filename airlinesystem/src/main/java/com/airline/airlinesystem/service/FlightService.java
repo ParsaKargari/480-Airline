@@ -161,19 +161,25 @@ public class FlightService {
         return flight;
     }
 
-    // Update flight
     public Flight updateFlight(int id, Flight updatedFlight) {
         Flight existingFlight = getFlightById(id);
-
-        // Update the fields of the existing flight with the values from the updatedFlight
+    
         existingFlight.setFlightNo(updatedFlight.getFlightNo());
         existingFlight.setDestination(updatedFlight.getDestination());
         existingFlight.setOrigin(updatedFlight.getOrigin());
         existingFlight.setDepartureDate(updatedFlight.getDepartureDate());
         existingFlight.setDuration(updatedFlight.getDuration());
-        // Save the updated flight
+    
+        // Update the seats collection without replacing it
+        existingFlight.getSeats().clear();
+        if (updatedFlight.getSeats() != null) {
+            existingFlight.getSeats().addAll(updatedFlight.getSeats());
+        }
+    
         return saveFlight(existingFlight);
     }
+    
+    
 
     public Flight bookFlight(Flight flight, List<String> seatNumbers, String email, String name, String creditCardNum, String cvv, String expDate){
         flight.selectSeats(seatNumbers);
