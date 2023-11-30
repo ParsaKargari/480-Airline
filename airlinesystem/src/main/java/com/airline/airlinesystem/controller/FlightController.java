@@ -2,6 +2,7 @@ package com.airline.airlinesystem.controller;
 
 
 import com.airline.airlinesystem.core.Flight;
+import com.airline.airlinesystem.core.Passenger;
 import com.airline.airlinesystem.core.Seat;
 import com.airline.airlinesystem.service.FlightService;
 
@@ -107,4 +108,11 @@ public class FlightController {
             Flight updated = flightService.cancelFlightOperations(paymentId, flight);
             return ResponseEntity.ok(updated);
     }
+    @GetMapping("/{flightNo}/passenger")
+    public ResponseEntity<List<Passenger>> getPassengers(@PathVariable String flightNo){
+        Flight flight =  flightService.getFlightByFlightNo(flightNo);
+        List<Passenger> passengers = flight.getPassengers();
+        return ResponseEntity.ok(passengers);
+    }
+    
 }

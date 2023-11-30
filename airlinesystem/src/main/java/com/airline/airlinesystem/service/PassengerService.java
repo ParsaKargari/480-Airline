@@ -24,6 +24,9 @@ public class PassengerService {
     public List<Passenger> getAllPassengers() {
         return passengerRepository.findAll();
     }
+    public List<Passenger> getAllPassengersByFlightNo(String flightNo) {
+        return passengerRepository.findAllByFlightNo(flightNo);
+    }
 
     public Passenger getPassengerById(int id) {
         return passengerRepository.findById(id).orElse(null);

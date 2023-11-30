@@ -6,6 +6,8 @@ import com.airline.airlinesystem.core.Passenger;
 import com.airline.airlinesystem.core.Payment;
 import com.airline.airlinesystem.core.Receipt;
 import com.airline.airlinesystem.core.Seat;
+import com.airline.airlinesystem.core.Crew;
+import com.airline.airlinesystem.repository.CrewRepository;
 import com.airline.airlinesystem.repository.FlightRepository;
 import com.airline.airlinesystem.repository.PassengerRepository;
 import com.airline.airlinesystem.repository.PaymentRepository;
@@ -37,6 +39,9 @@ public class FlightService {
     @Autowired
     private ReceiptRepository receiptRepository;
 
+    @Autowired
+    private CrewRepository crewRepository;
+
     private final FlightRepository flightRepository;
 
     @Autowired
@@ -61,6 +66,10 @@ public class FlightService {
             List<Seat> seats = seatRepository.findAllByFlightNo(flight.getFlightNo());
             List<String> seatNo = new ArrayList<>();
             List<Passenger> passengers = passengerRepository.findAllByFlightNo(flight.getFlightNo());
+            List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
+            if(crew != null){
+                flight.setCrew(crew);
+            }
             if(passengers != null){
                 flight.setPassengers(passengers);
             }
@@ -82,6 +91,10 @@ public class FlightService {
         List<Seat> seats = seatRepository.findAllByFlightNo(flight.getFlightNo());
         List<String> seatNo = new ArrayList<>();
         List<Passenger> passengers = passengerRepository.findAllByFlightNo(flight.getFlightNo());
+        List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
+            if(crew != null){
+                flight.setCrew(crew);
+            }
             if(passengers != null){
                 flight.setPassengers(passengers);
             }
@@ -101,6 +114,10 @@ public class FlightService {
         List<Seat> seats = seatRepository.findAllByFlightNo(flight.getFlightNo());
         List<String> seatNo = new ArrayList<>();
         List<Passenger> passengers = passengerRepository.findAllByFlightNo(flight.getFlightNo());
+        List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
+        if(crew != null){
+            flight.setCrew(crew);
+        }
         if(passengers != null){
             flight.setPassengers(passengers);
         }

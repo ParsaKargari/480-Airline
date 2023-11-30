@@ -23,7 +23,7 @@ public class Flight {
     private FlightViewStrategy flightStrategy;
 
     @Transient
-    private List<String> crew;
+    private List<Crew> crew;
 
     @Transient
     private List<Passenger> passengers;
@@ -38,7 +38,7 @@ public class Flight {
     }
 
     public Flight(FlightViewStrategy flightStrategy, String flightNo, String destination, String origin,
-            List<String> crew, List<Seat> seats, List<Passenger> passengers) {
+            List<Crew> crew, List<Seat> seats, List<Passenger> passengers) {
 
         this.flightStrategy = flightStrategy;
         this.flightNo = flightNo;
@@ -134,11 +134,11 @@ public class Flight {
         this.origin = origin;
     }
 
-    public List<String> getCrew() {
+    public List<Crew> getCrew() {
         return crew;
     }
 
-    public void setCrew(List<String> crew) {
+    public void setCrew(List<Crew> crew) {
         this.crew = crew;
     }
  
