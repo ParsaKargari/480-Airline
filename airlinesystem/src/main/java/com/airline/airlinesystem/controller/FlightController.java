@@ -22,7 +22,6 @@ import java.util.Map;
 public class FlightController {
     @Autowired
     private FlightService flightService;
-
     // Returns list of flights
     // Works
     @GetMapping // GET /api/flights

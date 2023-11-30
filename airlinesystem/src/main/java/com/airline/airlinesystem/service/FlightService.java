@@ -56,6 +56,37 @@ public class FlightService {
 
     // Delete flight from database
     public void deleteFlight(int id) {
+        Flight flight = getFlightById(id);
+        List<Passenger> passengers = flight.getPassengers();
+        List<Crew> crew = flight.getCrew();
+        List<Seat> seats = seatRepository.findAllByFlightNo(flight.getFlightNo());
+        if(seats != null){
+            for(Seat seat: seats){
+                Ticket ticket = ticketRepository.findBySeatNumberAndFlightNo(seat.getSeatNumber(), flight.getFlightNo()).orElse(null);
+                if(ticket != null){
+                    Payment payment = paymentRepository.findById(ticket.getPaymentId()).orElse(null);
+                    Receipt receipt = receiptRepository.findById(ticket.getPaymentId()).orElse(null);
+                    if(payment != null){
+                    paymentRepository.delete(payment);
+                    }
+                    if(receipt != null){
+                    receiptRepository.delete(receipt);
+                    }
+                    ticketRepository.delete(ticket);
+                }
+                seatRepository.delete(seat);
+            }
+        }
+        if(passengers != null){
+            for(Passenger passenger: passengers){
+                passengerRepository.delete(passenger);
+            }
+        }
+        if(crew != null){
+            for(Crew crewMember : crew){
+                crewRepository.delete(crewMember);
+            }
+        }
         flightRepository.deleteById(id);
     }
 

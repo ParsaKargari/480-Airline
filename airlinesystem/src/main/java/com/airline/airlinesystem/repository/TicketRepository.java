@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Integer> {
     List<Ticket> findAllByPaymentId(int paymentId);
+    Optional<Ticket> findBySeatNumberAndFlightNo(String seatNo, String flightNo);
 }
