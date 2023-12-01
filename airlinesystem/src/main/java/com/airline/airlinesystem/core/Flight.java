@@ -3,6 +3,8 @@ package com.airline.airlinesystem.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 
 // Flight Database
@@ -19,10 +21,8 @@ public class Flight {
     private String departureDate;
     private String duration;
 
-    @Transient // Do not include in database
-    private FlightViewStrategy flightStrategy;
-
-    @Transient
+    @OneToMany(mappedBy = "flight", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Crew> crew;
 
     @Transient
@@ -41,11 +41,10 @@ public class Flight {
         initializeSeats();
     }
 
-    public Flight(FlightViewStrategy flightStrategy, String flightNo, String destination, String origin,
+    public Flight(String flightNo, String destination, String origin,
             String departureDate, String duration,
             List<Crew> crew, List<Seat> seats, List<Passenger> passengers, Aircraft aircraft) {
 
-        this.flightStrategy = flightStrategy;
         this.flightNo = flightNo;
         this.destination = destination;
         this.origin = origin;
@@ -108,14 +107,6 @@ public class Flight {
 
     public String getDuration() {
         return duration;
-    }
-
-    public FlightViewStrategy getFlightStrategy() {
-        return flightStrategy;
-    }
-
-    public void setFlightStrategy(FlightViewStrategy flightStrategy) {
-        this.flightStrategy = flightStrategy;
     }
 
     public String getFlightNo() {

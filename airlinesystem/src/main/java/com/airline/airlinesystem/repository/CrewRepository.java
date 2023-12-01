@@ -7,6 +7,6 @@ import java.util.*;
 
 @Repository
 public interface CrewRepository extends JpaRepository<Crew, Integer> {
-    // List<Crew> findAllByFlightNo(String flightNo);
-    // void deleteByFlightNoAndName(String flightNo, String name);
+    List<Crew> findAllByFlightNo(String flightNo);
+    void deleteByFlightNoAndName(String flightId, String name);
 }

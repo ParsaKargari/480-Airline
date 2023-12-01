@@ -63,23 +63,23 @@ public class FlightService {
         List<Flight> flights = new ArrayList<>();
 
         // Realistic flight examples
-        flights.add(new Flight(null, "UA303", "San Francisco", "New York", "12-01-2023", "5h 30m", null, null, null,
+        flights.add(new Flight("UA303", "San Francisco", "New York", "12-01-2023", "5h 30m", null, null, null,
                 aircrafts.get(0)));
-        flights.add(new Flight(null, "DL105", "Atlanta", "London", "12-05-2023", "8h 15m", null, null, null,
+        flights.add(new Flight("DL105", "Atlanta", "London", "12-05-2023", "8h 15m", null, null, null,
                 aircrafts.get(1)));
-        flights.add(new Flight(null, "AA786", "Dallas", "Tokyo", "12-08-2023", "13h 45m", null, null, null,
+        flights.add(new Flight("AA786", "Dallas", "Tokyo", "12-08-2023", "13h 45m", null, null, null,
                 aircrafts.get(2)));
-        flights.add(new Flight(null, "LH455", "Berlin", "San Francisco", "12-20-2023", "11h 20m", null, null, null,
+        flights.add(new Flight("LH455", "Berlin", "San Francisco", "12-20-2023", "11h 20m", null, null, null,
                 aircrafts.get(0)));
-        flights.add(new Flight(null, "QF12", "Sydney", "Los Angeles", "11-29-2023", "14h 30m", null, null, null,
+        flights.add(new Flight("QF12", "Sydney", "Los Angeles", "11-29-2023", "14h 30m", null, null, null,
                 aircrafts.get(1)));
-        flights.add(new Flight(null, "EK241", "Dubai", "Toronto", "11-28-2023", "14h 00m", null, null, null,
+        flights.add(new Flight("EK241", "Dubai", "Toronto", "11-28-2023", "14h 00m", null, null, null,
                 aircrafts.get(2)));
-        flights.add(new Flight(null, "SQ26", "Singapore", "Frankfurt", "12-03-2023", "12h 10m", null, null, null,
+        flights.add(new Flight("SQ26", "Singapore", "Frankfurt", "12-03-2023", "12h 10m", null, null, null,
                 aircrafts.get(0)));
-        flights.add(new Flight(null, "AF83", "Paris", "San Francisco", "12-02-2023", "11h 35m", null, null, null,
+        flights.add(new Flight("AF83", "Paris", "San Francisco", "12-02-2023", "11h 35m", null, null, null,
                 aircrafts.get(1)));
-        flights.add(new Flight(null, "BA75", "London", "Lagos", "12-08-2023", "6h 50m", null, null, null,
+        flights.add(new Flight("BA75", "London", "Lagos", "12-08-2023", "6h 50m", null, null, null,
                 aircrafts.get(2)));
 
         // Save the flights to the database
@@ -130,10 +130,10 @@ public class FlightService {
             List<Seat> seats = seatRepository.findAllByFlightNo(flight.getFlightNo());
             List<String> seatNo = new ArrayList<>();
             List<Passenger> passengers = passengerRepository.findAllByFlightNo(flight.getFlightNo());
-            // List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
-            // if(crew != null){
-            // flight.setCrew(crew);
-            // }
+            List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
+            if(crew != null){
+            flight.setCrew(crew);
+            }
             if (passengers != null) {
                 flight.setPassengers(passengers);
             }
@@ -155,10 +155,10 @@ public class FlightService {
         List<Seat> seats = seatRepository.findAllByFlightNo(flight.getFlightNo());
         List<String> seatNo = new ArrayList<>();
         List<Passenger> passengers = passengerRepository.findAllByFlightNo(flight.getFlightNo());
-        // List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
-        // if(crew != null){
-        // flight.setCrew(crew);
-        // }
+        List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
+        if(crew != null){
+        flight.setCrew(crew);
+        }
         if (passengers != null) {
             flight.setPassengers(passengers);
         }
@@ -179,10 +179,10 @@ public class FlightService {
         List<Seat> seats = seatRepository.findAllByFlightNo(flight.getFlightNo());
         List<String> seatNo = new ArrayList<>();
         List<Passenger> passengers = passengerRepository.findAllByFlightNo(flight.getFlightNo());
-        // List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
-        // if(crew != null){
-        // flight.setCrew(crew);
-        // }
+        List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
+        if(crew != null){
+        flight.setCrew(crew);
+        }
         if (passengers != null) {
             flight.setPassengers(passengers);
         }
@@ -246,10 +246,11 @@ public class FlightService {
             passengers.add(passenger);
             passengerRepository.save(passenger);
         }
-        // Payment payment = new Payment(passengers.get(0), flight, seatNumbers, amount, creditCardNum, expDate, cvv);
+        // Payment payment = new Payment(passengers.get(0), flight, seatNumbers, amount,
+        // creditCardNum, expDate, cvv);
         // paymentRepository.save(payment);
         // for (Ticket ticket : payment.getTickets()) {
-        //     ticketRepository.save(ticket);
+        // ticketRepository.save(ticket);
         // }
         // receiptRepository.save(payment.getReceipt());
         existingPassengers.addAll(passengers);
