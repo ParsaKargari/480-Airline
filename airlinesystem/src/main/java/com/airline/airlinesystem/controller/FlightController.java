@@ -77,6 +77,8 @@ public class FlightController {
     // Works
     @PostMapping("/{id}/seats/book") // POST /api/flights/{id}/seats/book
     public ResponseEntity<Flight> bookSeats(@PathVariable int id, @RequestBody Map<String, Object> requestBody) {
+        // Print the request body
+        System.err.println(requestBody);
         String name = (String) requestBody.get("name");
         String email = (String) requestBody.get("email");
         List<String> seatNumbers = (List<String>) requestBody.get("seatNumbers");

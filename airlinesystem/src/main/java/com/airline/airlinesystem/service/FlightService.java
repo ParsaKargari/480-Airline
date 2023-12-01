@@ -224,17 +224,17 @@ public class FlightService {
         double amount = 0;
         for (String seatNumber : seatNumbers) {
             int rowNumber = Integer.parseInt(seatNumber.substring(1));
-            if (rowNumber >= 1 && rowNumber <= 2) {
+            if (rowNumber >= 0 && rowNumber <= 1) {
                 Seat newSeat = new Seat(flight.getFlightNo(), seatNumber, "Business Class", 250);
                 newSeat.setAvailable(false);
                 amount += 250;
                 seatRepository.save(newSeat);
-            } else if (rowNumber >= 3 && rowNumber <= 5) {
+            } else if (rowNumber >= 2 && rowNumber <= 4) {
                 Seat newSeat = new Seat(flight.getFlightNo(), seatNumber, "Comfort Class", 140);
                 newSeat.setAvailable(false);
                 seatRepository.save(newSeat);
                 amount += 140;
-            } else if (rowNumber >= 6 && rowNumber <= 13) {
+            } else if (rowNumber >= 5 && rowNumber <= 12) {
                 Seat newSeat = new Seat(flight.getFlightNo(), seatNumber, "Ordinary Class", 100);
                 newSeat.setAvailable(false);
                 seatRepository.save(newSeat);
@@ -246,12 +246,12 @@ public class FlightService {
             passengers.add(passenger);
             passengerRepository.save(passenger);
         }
-        Payment payment = new Payment(passengers.get(0), flight, seatNumbers, amount, creditCardNum, expDate, cvv);
-        paymentRepository.save(payment);
-        for (Ticket ticket : payment.getTickets()) {
-            ticketRepository.save(ticket);
-        }
-        receiptRepository.save(payment.getReceipt());
+        // Payment payment = new Payment(passengers.get(0), flight, seatNumbers, amount, creditCardNum, expDate, cvv);
+        // paymentRepository.save(payment);
+        // for (Ticket ticket : payment.getTickets()) {
+        //     ticketRepository.save(ticket);
+        // }
+        // receiptRepository.save(payment.getReceipt());
         existingPassengers.addAll(passengers);
         flight.setPassengers(existingPassengers);
         Flight updatedFlight = saveFlight(flight);

@@ -169,9 +169,6 @@ const DefaultDashboard = () => {
     return seat.seatNumber;
   });
 
-
-
-  console.log(soldOutSeats);
   const seatPrices = {
     // Need to get this from the backend
     ordinary: 100,

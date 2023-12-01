@@ -1,5 +1,5 @@
 // Import necessary dependencies from Material-UI
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import Modal from "@material-ui/core/Modal";
 import Backdrop from "@material-ui/core/Backdrop";
 import Fade from "@material-ui/core/Fade";
@@ -9,6 +9,9 @@ import {
   FormControlLabel,
   Checkbox,
   TextField,
+  Grid,
+  Paper,
+  Divider,
 } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import FlightTakeoffIcon from "@material-ui/icons/FlightTakeoff";
@@ -16,6 +19,7 @@ import FlightIcon from "@material-ui/icons/Flight";
 import FlightLandIcon from "@material-ui/icons/FlightLand";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "./contexts/AuthContext";
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -26,8 +30,8 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     backgroundColor: theme.palette.background.paper,
     boxShadow: theme.shadows[5],
-    padding: theme.spacing(3),
-    maxWidth: 700,
+    padding: theme.spacing(4),
+    maxWidth: 800,
     borderRadius: 8,
     textAlign: "center",
   },
@@ -44,6 +48,12 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
   },
+  flightInfo: {
+    marginBottom: theme.spacing(2),
+  },
+  divider: {
+    margin: theme.spacing(3, 0),
+  },
 }));
 
 const CheckoutModal = ({
@@ -53,14 +63,14 @@ const CheckoutModal = ({
   selectedFlight,
   selectedSeats,
 }) => {
-  console.log("Selected Flight: " + selectedFlight);
-  console.log("Selected Seats: " + selectedSeats);
-  console.log("Total Amount: " + totalAmount);
-  const classes = useStyles();
   const [insuranceSelected, setInsuranceSelected] = useState(false);
   const [creditCard, setCreditCard] = useState("");
+  const [expDateInput, setExpDateInput] = useState("");
+  const [cvvInput, setCvvInput] = useState("");
   const [totalPrice, setTotalPrice] = useState(totalAmount);
   const navigate = useNavigate();
+  const classes = useStyles();
+  const { user } = useContext(AuthContext);
 
   useEffect(() => {
     setTotalPrice(totalAmount);
@@ -72,32 +82,28 @@ const CheckoutModal = ({
       insuranceSelected ? prevTotalPrice - 10 : prevTotalPrice + 10
     );
   };
-
-  const fetchFlightID = async () => {
-    try {
-      const response = await fetch(
-        `http://localhost:8080/api/flights/${selectedFlight.flightNo}/id`
-      );
-      if (response.ok) {
-        const data = await response.json();
-        return data;
-      } else {
-        throw new Error("Failed to fetch flightID");
-      }
-    } catch (error) {
-      console.error("Error fetching flightID:", error);
-      // Handle errors here
-    }
-  };
-
   const bookFlight = async () => {
     try {
-      const flightID = await fetchFlightID();
-      // Convert seats using convertSeatFormat
-      const selectedSeatsCOR = selectedSeats.map((seat) =>
+      const flightID = selectedFlight.id; // Adjust this based on how the flight ID is stored
+      const selectedSeatsFormatted = selectedSeats.map((seat) =>
         convertSeatFormat(seat)
       );
-      console.log(selectedSeatsCOR);
+
+      const isRegisteredUser = user.role === "REGISTERED_USER";
+      const creditCardNum = isRegisteredUser
+        ? user.creditCard.number
+        : creditCard;
+      const cvv = isRegisteredUser ? user.creditCard.cvv : cvvInput;
+      const expDate = isRegisteredUser ? user.creditCard.expDate : expDateInput;
+
+      const bookingDetails = {
+        name: user.name,
+        email: user.email,
+        seatNumbers: selectedSeatsFormatted,
+        creditCardNum: creditCardNum,
+        cvv: cvv,
+        expDate: expDate,
+      };
 
       const response = await fetch(
         `http://localhost:8080/api/flights/${flightID}/seats/book`,
@@ -106,31 +112,40 @@ const CheckoutModal = ({
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(selectedSeatsCOR),
+          body: JSON.stringify(bookingDetails),
         }
       );
 
       if (response.ok) {
         const data = await response.json();
-        navigate("/")
+        navigate("/");
       } else {
         throw new Error("Failed to book flight");
       }
     } catch (error) {
       console.error("Error booking flight:", error);
-      // Handle errors here
     }
   };
 
   const handlePayment = () => {
-    // Implement your payment logic here
-    if (creditCard.trim() === "") {
-      alert("Please enter credit card information.");
-    } else {
-      // This is just a placeholder
+    if (isRegisteredUser) {
       bookFlight();
-      alert("Payment Successful!");
-      onClose(); // Close the modal after successful payment
+    } else {
+      // Check if credit card info is valid
+      const creditCardRegex = /^\d{16}$/; // 16 digits
+      const cvvRegex = /^\d{3}$/; // 3 digits
+      const expDateRegex = /^\d{2}\/\d{2}$/; // MM/YY
+
+      if (
+        !creditCardRegex.test(creditCard) ||
+        !cvvRegex.test(cvvInput) ||
+        !expDateRegex.test(expDateInput)
+      ) {
+        alert("Invalid credit card information");
+        return;
+      } else {
+        bookFlight();
+      }
     }
   };
 
@@ -140,6 +155,8 @@ const CheckoutModal = ({
     const seatLetter = String.fromCharCode(64 + parseInt(seat));
     return `${seatLetter}${row}`;
   };
+
+  const isRegisteredUser = user.role === "REGISTERED_USER";
 
   return (
     <Modal
@@ -153,63 +170,54 @@ const CheckoutModal = ({
       }}
     >
       <Fade in={isOpen}>
-        <div className={classes.paper}>
-          <h2>Checkout</h2>
+        <Paper className={classes.paper}>
+          <Typography variant="h4" gutterBottom>
+            Checkout
+          </Typography>
+
           {selectedFlight && (
-            <>
-              <p>Selected Flight:</p>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  marginBottom: "20px",
-                }}
-              >
-                <FlightTakeoffIcon
-                  fontSize="large"
-                  style={{ marginRight: "10px" }}
-                />
-                <Typography variant="subtitle1">
-                  {selectedFlight.origin}
-                </Typography>
-                <FlightIcon
-                  fontSize="large"
-                  style={{ margin: "0 10px", marginLeft: "30px" }}
-                />
-                <Typography variant="subtitle1">
-                  {selectedFlight.flightNumber}
-                </Typography>
-                <FlightLandIcon
-                  fontSize="large"
-                  style={{ margin: "0 10px", marginLeft: "30px" }}
-                />
-                <Typography variant="subtitle1">
-                  {selectedFlight.destination}
-                </Typography>
-                <AccessTimeIcon
-                  fontSize="large"
-                  style={{ margin: "0 10px", marginLeft: "30px" }}
-                />
-                <Typography variant="subtitle1">
-                  {selectedFlight.duration}
-                </Typography>
-              </div>
-            </>
+            <Grid
+              container
+              spacing={2}
+              alignItems="center"
+              className={classes.flightInfo}
+              justify="center"
+            >
+              <Grid item>
+                <FlightTakeoffIcon fontSize="large" />
+              </Grid>
+              <Grid item>
+                <Typography>{selectedFlight.origin}</Typography>
+              </Grid>
+              <Grid item>
+                <FlightIcon fontSize="large" />
+              </Grid>
+              <Grid item>
+                <Typography>{selectedFlight.flightNo}</Typography>
+              </Grid>
+              <Grid item>
+                <FlightLandIcon fontSize="large" />
+              </Grid>
+              <Grid item>
+                <Typography>{selectedFlight.destination}</Typography>
+              </Grid>
+              <Grid item>
+                <AccessTimeIcon fontSize="large" />
+              </Grid>
+              <Grid item>
+                <Typography>{selectedFlight.duration}</Typography>
+              </Grid>
+            </Grid>
           )}
-          <p>Selected Seats:</p>
-          <div>
-            {Array.isArray(selectedSeats) && selectedSeats.length > 0 ? (
-              selectedSeats.map((seat, index) => (
-                <span key={seat}>
-                  {index === selectedSeats.length - 1
-                    ? convertSeatFormat(seat)
-                    : convertSeatFormat(seat) + ", "}
-                </span>
-              ))
-            ) : (
-              <span>No seats selected</span>
-            )}
-          </div>
+
+          <Divider className={classes.divider} />
+
+          <Typography variant="subtitle1">
+            Selected Seats:{" "}
+            {selectedSeats.map(convertSeatFormat).join(", ") ||
+              "No seats selected"}
+          </Typography>
+
           <FormControlLabel
             control={
               <Checkbox
@@ -221,29 +229,51 @@ const CheckoutModal = ({
             }
             label="Ticket Cancellation Insurance (+$10)"
           />
-          <p>Make payment, using a credit card.</p>
-          <TextField
-            label="Credit Card"
-            variant="outlined"
-            className={classes.formControl}
-            value={creditCard}
-            onChange={(e) => setCreditCard(e.target.value)}
-          />
-          <p>
-            <strong>Total Price:</strong> ${totalPrice}
-          </p>
+
+          {isRegisteredUser ? (
+            <Typography variant="body1" color="secondary">
+              Your company's credit card will be used for this transaction.
+            </Typography>
+          ) : (
+            <>
+              <TextField
+                label="Credit Card Number"
+                variant="outlined"
+                className={classes.formControl}
+                value={creditCard}
+                onChange={(e) => setCreditCard(e.target.value)}
+              />
+              <TextField
+                label="CVV"
+                variant="outlined"
+                className={classes.formControl}
+                value={cvvInput}
+                onChange={(e) => setCvvInput(e.target.value)}
+              />
+              <TextField
+                label="Expiration Date"
+                variant="outlined"
+                className={classes.formControl}
+                value={expDateInput}
+                onChange={(e) => setExpDateInput(e.target.value)}
+              />
+            </>
+          )}
+
+          <Typography variant="h6">Total Price: ${totalPrice}</Typography>
+
           <Button
             variant="contained"
             color="primary"
             onClick={handlePayment}
-            style={{ margin: "0 10px", marginRight: "20px" }}
+            style={{ margin: "16px 8px" }}
           >
             Confirm Payment
           </Button>
           <Button variant="contained" color="secondary" onClick={onClose}>
             Cancel
           </Button>
-        </div>
+        </Paper>
       </Fade>
     </Modal>
   );
