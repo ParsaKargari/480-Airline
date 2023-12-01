@@ -126,10 +126,10 @@ public class FlightService {
             List<Seat> seats = seatRepository.findAllByFlightNo(flight.getFlightNo());
             List<String> seatNo = new ArrayList<>();
             List<Passenger> passengers = passengerRepository.findAllByFlightNo(flight.getFlightNo());
-            // List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
-            // if(crew != null){
-            // flight.setCrew(crew);
-            // }
+            List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
+            if(crew != null){
+            flight.setCrew(crew);
+            }
             if (passengers != null) {
                 flight.setPassengers(passengers);
             }
@@ -151,10 +151,10 @@ public class FlightService {
         List<Seat> seats = seatRepository.findAllByFlightNo(flight.getFlightNo());
         List<String> seatNo = new ArrayList<>();
         List<Passenger> passengers = passengerRepository.findAllByFlightNo(flight.getFlightNo());
-        // List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
-        // if(crew != null){
-        // flight.setCrew(crew);
-        // }
+        List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
+        if(crew != null){
+        flight.setCrew(crew);
+        }
         if (passengers != null) {
             flight.setPassengers(passengers);
         }
@@ -175,10 +175,10 @@ public class FlightService {
         List<Seat> seats = seatRepository.findAllByFlightNo(flight.getFlightNo());
         List<String> seatNo = new ArrayList<>();
         List<Passenger> passengers = passengerRepository.findAllByFlightNo(flight.getFlightNo());
-        // List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
-        // if(crew != null){
-        // flight.setCrew(crew);
-        // }
+        List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
+        if(crew != null){
+        flight.setCrew(crew);
+        }
         if (passengers != null) {
             flight.setPassengers(passengers);
         }

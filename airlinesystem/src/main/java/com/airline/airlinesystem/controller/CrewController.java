@@ -17,22 +17,24 @@ public class CrewController {
     @Autowired
     CrewService crewService;
 
-    @PostMapping
-    public ResponseEntity<Crew> addCrew(@RequestBody Crew crewMember){
-        Crew savedCrew = crewService.saveCrew(crewMember);
+    @PostMapping("/{flightId}")
+    public ResponseEntity<Crew> addCrew(@RequestBody Crew crewMember, @PathVariable String flightId) {
+        Crew savedCrew = crewService.saveCrew(crewMember, flightId);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCrew);
     }
-    // @GetMapping("/{flightNo}")
-    // public ResponseEntity<List<Crew>> getAllCrewByFlightNo(@PathVariable String flightNo){
-    //     return ResponseEntity.ok(crewService.getCrewByFlightNo(flightNo));
-    // }
 
-    // @DeleteMapping
-    // public ResponseEntity<Void> deleteCrew(@RequestBody Map<String, String> requestBody) {
-    //     String name = requestBody.get("name");
-    //     String flightNo =  requestBody.get("flightNo");
-    //     crewService.deleteCrew(flightNo, name);
-    //     return ResponseEntity.noContent().build();
-    // }
+    @GetMapping("/{flightId}")
+    public ResponseEntity<List<Crew>> getCrewByFlightNo(@PathVariable String flightId) {
+        List<Crew> crew = crewService.getCrewByFlightNo(flightId);
+        return ResponseEntity.ok(crew);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<Void> deleteCrew(@RequestBody Map<String, String> requestBody) {
+        String name = requestBody.get("name");
+        String flightNo = requestBody.get("flightNo");
+        crewService.deleteCrew(flightNo, name);
+        return ResponseEntity.noContent().build();
+    }
 
 }

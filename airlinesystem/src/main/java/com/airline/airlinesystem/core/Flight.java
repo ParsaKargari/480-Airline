@@ -3,6 +3,8 @@ package com.airline.airlinesystem.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 
 // Flight Database
@@ -19,8 +21,8 @@ public class Flight {
     private String departureDate;
     private String duration;
 
-
-    @Transient
+    @OneToMany(mappedBy = "flight", cascade = CascadeType.ALL)
+    @JsonManagedReference
     private List<Crew> crew;
 
     @Transient
