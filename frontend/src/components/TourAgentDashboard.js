@@ -7,7 +7,6 @@ const TourAgentDashboard = () => {
   const location = useLocation();
   const selectedFlight = location.state && location.state.selectedFlight;
 
-  console.log("TourAgent dashboard: " + selectedFlight);
 
   return (
     <div>

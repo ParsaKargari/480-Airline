@@ -15,15 +15,15 @@ public class CrewService {
         this.crewRepository = crewRepository;
     }
     
-    public void deleteCrew(String flightNo, String name){
-        crewRepository.deleteByFlightNoAndName(flightNo, name);
-    }
+    // public void deleteCrew(String flightNo, String name){
+    //     crewRepository.deleteByFlightNoAndName(flightNo, name);
+    // }
 
     public Crew saveCrew(Crew crewMember){
         return crewRepository.save(crewMember);
     }
     
-    public List<Crew> getCrewByFlightNo(String flightNo){
-        return crewRepository.findAllByFlightNo(flightNo);
-    }
+    // public List<Crew> getCrewByFlightNo(String flightNo){
+    //     return crewRepository.findAllByFlightNo(flightNo);
+    // }
 }

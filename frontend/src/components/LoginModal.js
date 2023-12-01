@@ -85,7 +85,6 @@ export default function LoginModal({ open, handleClose }) {
     }
 
     setLoginSuccessful(true);
-    console.log(loginSuccessful);
     if (success) {
       setSnackbarOpenSuccess(true);
       handleClose();

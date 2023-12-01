@@ -55,8 +55,6 @@ public class Payment {
         if (cvv == null || cvv.length() != 3) {
             return false;
         }
-
-
         if(expirationDate == null || expirationDate.length() != 5){
             return false;
         }

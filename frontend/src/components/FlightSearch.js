@@ -60,7 +60,6 @@ export default function FlightSearch() {
       if (response.ok) {
         const data = await response.json();
         setFlights(data);
-        console.log(data);
       } else {
         throw new Error("Failed to fetch flights");
       }
@@ -149,7 +148,6 @@ export default function FlightSearch() {
                 flight.destination
             )}
             onInputChange={(event, newInputValue) => {
-              console.log(newInputValue);
               setSearchTerm(newInputValue);
             }}
             renderInput={(params) => (

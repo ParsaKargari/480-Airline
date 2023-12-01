@@ -1,6 +1,13 @@
 package com.airline.airlinesystem.core;
 
+import jakarta.persistence.*;
+
+@Entity
 public class Crew {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
     private int employeeID;
     private Employment employment;
 

@@ -22,17 +22,17 @@ public class CrewController {
         Crew savedCrew = crewService.saveCrew(crewMember);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedCrew);
     }
-    @GetMapping("/{flightNo}")
-    public ResponseEntity<List<Crew>> getAllCrewByFlightNo(@PathVariable String flightNo){
-        return ResponseEntity.ok(crewService.getCrewByFlightNo(flightNo));
-    }
+    // @GetMapping("/{flightNo}")
+    // public ResponseEntity<List<Crew>> getAllCrewByFlightNo(@PathVariable String flightNo){
+    //     return ResponseEntity.ok(crewService.getCrewByFlightNo(flightNo));
+    // }
 
-    @DeleteMapping
-    public ResponseEntity<Void> deleteCrew(@RequestBody Map<String, String> requestBody) {
-        String name = requestBody.get("name");
-        String flightNo =  requestBody.get("flightNo");
-        crewService.deleteCrew(flightNo, name);
-        return ResponseEntity.noContent().build();
-    }
+    // @DeleteMapping
+    // public ResponseEntity<Void> deleteCrew(@RequestBody Map<String, String> requestBody) {
+    //     String name = requestBody.get("name");
+    //     String flightNo =  requestBody.get("flightNo");
+    //     crewService.deleteCrew(flightNo, name);
+    //     return ResponseEntity.noContent().build();
+    // }
 
 }
