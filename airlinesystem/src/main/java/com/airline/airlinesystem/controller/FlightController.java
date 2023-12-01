@@ -122,7 +122,10 @@ public class FlightController {
         Flight updated = flightService.cancelFlightOperations(paymentId, flight);
         return ResponseEntity.ok(updated);
     }
-    @GetMapping("/{flightNo}/passenger")
+
+
+
+    @GetMapping("/{flightNo}/passenger") // GET /api/flights/{flightNo}/passenger
     public ResponseEntity<List<Passenger>> getPassengers(@PathVariable String flightNo){
         Flight flight =  flightService.getFlightByFlightNo(flightNo);
         List<Passenger> passengers = flight.getPassengers();

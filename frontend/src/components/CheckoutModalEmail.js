@@ -15,6 +15,8 @@ import FlightTakeoffIcon from "@material-ui/icons/FlightTakeoff";
 import FlightIcon from "@material-ui/icons/Flight";
 import FlightLandIcon from "@material-ui/icons/FlightLand";
 import AccessTimeIcon from "@material-ui/icons/AccessTime";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -52,15 +54,15 @@ const CheckoutModalEmail = ({
   selectedFlight,
   selectedSeats,
 }) => {
-  console.log("Selected Flight: " + selectedFlight);
-  console.log("Selected Seats: " + selectedSeats);
-  console.log("Total Amount: " + totalAmount);
   const classes = useStyles();
   const [insuranceSelected, setInsuranceSelected] = useState(false);
   const [creditCard, setCreditCard] = useState("");
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [totalPrice, setTotalPrice] = useState(totalAmount);
+  const [cvv, setCvv] = useState("");
+  const [expDate, setExpDate] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     setTotalPrice(totalAmount);
@@ -73,16 +75,59 @@ const CheckoutModalEmail = ({
     );
   };
 
-  const handlePayment = () => {
-    // Implement your payment logic here
-    if (creditCard.trim() === "") {
-      alert("Please enter credit card information.");
-    } else if (email.trim() === "" || name.trim() === "") {
-      alert("Please enter email and name.");
-    } else {
-      alert("Payment Success!");
-      onClose(); // Close the modal after successful payment
+  const bookUserFlight = async () => {
+    // Prepare the payload
+    const payload = {
+      name: name,
+      email: email,
+      seatNumbers: selectedSeats,
+      creditCardNum: creditCard,
+      cvv: cvv,
+      expDate: expDate,
+    };
+
+    try {
+      // Send the post request with the payload
+      const response = await axios.post(
+        `http://localhost:8080/api/flights/${selectedFlight.id}/seats/book`,
+        payload
+      );
+
+      // Check if the request was successful
+      if (response.status === 200) {
+        // Navigate to the home page or a confirmation page
+        navigate("/");
+      } else {
+        // Handle any other HTTP status codes as needed
+        console.error("Error booking flight");
+      }
+    } catch (error) {
+      // Handle any errors that occur during the request
+      console.error("Error booking flight: ", error);
     }
+  };
+
+  const handlePayment = () => {
+    // Use Regex to validate input
+    const emailRegex = /\S+@\S+\.\S+/;
+    const creditCardRegex = /^\d{16}$/;
+    const cvvRegex = /^\d{3}$/;
+    const expDateRegex = /^\d{2}\/\d{2}$/;
+
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email address.");
+      return;
+    } else if (!creditCardRegex.test(creditCard)) {
+      alert("Please enter a valid credit card number.");
+      return;
+    } else if (!cvvRegex.test(cvv)) {
+      alert("Please enter a valid CVV.");
+      return;
+    } else if (!expDateRegex.test(expDate)) {
+      alert("Please enter a valid expiration date.");
+      return;
+    }
+    bookUserFlight();
   };
 
   return (
@@ -174,6 +219,20 @@ const CheckoutModalEmail = ({
             className={classes.formControl}
             value={creditCard}
             onChange={(e) => setCreditCard(e.target.value)}
+          />
+          <TextField
+            label="CVV"
+            variant="outlined"
+            className={classes.formControl}
+            value={cvv}
+            onChange={(e) => setCvv(e.target.value)}
+          />
+          <TextField
+            label="Expiration Date"
+            variant="outlined"
+            className={classes.formControl}
+            value={expDate}
+            onChange={(e) => setExpDate(e.target.value)}
           />
           <p>
             <strong>Total Price:</strong> ${totalPrice}
