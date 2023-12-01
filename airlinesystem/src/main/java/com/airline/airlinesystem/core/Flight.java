@@ -19,8 +19,6 @@ public class Flight {
     private String departureDate;
     private String duration;
 
-    @Transient // Do not include in database
-    private FlightViewStrategy flightStrategy;
 
     @Transient
     private List<Crew> crew;
@@ -32,7 +30,7 @@ public class Flight {
     private List<Seat> seats;
 
     @ManyToOne // Many flights can use one aircraft
-    @JoinColumn(name = "aircraft_id")
+    @JoinColumn(name = "aircraft_id") // Foreign key in the Flight table
     private Aircraft aircraft;
 
     // Default constructor
@@ -41,20 +39,13 @@ public class Flight {
         initializeSeats();
     }
 
-    public Flight(FlightViewStrategy flightStrategy, String flightNo, String destination, String origin,
-            String departureDate, String duration,
-            List<Crew> crew, List<Seat> seats, List<Passenger> passengers, Aircraft aircraft) {
-
-        this.flightStrategy = flightStrategy;
+    public Flight(String flightNo, String destination, String origin, String departureDate, String duration, Aircraft aircraft) {
+        this.duration = duration;
         this.flightNo = flightNo;
         this.destination = destination;
         this.origin = origin;
-        this.crew = crew;
-        this.seats = seats;
-        this.passengers = passengers;
         this.aircraft = aircraft;
         this.departureDate = departureDate;
-        this.duration = duration;
     }
 
     // Initialize Seats
@@ -110,14 +101,6 @@ public class Flight {
         return duration;
     }
 
-    public FlightViewStrategy getFlightStrategy() {
-        return flightStrategy;
-    }
-
-    public void setFlightStrategy(FlightViewStrategy flightStrategy) {
-        this.flightStrategy = flightStrategy;
-    }
-
     public String getFlightNo() {
         return flightNo;
     }
@@ -152,10 +135,10 @@ public class Flight {
 
     // Method to add a crew member
     // public void addCrewMember(String crewMember) {
-    // if (crew == null) {
-    // crew = new ArrayList<>();
-    // }
-    // crew.add(crewMember);
+    //     if (crew == null) {
+    //         crew = new ArrayList<>();
+    //     }
+    //     crew.add(crewMember);
     // }
 
     // Method to remove a crew member
