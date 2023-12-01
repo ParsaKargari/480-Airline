@@ -114,4 +114,22 @@ public class AccountController {
         }
     }
 
+    @GetMapping("/news/{id}") // GET /api/accounts/users
+    public ResponseEntity<Void> sendNews(@PathVariable int id) {
+        try {
+            User user = accountService.getAccountRepository().findById(id).orElse(null);
+            if(user != null){
+                String email = user.getEmail();
+                News news = new News();
+                String subject = "Embark on Unforgettable Journeys with Moussavi Airlines - Unveiling Exclusive Deals!";
+                String body = "We are thrilled to announce the launch of Moussavi Airlines' latest promotional offers, inviting you to experience travel like never before! As a valued passenger, you now have the opportunity to embark on unforgettable journeys at unbeatable prices.\n\nOur exclusive deals cover a wide range of destinations, ensuring that you can explore the world with comfort and style. Whether you're planning a business trip or a leisurely vacation, Moussavi Airlines is committed to providing you with exceptional service and a seamless travel experience.\n\nTake advantage of our limited-time promotions and elevate your travel adventures. Book your tickets now and let Moussavi Airlines be your passport to extraordinary destinations!";
+                news.sendEmail(email, subject, body);
+            }
+            return ResponseEntity.noContent().build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.noContent().build();
+        }
+    }
+
 }

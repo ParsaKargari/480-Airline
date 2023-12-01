@@ -36,6 +36,9 @@ public class News implements Email {
         this.newsContent = newsContent;
     }
 
+    public News() {
+    }
+
     // Getters and setters...
 
     public String getNewsTitle() {
