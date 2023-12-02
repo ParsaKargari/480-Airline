@@ -82,7 +82,7 @@ export default function Header() {
   const subscribeToNews = async () => {
     try {
       const userId = user.id;
-      const response = await fetch(`/api/news/${userId}`, {
+      const response = await fetch(`/api/accounts/news/${userId}`, {
         method: "GET",
       });
       if (response.ok) {

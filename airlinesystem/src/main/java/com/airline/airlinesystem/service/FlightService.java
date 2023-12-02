@@ -269,7 +269,7 @@ public class FlightService {
         return updatedFlight;
     }
 
-    public Flight cancelFlightOperations(int paymentId, Flight flight) {
+    public Flight cancelFlightOperations(int paymentId, Flight flight) throws Exception{
         // Retrieve ticket information
         List<Ticket> tickets = ticketRepository.findAllByPaymentId(paymentId);
         Receipt receipt = receiptRepository.findByPaymentId(paymentId)
@@ -296,6 +296,24 @@ public class FlightService {
         if (passengers != null) {
             passengers.removeAll(canceledPassengers);
             flight.setPassengers(passengers);
+        }
+        String emailSubject = "Cancellation Confirmation for Your Recent Booking With Moussavi Airlines";
+        String emailBody = "Hello,\n\n" +
+                "We are writing this email to inform you that your recent booking with Moussavi Airlines has been canceled.\n\n" +
+                "Cancellation Details:\n" +
+                "- Transaction ID: " + receipt.getPaymentId() + "\n" +
+                "- Total Amount Refunded: $" + receipt.getAmount()+ "\n\n" +
+                "The refunded amount will be processed back to your original payment method within the next few business days.\n\n" +
+                "If you have any further questions or concerns, please do not hesitate to contact our customer support team.\n\n" +
+                "We appreciate your understanding and apologize for any inconvenience caused.\n\n" +
+                "Thank you for considering Moussavi Airlines, and we hope to serve you in the future.\n\n" +
+                "Best regards,\n" +
+                "Moussavi Airlines";
+        try {
+            receipt.sendEmail(receipt.getRecipientEmail(), emailSubject, emailBody);
+        }
+        catch(Exception e){
+            e.printStackTrace();
         }
         paymentRepository.delete(payment);
         receiptRepository.delete(receipt);

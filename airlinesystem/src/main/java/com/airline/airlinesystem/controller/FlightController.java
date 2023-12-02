@@ -111,7 +111,7 @@ public class FlightController {
 
     // Update a flight by ID
     @PutMapping("/{id}") // PUT /api/flights/{id}
-    public ResponseEntity<Flight> updateFlight(@PathVariable int id, @RequestBody Flight updatedFlight) {
+    public ResponseEntity<Flight> updateFlight(@PathVariable int id, @RequestBody Flight updatedFlight) throws Exception{
         try {
             Flight updated = flightService.updateFlight(id, updatedFlight);
             return ResponseEntity.ok(updated);
@@ -126,8 +126,14 @@ public class FlightController {
             @RequestBody Map<String, Integer> requestBody) {
         int paymentId = requestBody.get("paymentId");
         Flight flight = flightService.getFlightById(id);
+        try{
         Flight updated = flightService.cancelFlightOperations(paymentId, flight);
         return ResponseEntity.ok(updated);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return ResponseEntity.ok(flight);
     }
 
     @GetMapping("/{flightNo}/passenger") // GET /api/flights/{flightNo}/passenger
