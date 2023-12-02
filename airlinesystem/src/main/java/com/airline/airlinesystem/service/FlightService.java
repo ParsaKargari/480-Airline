@@ -218,9 +218,9 @@ public class FlightService {
     }
 
     public Flight bookFlight(Flight flight, List<String> seatNumbers, String email, String name, String creditCardNum,
-            String cvv, String expDate, Boolean useFreeTicket) {
+            String cvv, String expDate, double amount, Boolean hasFreeTicket, Boolean useFreeTicket) {
         flight.selectSeats(seatNumbers);
-        if(useFreeTicket){
+        if(useFreeTicket && hasFreeTicket){
             User user =  accountRepository.findByEmail(email);
             if(user != null){
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
@@ -235,24 +235,20 @@ public class FlightService {
             existingPassengers = new ArrayList<>();
         }
         List<Passenger> passengers = new ArrayList<>();
-        double amount = 0;
         for (String seatNumber : seatNumbers) {
             int rowNumber = Integer.parseInt(seatNumber.substring(1));
             if (rowNumber >= 1 && rowNumber <= 2) {
                 Seat newSeat = new Seat(flight.getFlightNo(), seatNumber, "Business Class", 250);
                 newSeat.setAvailable(false);
-                amount += 250;
                 seatRepository.save(newSeat);
             } else if (rowNumber >= 3 && rowNumber <= 5) {
                 Seat newSeat = new Seat(flight.getFlightNo(), seatNumber, "Comfort Class", 140);
                 newSeat.setAvailable(false);
                 seatRepository.save(newSeat);
-                amount += 140;
             } else if (rowNumber >= 6 && rowNumber <= 13) {
                 Seat newSeat = new Seat(flight.getFlightNo(), seatNumber, "Ordinary Class", 100);
                 newSeat.setAvailable(false);
                 seatRepository.save(newSeat);
-                amount += 100;
             } else {
                 throw new IllegalArgumentException("Unknown seat class for seat number: " + seatNumber);
             }

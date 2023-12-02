@@ -86,8 +86,10 @@ public class FlightController {
         String ccNum = (String) requestBody.get("creditCardNum");
         String cvv = (String) requestBody.get("cvv");
         String expDate = (String) requestBody.get("expDate");
+        double amount = (double) requestBody.get("amount");
+        Boolean hasFreeTicket = (Boolean) requestBody.get("hasFreeTicket");
         Boolean useFreeTicket = (Boolean) requestBody.get("useFreeTicket");
-        Flight updatedFlight = flightService.bookFlight(flight, seatNumbers, email, name, ccNum, cvv, expDate, useFreeTicket);
+        Flight updatedFlight = flightService.bookFlight(flight, seatNumbers, email, name, ccNum, cvv, expDate,amount, hasFreeTicket, useFreeTicket);
         return ResponseEntity.ok(updatedFlight);
     }
 
