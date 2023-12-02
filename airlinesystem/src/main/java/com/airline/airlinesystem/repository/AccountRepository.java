@@ -9,6 +9,7 @@ import java.util.List;
 public interface AccountRepository extends JpaRepository<User, Integer>{
     User findByUsernameAndPassword(String username, String password);
     User findByToken(String token);
+    User findByEmail(String email);
     // return users with role "REGISTERED_USER"
     List<User> findByRole(String role);
 }

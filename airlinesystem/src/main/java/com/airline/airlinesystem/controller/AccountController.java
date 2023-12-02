@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 
 @RestController
 @RequestMapping("/api/accounts")
@@ -65,6 +67,24 @@ public class AccountController {
         User authenticatedUser = accountService.authenticate(username, password, token, strategy);
 
         if (authenticatedUser != null) {
+            RegisteredUser registeredUser = (RegisteredUser) authenticatedUser;
+            if (registeredUser.getFreeTicket() != null && registeredUser.getUseDate() != null) {
+                String useDateString = registeredUser.getUseDate();
+                // Define the date format for "DD/MM/YY"
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
+                try {
+                    // Parse the useDate string to a Date object
+                    Date useDate = dateFormat.parse(useDateString);
+                    // Compare with the current date to check if the year has passed
+                    if (useDate.before(new Date())) {
+                        ((RegisteredUser)authenticatedUser).setFreeTicket(true);
+                        accountService.registerUser(authenticatedUser);
+                    }
+                } catch (ParseException e) {
+                    // Handle the parsing exception if the date string is not in the expected format
+                    e.printStackTrace(); // or log the exception
+                }
+            }
             return ResponseEntity.ok(authenticatedUser);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
@@ -87,6 +107,9 @@ public class AccountController {
                             creditCardInfo.get("billingAddress"));
                     // Other credit card details will be set by the CreditCard constructor
                     ((RegisteredUser) newUser).setCreditCard(creditCard);
+                    ((RegisteredUser) newUser).setLoungeDiscount(true);
+                    ((RegisteredUser) newUser).setFreeTicket(true);
+
                 }
             } else {
                 newUser = objectMapper.convertValue(userInfo, User.class);
