@@ -89,7 +89,9 @@ const CheckoutModal = ({
   // Update user lounge and free ticket status from the backend
   const updateUserStatus = async () => {
     try {
-      const response = await fetch(`http://localhost:8080/api/accounts/users/${user.id}`);
+      const response = await fetch(
+        `http://localhost:8080/api/accounts/users/${user.id}`
+      );
       const data = await response.json();
       console.log(data);
       if (response.ok) {
@@ -108,8 +110,6 @@ const CheckoutModal = ({
     updateUserStatus();
   }, []);
 
-
-
   useEffect(() => {
     let newTotalPrice = totalAmount;
 
@@ -122,7 +122,8 @@ const CheckoutModal = ({
     }
 
     if (useFreeTicket) {
-      newTotalPrice = 0;
+      // Subtract $100 for the free ticket
+      newTotalPrice = Math.max(newTotalPrice - 100, 0);
     }
 
     setTotalPrice(newTotalPrice);
@@ -137,7 +138,7 @@ const CheckoutModal = ({
   const handleInsuranceChange = () => {
     setInsuranceSelected(!insuranceSelected);
     setTotalPrice((prevTotalPrice) =>
-      insuranceSelected ? prevTotalPrice - 10 : prevTotalPrice + 10
+      !useFreeTicket ? Math.max(prevTotalPrice - 100, 0) : prevTotalPrice + 100
     );
   };
 
@@ -172,7 +173,6 @@ const CheckoutModal = ({
         useFreeTicket: useFreeTicket,
         amount: totalPrice,
       };
-
 
       const response = await fetch(
         `http://localhost:8080/api/flights/${flightID}/seats/book`,
