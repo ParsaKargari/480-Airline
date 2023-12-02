@@ -120,7 +120,6 @@ const CheckoutModal = ({
       );
 
       if (response.ok) {
-        const data = await response.json();
         navigate("/");
       } else {
         throw new Error("Failed to book flight");

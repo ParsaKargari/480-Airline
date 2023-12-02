@@ -15,6 +15,8 @@ import TextField from "@material-ui/core/TextField";
 import MuiAlert from "@material-ui/lab/Alert";
 import { AuthContext } from "./contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import Drawer from "@material-ui/core/Drawer";
+import FlightCancellationForm from "./FlightCancellationForm";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,7 +50,18 @@ export default function FlightSearch() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [flights, setFlights] = useState([]);
-  const [flightID, setFlightID] = useState();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const toggleDrawer = (open) => (event) => {
+    if (
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
+
+    setDrawerOpen(open);
+  };
 
   useEffect(() => {
     fetchFlights();
@@ -181,8 +194,19 @@ export default function FlightSearch() {
               Admin Dashboard
             </Button>
           )}
+          <Button
+            className={classes.button}
+            fullWidth
+            variant="outlined"
+            onClick={toggleDrawer(true)}
+          >
+            Cancel Flight
+          </Button>
         </CardContent>
       </Card>
+      <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
+        <FlightCancellationForm flights={flights}  />
+      </Drawer>
       <Snackbar
         open={openSnackbar}
         autoHideDuration={6000}
