@@ -17,6 +17,12 @@ public class CrewController {
     @Autowired
     CrewService crewService;
 
+    @GetMapping
+    public ResponseEntity<List<Crew>> getAllCrew() {
+        List<Crew> crew = crewService.getAllCrew();
+        return ResponseEntity.ok(crew);
+    }
+
     @PostMapping("/{flightId}")
     public ResponseEntity<Crew> addCrew(@RequestBody Crew crewMember, @PathVariable String flightId) {
         Crew savedCrew = crewService.saveCrew(crewMember, flightId);
@@ -27,6 +33,12 @@ public class CrewController {
     public ResponseEntity<List<Crew>> getCrewByFlightNo(@PathVariable String flightId) {
         List<Crew> crew = crewService.getCrewByFlightNo(flightId);
         return ResponseEntity.ok(crew);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Crew> updateCrew(@PathVariable Integer id, @RequestBody Crew crewDetails) {
+        Crew updatedCrew = crewService.updateCrew(id, crewDetails);
+        return ResponseEntity.ok(updatedCrew);
     }
 
     @DeleteMapping

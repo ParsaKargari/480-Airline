@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -18,62 +18,48 @@ import {
   FormControl,
   InputLabel,
 } from "@material-ui/core";
-
-const mockCrews = [
-  // Flight A
-  { id: "CR001", name: "Alice Johnson", role: "Pilot", flight: "FL001" },
-  { id: "CR002", name: "Bob Smith", role: "Pilot", flight: "FL001" },
-  {
-    id: "CR003",
-    name: "Charlie Brown",
-    role: "Flight Attendant",
-    flight: "FL001",
-  },
-  // Flight B
-  { id: "CR004", name: "Alice Johnson2", role: "Pilot", flight: "FL002" },
-  { id: "CR005", name: "Bob Smith2", role: "Pilot", flight: "FL002" },
-  {
-    id: "CR006",
-    name: "Charlie Brown2",
-    role: "Flight Attendant",
-    flight: "FL002",
-  },
-  // Flight C
-  { id: "CR007", name: "Alice Johnson3", role: "Pilot", flight: "FL003" },
-  { id: "CR008", name: "Bob Smith3", role: "Pilot", flight: "FL003" },
-  {
-    id: "CR009",
-    name: "Charlie Brown3",
-    role: "Flight Attendant",
-    flight: "FL003",
-  },
-
-  // ... more mock crew members
-];
-
-const mockFlights = [
-  { id: "FL001", label: "Flight A", origin: "City X", destination: "City Y" },
-  { id: "FL002", label: "Flight B", origin: "City X", destination: "City Z" },
-  { id: "FL003", label: "Flight C", origin: "City Y", destination: "City Z" },
-  // ... more mock flights
-];
+import axios from "axios";
 
 const CrewList = () => {
-  const [crews, setCrews] = useState(mockCrews);
+  const [crews, setCrews] = useState([]);
+
   const [selectedFlight, setSelectedFlight] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [flights, setFlights] = useState([]);
   const [currentCrew, setCurrentCrew] = useState({
-    id: "",
+    employeeID: "",
     name: "",
-    role: "",
-    flight: "",
+    employment: "",
+    flightNo: "",
   });
+
+  const fetchCrews = async () => {
+    const response = await axios.get(`http://localhost:8080/api/crew`);
+    console.log(response.data);
+    setCrews(response.data);
+  };
+
+  const fetchFlights = async () => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/flights`);
+      setFlights(response.data);
+    } catch (error) {
+      console.error("Error fetching flights:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchCrews();
+    fetchFlights();
+  }, []);
 
   const handleFlightChange = (event) => {
     setSelectedFlight(event.target.value);
   };
 
-  const openDialog = (crew = { id: "", name: "", role: "", flight: "" }) => {
+  const openDialog = (
+    crew = { employeeID: "", name: "", employment: "", flightNo: "" }
+  ) => {
     setCurrentCrew(crew);
     setDialogOpen(true);
   };
@@ -82,26 +68,61 @@ const CrewList = () => {
     setDialogOpen(false);
   };
 
-  const handleSave = () => {
-    if (currentCrew.id) {
-      // Edit mode
-      setCrews(
-        crews.map((crew) => (crew.id === currentCrew.id ? currentCrew : crew))
-      );
-    } else {
-      // Add mode
-      const newCrew = { ...currentCrew, id: `CR${crews.length + 1}` };
-      setCrews([...crews, newCrew]);
+  const handleSave = async () => {
+    try {
+      const crewData = {
+        name: currentCrew.name,
+        employeeID: parseInt(currentCrew.employeeID, 10),
+        employment: currentCrew.employment,
+        flightNo: currentCrew.flightNo,
+      };
+
+      if (currentCrew.id) {
+        // Edit mode
+        await axios.put(
+          `http://localhost:8080/api/crew/${currentCrew.id}`,
+          crewData
+        );
+      } else {
+        // Add mode
+        await axios.post(
+          `http://localhost:8080/api/crew/${crewData.flightNo}`,
+          crewData
+        );
+      }
+
+      fetchCrews();
+      closeDialog();
+    } catch (error) {
+      console.error("Error saving crew:", error);
+      // Handle the error appropriately
     }
-    closeDialog();
   };
 
-  const handleDelete = (id) => {
-    setCrews(crews.filter((crew) => crew.id !== id));
+  const handleDelete = async (crew) => {
+    try {
+      const payload = {
+        name: crew.name,
+        flightNo: crew.flightNo,
+      };
+
+      await axios.delete(`http://localhost:8080/api/crew`, { data: payload });
+
+      // Optionally refresh the crew list
+      fetchCrews();
+    } catch (error) {
+      console.error("Error deleting crew:", error);
+      // Handle the error appropriately
+    }
+  };
+
+  const getUniqueFlightNumbers = (crews) => {
+    const uniqueFlights = new Set(crews.map((crew) => crew.flightNo));
+    return Array.from(uniqueFlights);
   };
 
   const filteredCrews = selectedFlight
-    ? crews.filter((crew) => crew.flight === selectedFlight)
+    ? crews.filter((crew) => crew.flightNo === selectedFlight)
     : crews;
 
   return (
@@ -113,9 +134,9 @@ const CrewList = () => {
           value={selectedFlight}
           onChange={handleFlightChange}
         >
-          {mockFlights.map((flight) => (
-            <MenuItem key={flight.id} value={flight.id}>
-              {flight.label}
+          {getUniqueFlightNumbers(crews)?.map((flightNo) => (
+            <MenuItem key={flightNo} value={flightNo}>
+              {flightNo}
             </MenuItem>
           ))}
         </Select>
@@ -129,26 +150,23 @@ const CrewList = () => {
             <TableRow>
               <TableCell>ID</TableCell>
               <TableCell>Name</TableCell>
-              <TableCell>Role</TableCell>
+              <TableCell>Employment</TableCell>
               <TableCell>Flight</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {filteredCrews.map((crew) => (
+            {filteredCrews?.map((crew) => (
               <TableRow key={crew.id}>
                 <TableCell>{crew.id}</TableCell>
                 <TableCell>{crew.name}</TableCell>
-                <TableCell>{crew.role}</TableCell>
-                <TableCell>{crew.flight}</TableCell>
+                <TableCell>{crew.employment}</TableCell>
+                <TableCell>{crew.flightNo}</TableCell>
                 <TableCell>
                   <Button color="primary" onClick={() => openDialog(crew)}>
                     Edit
                   </Button>
-                  <Button
-                    color="secondary"
-                    onClick={() => handleDelete(crew.id)}
-                  >
+                  <Button color="secondary" onClick={() => handleDelete(crew)}>
                     Delete
                   </Button>
                 </TableCell>
@@ -175,26 +193,42 @@ const CrewList = () => {
           />
           <TextField
             margin="dense"
-            label="Role"
-            type="text"
+            label="Employee ID"
+            type="number"
             fullWidth
-            value={currentCrew.role}
+            value={currentCrew.employeeID}
             onChange={(e) =>
-              setCurrentCrew({ ...currentCrew, role: e.target.value })
+              setCurrentCrew({ ...currentCrew, employeeID: e.target.value })
             }
           />
           <FormControl fullWidth margin="normal">
-            <InputLabel id="select-crew-flight-label">Flight</InputLabel>
+            <InputLabel id="select-crew-employment-label">
+              Employment
+            </InputLabel>
             <Select
-              labelId="select-crew-flight-label"
-              value={currentCrew.flight}
+              labelId="select-crew-employment-label"
+              value={currentCrew.employment}
               onChange={(e) =>
-                setCurrentCrew({ ...currentCrew, flight: e.target.value })
+                setCurrentCrew({ ...currentCrew, employment: e.target.value })
               }
             >
-              {mockFlights.map((flight) => (
-                <MenuItem key={flight.id} value={flight.id}>
-                  {flight.label}
+              <MenuItem value="PILOT">PILOT</MenuItem>
+              <MenuItem value="CREW">CREW</MenuItem>
+            </Select>
+          </FormControl>
+
+          <FormControl fullWidth margin="normal">
+            <InputLabel id="select-crew-flight-label">Flight Number</InputLabel>
+            <Select
+              labelId="select-crew-flight-label"
+              value={currentCrew.flightNo}
+              onChange={(e) =>
+                setCurrentCrew({ ...currentCrew, flightNo: e.target.value })
+              }
+            >
+              {flights.map((flight) => (
+                <MenuItem key={flight.id} value={flight.flightNo}>
+                  {flight.flightNo}
                 </MenuItem>
               ))}
             </Select>
