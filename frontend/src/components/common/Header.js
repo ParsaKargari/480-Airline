@@ -118,7 +118,7 @@ export default function Header() {
           {user ? (
             <>
               <Typography variant="h6" style={{ marginRight: "1rem" }}>
-                Welcome, {user.username}
+                Welcome, {user.name}
               </Typography>
               <Button color="inherit" onClick={handleLogoutClick}>
                 Logout

@@ -67,25 +67,31 @@ public class AccountController {
         User authenticatedUser = accountService.authenticate(username, password, token, strategy);
 
         if (authenticatedUser != null) {
-            RegisteredUser registeredUser = (RegisteredUser) authenticatedUser;
-            if (registeredUser.getFreeTicket() != null && registeredUser.getUseDate() != null) {
-                String useDateString = registeredUser.getUseDate();
-                // Define the date format for "DD/MM/YY"
-                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
-                try {
-                    // Parse the useDate string to a Date object
-                    Date useDate = dateFormat.parse(useDateString);
-                    // Compare with the current date to check if the year has passed
-                    if (useDate.before(new Date())) {
-                        ((RegisteredUser)authenticatedUser).setFreeTicket(true);
-                        accountService.registerUser(authenticatedUser);
+            // Check if the authenticated user is an instance of RegisteredUser
+            if (authenticatedUser instanceof RegisteredUser) {
+                RegisteredUser registeredUser = (RegisteredUser) authenticatedUser;
+                if (registeredUser.getFreeTicket() != null && registeredUser.getUseDate() != null) {
+                    String useDateString = registeredUser.getUseDate();
+                    // Define the date format for "DD/MM/YY"
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
+                    try {
+                        // Parse the useDate string to a Date object
+                        Date useDate = dateFormat.parse(useDateString);
+                        // Compare with the current date to check if the year has passed
+                        if (useDate.before(new Date())) {
+                            registeredUser.setFreeTicket(true);
+                            accountService.registerUser(registeredUser);
+                        }
+                    } catch (ParseException e) {
+                        // Handle the parsing exception if the date string is not in the expected format
+                        e.printStackTrace(); // or log the exception
                     }
-                } catch (ParseException e) {
-                    // Handle the parsing exception if the date string is not in the expected format
-                    e.printStackTrace(); // or log the exception
                 }
+                return ResponseEntity.ok(registeredUser);
+            } else {
+                // If authenticatedUser is not a RegisteredUser, return it as is
+                return ResponseEntity.ok(authenticatedUser);
             }
-            return ResponseEntity.ok(authenticatedUser);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
         }
@@ -152,6 +158,17 @@ public class AccountController {
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.noContent().build();
+        }
+    }
+
+    // fetch user by id
+    @GetMapping("/users/{id}") // GET /api/accounts/users/1
+    public ResponseEntity<User> getUserById(@PathVariable int id) {
+        User user = accountService.getAccountRepository().findById(id).orElse(null);
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
 

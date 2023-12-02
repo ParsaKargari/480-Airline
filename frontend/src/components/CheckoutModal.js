@@ -54,6 +54,15 @@ const useStyles = makeStyles((theme) => ({
   divider: {
     margin: theme.spacing(3, 0),
   },
+  buttonGroup: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginTop: theme.spacing(2),
+  },
+  priceDisplay: {
+    fontWeight: "bold",
+    marginTop: theme.spacing(2),
+  },
 }));
 
 const CheckoutModal = ({
@@ -73,14 +82,57 @@ const CheckoutModal = ({
   const { user } = useContext(AuthContext);
   const [useLoungeDiscount, setUseLoungeDiscount] = useState(false);
   const [useFreeTicket, setUseFreeTicket] = useState(false);
+  const [loungePrice, setLoungePrice] = useState(50);
+  const [loungeAccess, setLoungeAccess] = useState(false);
+  const [updatedUser, setUpdatedUser] = useState([]);
+
+  // Update user lounge and free ticket status from the backend
+  const updateUserStatus = async () => {
+    try {
+      const response = await fetch(`http://localhost:8080/api/accounts/users/${user.id}`);
+      const data = await response.json();
+      console.log(data);
+      if (response.ok) {
+        // Update user context
+        setUpdatedUser(data);
+      } else {
+        throw new Error("Failed to update user status");
+      }
+    } catch (error) {
+      console.error("Error updating user status:", error);
+    }
+  };
+
+  // Update user status when the component mounts
+  useEffect(() => {
+    updateUserStatus();
+  }, []);
+
+
 
   useEffect(() => {
-    if (useFreeTicket) {
-      setTotalPrice(0);
-    } else {
-      setTotalPrice(insuranceSelected ? totalAmount + 10 : totalAmount);
+    let newTotalPrice = totalAmount;
+
+    if (insuranceSelected) {
+      newTotalPrice += 10;
     }
-  }, [totalAmount, insuranceSelected, useFreeTicket]);
+
+    if (loungeAccess) {
+      newTotalPrice += loungePrice; // Add lounge price to the total
+    }
+
+    if (useFreeTicket) {
+      newTotalPrice = 0;
+    }
+
+    setTotalPrice(newTotalPrice);
+  }, [
+    totalAmount,
+    insuranceSelected,
+    useFreeTicket,
+    loungeAccess,
+    loungePrice,
+  ]);
 
   const handleInsuranceChange = () => {
     setInsuranceSelected(!insuranceSelected);
@@ -88,6 +140,11 @@ const CheckoutModal = ({
       insuranceSelected ? prevTotalPrice - 10 : prevTotalPrice + 10
     );
   };
+
+  const handleLoungeAccessChange = () => {
+    setLoungeAccess(!loungeAccess);
+  };
+
   const bookFlight = async () => {
     try {
       const flightID = selectedFlight.id; // Adjust this based on how the flight ID is stored
@@ -116,7 +173,6 @@ const CheckoutModal = ({
         amount: totalPrice,
       };
 
-      console.log(bookingDetails);
 
       const response = await fetch(
         `http://localhost:8080/api/flights/${flightID}/seats/book`,
@@ -141,7 +197,18 @@ const CheckoutModal = ({
 
   const handleLoungeDiscountClick = () => {
     setUseLoungeDiscount(!useLoungeDiscount);
-    // Additional logic if needed
+
+    if (!useLoungeDiscount) {
+      setLoungePrice(35); // Apply discount
+    } else {
+      setLoungePrice(50); // Revert to original price
+    }
+
+    // Update total price based on the lounge discount
+    const updatedTotalPrice = useLoungeDiscount
+      ? totalPrice - 15
+      : totalPrice + 15;
+    setTotalPrice(updatedTotalPrice);
   };
 
   // Handle Free Ticket Redemption Click
@@ -258,6 +325,8 @@ const CheckoutModal = ({
             label="Ticket Cancellation Insurance (+$10)"
           />
 
+          <Typography variant="body1">Lounge Price: ${loungePrice}</Typography>
+
           {isRegisteredUser ? (
             <Typography variant="body1" color="secondary">
               Your company's credit card will be used for this transaction.
@@ -288,28 +357,44 @@ const CheckoutModal = ({
             </>
           )}
 
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={loungeAccess}
+                onChange={handleLoungeAccessChange}
+                name="loungeAccess"
+                color="primary"
+              />
+            }
+            label={`Add Lounge Access ($${loungePrice})`}
+          />
+
           {isRegisteredUser && (
             <>
               <Button
                 variant="contained"
                 color="primary"
-                disabled={!user.loungeDiscount }
+                disabled={!updatedUser.loungeDiscount}
                 onClick={handleLoungeDiscountClick}
               >
-                Lounge Discount
+                {useLoungeDiscount
+                  ? "Remove Lounge Discount"
+                  : "Apply Lounge Discount"}
               </Button>
               <Button
                 variant="contained"
                 color="secondary"
-                disabled={!user.freeTicket}
+                disabled={!updatedUser.freeTicket}
                 onClick={handleFreeTicketClick}
               >
-                Free Ticket Redemption 
+                Free Ticket Redemption
               </Button>
             </>
           )}
 
-          <Typography variant="h6">Total Price: ${totalPrice}</Typography>
+          <Typography variant="h6" className={classes.priceDisplay}>
+            Total Price: ${totalPrice.toFixed(2)}
+          </Typography>
 
           <Button
             variant="contained"
