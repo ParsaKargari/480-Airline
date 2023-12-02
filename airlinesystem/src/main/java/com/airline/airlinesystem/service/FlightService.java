@@ -81,10 +81,10 @@ public class FlightService {
                 aircrafts.get(0)));
         flights.add(new Flight("QF12", "Sydney", "Los Angeles", "11-29-2023", "14h 30m",
                 aircrafts.get(1)));
-        flights.add(new Flight("EK241", "Dubai", "Toronto", "11-28-2023", "14h 00m",aircrafts.get(2)));
-        flights.add(new Flight("SQ26", "Singapore", "Frankfurt", "12-03-2023", "12h 10m",aircrafts.get(0)));
-        flights.add(new Flight("AF83", "Paris", "San Francisco", "12-02-2023", "11h 35m",aircrafts.get(1)));
-        flights.add(new Flight("BA75", "London", "Lagos", "12-08-2023", "6h 50m",aircrafts.get(2)));
+        flights.add(new Flight("EK241", "Dubai", "Toronto", "11-28-2023", "14h 00m", aircrafts.get(2)));
+        flights.add(new Flight("SQ26", "Singapore", "Frankfurt", "12-03-2023", "12h 10m", aircrafts.get(0)));
+        flights.add(new Flight("AF83", "Paris", "San Francisco", "12-02-2023", "11h 35m", aircrafts.get(1)));
+        flights.add(new Flight("BA75", "London", "Lagos", "12-08-2023", "6h 50m", aircrafts.get(2)));
 
         // Save the flights to the database
         flightRepository.saveAll(flights);
@@ -135,8 +135,8 @@ public class FlightService {
             List<String> seatNo = new ArrayList<>();
             List<Passenger> passengers = passengerRepository.findAllByFlightNo(flight.getFlightNo());
             List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
-            if(crew != null){
-            flight.setCrew(crew);
+            if (crew != null) {
+                flight.setCrew(crew);
             }
             if (passengers != null) {
                 flight.setPassengers(passengers);
@@ -160,8 +160,8 @@ public class FlightService {
         List<String> seatNo = new ArrayList<>();
         List<Passenger> passengers = passengerRepository.findAllByFlightNo(flight.getFlightNo());
         List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
-        if(crew != null){
-        flight.setCrew(crew);
+        if (crew != null) {
+            flight.setCrew(crew);
         }
         if (passengers != null) {
             flight.setPassengers(passengers);
@@ -184,8 +184,8 @@ public class FlightService {
         List<String> seatNo = new ArrayList<>();
         List<Passenger> passengers = passengerRepository.findAllByFlightNo(flight.getFlightNo());
         List<Crew> crew = crewRepository.findAllByFlightNo(flight.getFlightNo());
-        if(crew != null){
-        flight.setCrew(crew);
+        if (crew != null) {
+            flight.setCrew(crew);
         }
         if (passengers != null) {
             flight.setPassengers(passengers);
@@ -218,15 +218,15 @@ public class FlightService {
     }
 
     public Flight bookFlight(Flight flight, List<String> seatNumbers, String email, String name, String creditCardNum,
-            String cvv, String expDate, Boolean useFreeTicket) {
+            String cvv, String expDate, Boolean useFreeTicket, Integer amount) {
         flight.selectSeats(seatNumbers);
-        if(useFreeTicket){
-            User user =  accountRepository.findByEmail(email);
-            if(user != null){
+        if (useFreeTicket) {
+            User user = accountRepository.findByEmail(email);
+            if (user != null) {
                 SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
                 String currentDate = dateFormat.format(new Date());
-                ((RegisteredUser)user).setFreeTicket(false);
-                ((RegisteredUser)user).setUseDate(currentDate);
+                ((RegisteredUser) user).setFreeTicket(false);
+                ((RegisteredUser) user).setUseDate(currentDate);
                 accountRepository.save(user);
             }
         }
@@ -235,24 +235,20 @@ public class FlightService {
             existingPassengers = new ArrayList<>();
         }
         List<Passenger> passengers = new ArrayList<>();
-        double amount = 0;
         for (String seatNumber : seatNumbers) {
             int rowNumber = Integer.parseInt(seatNumber.substring(1));
-            if (rowNumber >= 1 && rowNumber <= 2) {
+            if (rowNumber >= 0 && rowNumber <= 1) {
                 Seat newSeat = new Seat(flight.getFlightNo(), seatNumber, "Business Class", 250);
                 newSeat.setAvailable(false);
-                amount += 250;
                 seatRepository.save(newSeat);
-            } else if (rowNumber >= 3 && rowNumber <= 5) {
+            } else if (rowNumber >= 2 && rowNumber <= 4) {
                 Seat newSeat = new Seat(flight.getFlightNo(), seatNumber, "Comfort Class", 140);
                 newSeat.setAvailable(false);
                 seatRepository.save(newSeat);
-                amount += 140;
-            } else if (rowNumber >= 6 && rowNumber <= 13) {
+            } else if (rowNumber >= 5 && rowNumber <= 12) {
                 Seat newSeat = new Seat(flight.getFlightNo(), seatNumber, "Ordinary Class", 100);
                 newSeat.setAvailable(false);
                 seatRepository.save(newSeat);
-                amount += 100;
             } else {
                 throw new IllegalArgumentException("Unknown seat class for seat number: " + seatNumber);
             }

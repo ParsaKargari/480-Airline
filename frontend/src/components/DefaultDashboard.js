@@ -15,6 +15,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import PersonIcon from "@material-ui/icons/Person";
 import ListItemText from "@material-ui/core/ListItemText";
 import CheckoutModal from "./CheckoutModal";
+import axios from "axios";
 
 const numRows = 13;
 
@@ -163,11 +164,32 @@ const DefaultDashboard = () => {
   const seatOptions = ["ordinary", "comfort", "business"];
   const [selectedSeatType, setSelectedSeatType] = useState("all");
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
+  const [soldOutSeats, setSoldOutSeats] = useState([]);
 
   // Sold out seats, go through a loop and add them to the array
-  const soldOutSeats = selectedFlight.soldOutSeats.map((seat) => {
-    return seat.seatNumber;
-  });
+  console.log(selectedFlight.id);
+
+  const fetchSoldOutSeats = async () => {
+    const response = await fetch(
+      `http://localhost:8080/api/flights/${selectedFlight.flightNo}/seats/sold-out`
+    );
+    const data = await response.json();
+    console.log(data);
+    setSoldOutSeats(extractSeats(data));
+  };
+
+  React.useEffect(() => {
+    fetchSoldOutSeats();
+  }, []);
+
+  // Function that extracts seats from the fetchedSeats array
+  const extractSeats = (fetchedSeats) => {
+    const seats = [];
+    fetchedSeats.forEach((seat) => {
+      seats.push(seat.seatNumber);
+    });
+    return seats;
+  };
 
   const seatPrices = {
     // Need to get this from the backend
@@ -372,9 +394,7 @@ const DefaultDashboard = () => {
             fontSize="large"
             style={{ margin: "0 10px", marginLeft: "30px" }}
           />
-          <Typography variant="subtitle1">
-            {selectedFlight.flightNo}
-          </Typography>
+          <Typography variant="subtitle1">{selectedFlight.flightNo}</Typography>
           <FlightLandIcon
             fontSize="large"
             style={{ margin: "0 10px", marginLeft: "30px" }}

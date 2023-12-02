@@ -84,6 +84,8 @@ const CheckoutModalEmail = ({
       creditCardNum: creditCard,
       cvv: cvv,
       expDate: expDate,
+      useFreeTicket: false,
+      amount: totalPrice,
     };
 
     try {

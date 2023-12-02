@@ -71,10 +71,16 @@ const CheckoutModal = ({
   const navigate = useNavigate();
   const classes = useStyles();
   const { user } = useContext(AuthContext);
+  const [useLoungeDiscount, setUseLoungeDiscount] = useState(false);
+  const [useFreeTicket, setUseFreeTicket] = useState(false);
 
   useEffect(() => {
-    setTotalPrice(totalAmount);
-  }, [totalAmount]);
+    if (useFreeTicket) {
+      setTotalPrice(0);
+    } else {
+      setTotalPrice(insuranceSelected ? totalAmount + 10 : totalAmount);
+    }
+  }, [totalAmount, insuranceSelected, useFreeTicket]);
 
   const handleInsuranceChange = () => {
     setInsuranceSelected(!insuranceSelected);
@@ -95,7 +101,9 @@ const CheckoutModal = ({
         : creditCard;
       const cvv = isRegisteredUser ? user.creditCard.cvv : cvvInput;
       const expDate = isRegisteredUser ? user.creditCard.expDate : expDateInput;
-
+      console.log(user);
+      console.log(user.freeTicket);
+      console.log(useFreeTicket);
       const bookingDetails = {
         name: user.name,
         email: user.email,
@@ -104,6 +112,8 @@ const CheckoutModal = ({
         creditCardNum: creditCardNum.replace(/\s/g, ""),
         cvv: cvv,
         expDate: expDate,
+        useFreeTicket: useFreeTicket,
+        amount: totalPrice,
       };
 
       console.log(bookingDetails);
@@ -126,6 +136,22 @@ const CheckoutModal = ({
       }
     } catch (error) {
       console.error("Error booking flight:", error);
+    }
+  };
+
+  const handleLoungeDiscountClick = () => {
+    setUseLoungeDiscount(!useLoungeDiscount);
+    // Additional logic if needed
+  };
+
+  // Handle Free Ticket Redemption Click
+  const handleFreeTicketClick = () => {
+    setUseFreeTicket(!useFreeTicket);
+    // Set total price to 0 if free ticket is used
+    if (!useFreeTicket) {
+      setTotalPrice(0);
+    } else {
+      setTotalPrice(insuranceSelected ? totalAmount + 10 : totalAmount);
     }
   };
 
@@ -259,6 +285,27 @@ const CheckoutModal = ({
                 value={expDateInput}
                 onChange={(e) => setExpDateInput(e.target.value)}
               />
+            </>
+          )}
+
+          {isRegisteredUser && (
+            <>
+              <Button
+                variant="contained"
+                color="primary"
+                disabled={!user.loungeDiscount }
+                onClick={handleLoungeDiscountClick}
+              >
+                Lounge Discount
+              </Button>
+              <Button
+                variant="contained"
+                color="secondary"
+                disabled={!user.freeTicket}
+                onClick={handleFreeTicketClick}
+              >
+                Free Ticket Redemption 
+              </Button>
             </>
           )}
 

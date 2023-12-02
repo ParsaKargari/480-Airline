@@ -4,6 +4,7 @@ import com.airline.airlinesystem.core.Flight;
 import com.airline.airlinesystem.core.Passenger;
 import com.airline.airlinesystem.core.Seat;
 import com.airline.airlinesystem.service.FlightService;
+import com.airline.airlinesystem.service.SeatService;
 import com.airline.airlinesystem.core.Aircraft;
 import com.airline.airlinesystem.service.AircraftService;
 
@@ -24,6 +25,9 @@ public class FlightController {
 
     @Autowired
     private AircraftService aircraftService;
+
+    @Autowired
+    private SeatService seatService;
 
     // Returns list of flights
     // Works
@@ -66,10 +70,10 @@ public class FlightController {
 
     // Returns sold out seats for a flight
     // Works
-    @GetMapping("/{id}/seats/sold-out") // GET /api/flights/{id}/seats/sold-out
-    public ResponseEntity<List<Seat>> getSoldOutSeats(@PathVariable int id) {
-        Flight flight = flightService.getFlightById(id);
-        List<Seat> soldOutSeats = flight.getSoldOutSeats();
+    @GetMapping("/{flightNo}/seats/sold-out") // GET /api/flights/{id}/seats/sold-out
+    public ResponseEntity<List<Seat>> getSoldOutSeats(@PathVariable String flightNo) {
+        // Return list of sold out seats for a flight
+        List<Seat> soldOutSeats = seatService.getSoldOutSeats(flightNo);
         return ResponseEntity.ok(soldOutSeats);
     }
 
@@ -87,7 +91,9 @@ public class FlightController {
         String cvv = (String) requestBody.get("cvv");
         String expDate = (String) requestBody.get("expDate");
         Boolean useFreeTicket = (Boolean) requestBody.get("useFreeTicket");
-        Flight updatedFlight = flightService.bookFlight(flight, seatNumbers, email, name, ccNum, cvv, expDate, useFreeTicket);
+        Integer amount = (Integer) requestBody.get("amount");
+        Flight updatedFlight = flightService.bookFlight(flight, seatNumbers, email, name, ccNum, cvv, expDate,
+                useFreeTicket, amount);
         return ResponseEntity.ok(updatedFlight);
     }
 
@@ -124,13 +130,11 @@ public class FlightController {
         return ResponseEntity.ok(updated);
     }
 
-
-
     @GetMapping("/{flightNo}/passenger") // GET /api/flights/{flightNo}/passenger
-    public ResponseEntity<List<Passenger>> getPassengers(@PathVariable String flightNo){
-        Flight flight =  flightService.getFlightByFlightNo(flightNo);
+    public ResponseEntity<List<Passenger>> getPassengers(@PathVariable String flightNo) {
+        Flight flight = flightService.getFlightByFlightNo(flightNo);
         List<Passenger> passengers = flight.getPassengers();
         return ResponseEntity.ok(passengers);
     }
-    
+
 }

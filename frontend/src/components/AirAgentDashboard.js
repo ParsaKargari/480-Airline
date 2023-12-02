@@ -175,6 +175,7 @@ const AirAgentDashboard = () => {
   const [selectedPage, setSelectedPage] = useState("passenger");
   const [passengerList, setPassengerList] = useState(null);
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
+  const [soldOutSeats, setSoldOutSeats] = useState(null);
 
   const seatPrices = {
     ordinary: 100,
@@ -194,11 +195,30 @@ const AirAgentDashboard = () => {
         `http://localhost:8080/api/flights/${selectedFlight.flightNo}/passenger`
       );
       return response.data;
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
-  const soldOutSeats = passengerList?.map((passenger) => passenger.seatNo);
+  const fetchSoldOutSeats = async () => {
+    const response = await fetch(
+      `http://localhost:8080/api/flights/${selectedFlight.flightNo}/seats/sold-out`
+    );
+    const data = await response.json();
+    console.log(data);
+    setSoldOutSeats(extractSeats(data));
+  };
+
+  React.useEffect(() => {
+    fetchSoldOutSeats();
+  }, []);
+
+  // Function that extracts seats from the fetchedSeats array
+  const extractSeats = (fetchedSeats) => {
+    const seats = [];
+    fetchedSeats.forEach((seat) => {
+      seats.push(seat.seatNumber);
+    });
+    return seats;
+  };
 
   const getSeatNumber = (row, seat) => {
     const seatLetter = String.fromCharCode(64 + seat);
@@ -429,9 +449,7 @@ const AirAgentDashboard = () => {
             fontSize="large"
             style={{ margin: "0 10px", marginLeft: "30px" }}
           />
-          <Typography variant="subtitle1">
-            {selectedFlight.flightNo}
-          </Typography>
+          <Typography variant="subtitle1">{selectedFlight.flightNo}</Typography>
           <FlightLandIcon
             fontSize="large"
             style={{ margin: "0 10px", marginLeft: "30px" }}

@@ -1,4 +1,5 @@
 package com.airline.airlinesystem.service;
+
 import com.airline.airlinesystem.core.Seat;
 import com.airline.airlinesystem.repository.SeatRepository;
 
@@ -31,5 +32,9 @@ public class SeatService {
 
     public void deleteSeat(int id) {
         seatRepository.deleteById(id);
+    }
+
+    public List<Seat> getSoldOutSeats(String flightNo) {
+        return seatRepository.findAllByFlightNo(flightNo);
     }
 }
