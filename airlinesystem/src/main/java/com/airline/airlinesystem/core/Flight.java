@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.*;
 
-// Flight Database
 
 @Entity
 public class Flight {
@@ -54,7 +53,6 @@ public class Flight {
     public void initializeSeats() {
         this.seats = new ArrayList<>();
 
-        // Your logic to add seats...
 
         // First class
         for (int i = 0; i < 2; i++) {
@@ -135,13 +133,7 @@ public class Flight {
         this.crew = crew;
     }
 
-    // Method to add a crew member
-    // public void addCrewMember(String crewMember) {
-    //     if (crew == null) {
-    //         crew = new ArrayList<>();
-    //     }
-    //     crew.add(crewMember);
-    // }
+
 
     // Method to remove a crew member
     public void removeCrewMember(String crewMember) {

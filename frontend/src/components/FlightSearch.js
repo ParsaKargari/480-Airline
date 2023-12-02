@@ -78,12 +78,10 @@ export default function FlightSearch() {
       }
     } catch (error) {
       console.error("Error fetching flights:", error);
-      // Handle errors here
     }
   };
 
   const handleSearch = () => {
-    // Here you would handle the actual search logic
     const searchResults = flights.find(
       (flight) =>
         flight.flightNo +
@@ -122,7 +120,6 @@ export default function FlightSearch() {
   };
 
   const handleSearchAdmin = () => {
-    // Navigate to admin dashboard
     navigate("/admin-dashboard");
   };
 

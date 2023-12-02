@@ -160,10 +160,6 @@ const FlightList = () => {
 
   const filterFlights = () => {
     return flights.filter((flight) => {
-      // Ensure departureDate is present and valid
-      // if (!flight.departureDate) {
-      //   return false;
-      // }
 
       // Parse the departure date of the flight
       const [day, month, year] = flight.departureDate.split("-");
@@ -217,8 +213,8 @@ const FlightList = () => {
           airline: aircraft?.airline,
           tailNumber: aircraft?.tailNumber,
         },
-        crew: [], // Assuming crew details are managed elsewhere
-        seats: [], // Assuming seats details are managed elsewhere
+        crew: [], 
+        seats: [], 
       };
       addOrUpdateFlight(flightData);
     }

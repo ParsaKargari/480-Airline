@@ -1,4 +1,5 @@
 package com.airline.airlinesystem.core;
+
 import jakarta.persistence.*;
 import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.java6.auth.oauth2.AuthorizationCodeInstalledApp;
@@ -58,30 +59,32 @@ public class News implements Email {
     }
 
     private static Credential getCredentials(final NetHttpTransport httpTransport, GsonFactory jsonFactory)
-      throws IOException {
-    // Load client secrets.
-    GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(jsonFactory, new InputStreamReader(Ticket.class.getResourceAsStream("/client_secret_579755992935-q79vl8csio88t5g95lmq88cak87bai0q.apps.googleusercontent.com.json")));
+            throws IOException {
+        // Load client secrets.
+        GoogleClientSecrets clientSecrets = GoogleClientSecrets.load(jsonFactory,
+                new InputStreamReader(Ticket.class.getResourceAsStream(
+                        "/client_secret_579755992935-q79vl8csio88t5g95lmq88cak87bai0q.apps.googleusercontent.com.json")));
 
-    // Build flow and trigger user authorization request.
-    GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
-        httpTransport, jsonFactory, clientSecrets, Set.of(GMAIL_SEND))
-        .setDataStoreFactory(new FileDataStoreFactory(Paths.get("tokens").toFile()))
-        .setAccessType("offline")
-        .build();
-    LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
-    Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
-    //returns an authorized Credential object.
-    return credential;
-  }
+        // Build flow and trigger user authorization request.
+        GoogleAuthorizationCodeFlow flow = new GoogleAuthorizationCodeFlow.Builder(
+                httpTransport, jsonFactory, clientSecrets, Set.of(GMAIL_SEND))
+                .setDataStoreFactory(new FileDataStoreFactory(Paths.get("tokens").toFile()))
+                .setAccessType("offline")
+                .build();
+        LocalServerReceiver receiver = new LocalServerReceiver.Builder().setPort(8888).build();
+        Credential credential = new AuthorizationCodeInstalledApp(flow, receiver).authorize("user");
+        // returns an authorized Credential object.
+        return credential;
+    }
 
     // Implementation of the sendEmail method from the Email interface
     @Override
-    public void sendEmail(String to, String subject, String body) throws Exception{
+    public void sendEmail(String to, String subject, String body) throws Exception {
         NetHttpTransport httpTransport = GoogleNetHttpTransport.newTrustedTransport();
         GsonFactory jsonFractory = GsonFactory.getDefaultInstance();
         Gmail service = new Gmail.Builder(httpTransport, jsonFractory, getCredentials(httpTransport, jsonFractory))
-            .setApplicationName("Moussavi Airline Mailer")
-            .build();
+                .setApplicationName("Moussavi Airline Mailer")
+                .build();
 
         Properties props = new Properties();
         Session session = Session.getDefaultInstance(props, null);

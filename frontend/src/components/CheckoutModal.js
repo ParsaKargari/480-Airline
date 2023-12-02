@@ -118,7 +118,7 @@ const CheckoutModal = ({
     }
 
     if (loungeAccess) {
-      newTotalPrice += loungePrice; // Add lounge price to the total
+      newTotalPrice += loungePrice;
     }
 
     if (useFreeTicket) {
@@ -148,7 +148,7 @@ const CheckoutModal = ({
 
   const bookFlight = async () => {
     try {
-      const flightID = selectedFlight.id; // Adjust this based on how the flight ID is stored
+      const flightID = selectedFlight.id; 
       const selectedSeatsFormatted = selectedSeats.map((seat) =>
         convertSeatFormat(seat)
       );
@@ -199,22 +199,19 @@ const CheckoutModal = ({
     setUseLoungeDiscount(!useLoungeDiscount);
 
     if (!useLoungeDiscount) {
-      setLoungePrice(35); // Apply discount
+      setLoungePrice(35);
     } else {
-      setLoungePrice(50); // Revert to original price
+      setLoungePrice(50);
     }
 
-    // Update total price based on the lounge discount
     const updatedTotalPrice = useLoungeDiscount
       ? totalPrice - 15
       : totalPrice + 15;
     setTotalPrice(updatedTotalPrice);
   };
 
-  // Handle Free Ticket Redemption Click
   const handleFreeTicketClick = () => {
     setUseFreeTicket(!useFreeTicket);
-    // Set total price to 0 if free ticket is used
     if (!useFreeTicket) {
       setTotalPrice(0);
     } else {

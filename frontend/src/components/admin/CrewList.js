@@ -95,7 +95,6 @@ const CrewList = () => {
       closeDialog();
     } catch (error) {
       console.error("Error saving crew:", error);
-      // Handle the error appropriately
     }
   };
 
@@ -108,11 +107,10 @@ const CrewList = () => {
 
       await axios.delete(`http://localhost:8080/api/crew`, { data: payload });
 
-      // Optionally refresh the crew list
       fetchCrews();
     } catch (error) {
       console.error("Error deleting crew:", error);
-      // Handle the error appropriately
+
     }
   };
 

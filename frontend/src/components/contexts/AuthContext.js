@@ -2,7 +2,6 @@
 
 import React, { createContext, useState } from "react";
 import axios from "axios";
-// import axios from 'axios'; // Uncomment if using axios
 
 export const AuthContext = createContext(null);
 
@@ -11,25 +10,19 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (username, password, token) => {
     try {
-      // Define the API endpoint
-      const endpoint = "http://localhost:8080/api/accounts/login"; // Adjust the URL as per your API
-
-      // Prepare the request body
+      
+      const endpoint = "http://localhost:8080/api/accounts/login";
       const body = JSON.stringify({ username, password, token });
 
-      // For fetch
       const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: body,
       });
 
-      // For axios (uncomment if using axios)
-      // const response = await axios.post(endpoint, { username, password });
-
       if (response) {
         const data = await response.json();
-        setUser(data); // Assuming the backend sends back the user's role
+        setUser(data); 
         return true;
       } else {
         setUser(null);

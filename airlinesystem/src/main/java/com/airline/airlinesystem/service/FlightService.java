@@ -279,7 +279,6 @@ public class FlightService {
         List<String> canceledSeatNumbers = new ArrayList<>();
         List<Passenger> canceledPassengers = new ArrayList<>();
         for (Ticket ticket : tickets) {
-            // Retrieve additional information for each ticket, e.g., seat number, passenger
             String seatNo = ticket.getSeatNumber();
             Seat seat = seatRepository.findBySeatNumberAndFlightNo(seatNo, flight.getFlightNo())
                     .orElseThrow(() -> new EntityNotFoundException("Seat not found"));

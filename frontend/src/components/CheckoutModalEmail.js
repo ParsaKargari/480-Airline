@@ -76,7 +76,6 @@ const CheckoutModalEmail = ({
   };
 
   const bookUserFlight = async () => {
-    // Prepare the payload
     const payload = {
       name: name,
       email: email,
@@ -97,14 +96,11 @@ const CheckoutModalEmail = ({
 
       // Check if the request was successful
       if (response.status === 200) {
-        // Navigate to the home page or a confirmation page
         navigate("/");
       } else {
-        // Handle any other HTTP status codes as needed
         console.error("Error booking flight");
       }
     } catch (error) {
-      // Handle any errors that occur during the request
       console.error("Error booking flight: ", error);
     }
   };

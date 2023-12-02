@@ -29,17 +29,16 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     position: "absolute",
     [theme.breakpoints.up("sm")]: {
-      width: "30%", // This makes the modal width 50% of the screen width on small devices and up
-      height: "45%", // This makes the modal height 50% of the screen height on small devices and up
+      width: "30%", 
+      height: "45%",
     },
     [theme.breakpoints.down("xs")]: {
-      width: "80%", // On extra small devices, the modal width is 80% of the screen width
+      width: "80%",
     },
     backgroundColor: theme.palette.background.paper,
     boxShadow: theme.shadows[5],
-    padding: theme.spacing(6), // Increased padding for better visual spacing
-    outline: "none", // Removes the focus outline from the modal
-    // Center Content
+    padding: theme.spacing(6), 
+    outline: "none", 
     display: "flex",
     flexDirection: "column",
 
@@ -64,7 +63,6 @@ export default function LoginModal({ open, handleClose }) {
   const [snackbarOpenFailure, setSnackbarOpenFailure] = useState(false);
   const [loginSuccessful, setLoginSuccessful] = useState(false);
 
-  // Reset states when handleClose is called
   React.useEffect(() => {
     if (!open) {
       setUsername("");
@@ -77,10 +75,8 @@ export default function LoginModal({ open, handleClose }) {
   const handleLoginClick = async () => {
     let success = false;
     if (token) {
-      // Token-based login (adjust as per your login method)
       success = await login(null, null, token);
     } else {
-      // Username/password login (adjust as per your login method)
       success = await login(username, password);
     }
 
@@ -89,7 +85,6 @@ export default function LoginModal({ open, handleClose }) {
       setSnackbarOpenSuccess(true);
       handleClose();
     } else {
-      // Handle login failure
       setLoginSuccessful(false);
       setSnackbarOpenFailure(true);
     }

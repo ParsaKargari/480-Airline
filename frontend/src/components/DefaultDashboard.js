@@ -145,9 +145,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#fff",
     borderRadius: "10px",
     marginTop: "45px",
-    // navy blue border
     padding: "30px",
-    // shadow
     boxShadow: "0 0 10px rgba(0,0,0,0.2)",
     flexDirection: "column",
     alignItems: "center",
@@ -166,7 +164,6 @@ const DefaultDashboard = () => {
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
   const [soldOutSeats, setSoldOutSeats] = useState([]);
 
-  // Sold out seats, go through a loop and add them to the array
   console.log(selectedFlight.id);
 
   const fetchSoldOutSeats = async () => {
@@ -182,7 +179,6 @@ const DefaultDashboard = () => {
     fetchSoldOutSeats();
   }, []);
 
-  // Function that extracts seats from the fetchedSeats array
   const extractSeats = (fetchedSeats) => {
     const seats = [];
     fetchedSeats.forEach((seat) => {
@@ -462,7 +458,6 @@ const DefaultDashboard = () => {
               </ListItem>
             </div>
           </div>
-          {/* Checkout button and total price */}
           <div
             style={{
               marginTop: "20px",

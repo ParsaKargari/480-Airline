@@ -24,7 +24,6 @@ public class AircraftController {
 
     @PutMapping("/{id}")
     public ResponseEntity<Aircraft> updateAircraft(@PathVariable int id, @RequestBody Aircraft aircraft) {
-        // Assuming you have a method like updateAircraft in your AircraftService
         Aircraft updatedAircraft = aircraftService.updateAircraft(id, aircraft);
         if (updatedAircraft != null) {
             return ResponseEntity.ok(updatedAircraft);

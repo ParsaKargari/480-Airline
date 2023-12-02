@@ -50,9 +50,9 @@ const useStyles = makeStyles((theme) => ({
   },
   seat: {
     backgroundColor: "#b4d9ff",
-    height: "35px", // Adjust the height as needed
-    width: "35px", // Adjust the width as needed
-    margin: "3px", // Adjust the margin as needed
+    height: "35px",
+    width: "35px",
+    margin: "3px",
     fontSize: "11px",
     borderRadius: "5px",
     cursor: "not-allowed",
@@ -142,7 +142,6 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
   seatPrev: {
-    // make bigger
     height: "60px",
     width: "60px",
     "&:hover": {
@@ -155,9 +154,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#fff",
     borderRadius: "10px",
     marginTop: "25px",
-    // navy blue border
     padding: "30px",
-    // shadow
     boxShadow: "0 0 10px rgba(0,0,0,0.2)",
     flexDirection: "column",
     alignItems: "center",
@@ -210,8 +207,6 @@ const AirAgentDashboard = () => {
   React.useEffect(() => {
     fetchSoldOutSeats();
   }, []);
-
-  // Function that extracts seats from the fetchedSeats array
   const extractSeats = (fetchedSeats) => {
     const seats = [];
     fetchedSeats.forEach((seat) => {
@@ -262,7 +257,6 @@ const AirAgentDashboard = () => {
     return seatPrices[seatType];
   };
 
-  // Function to check if a seat is sold out
   const isSoldOut = (rowIndex, seatIndex) => {
     // Convert the row and seat index into a seat number
     const seatKey = getSeatNumber(rowIndex, seatIndex);
@@ -514,8 +508,6 @@ const AirAgentDashboard = () => {
               value="passengerList"
             />
           </BottomNavigation>
-
-          {/* Display Single Passenger Info, based on selected seat */}
           {selectedPage === "passenger" && (
             <div className={classes.selectedSeatsContainer}>
               <Paper elevation={3} className={classes.passengerDetailPaper}>
@@ -568,7 +560,7 @@ const AirAgentDashboard = () => {
               </Button>
             </div>
           )}
-          {/* Display Passenger List */}
+
           {selectedPage === "passengerList" && (
             <div className={classes.selectedSeatsContainer}>
               <Paper elevation={3} className={classes.passengerListPaper}>

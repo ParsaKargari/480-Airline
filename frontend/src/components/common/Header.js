@@ -26,8 +26,7 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 1,
-    cursor: "pointer", // Add cursor pointer for indicating it's clickable
-    // make it smaller width
+    cursor: "pointer", 
     width: "fit-content",
   },
   appBar: {
@@ -42,7 +41,7 @@ export default function Header() {
   const [openNewsDialog, setOpenNewsDialog] = useState(false);
 
   const [isLoginOpen, setLoginOpen] = useState(false);
-  const [isRegisterOpen, setRegisterOpen] = useState(false); // State for the registration modal
+  const [isRegisterOpen, setRegisterOpen] = useState(false); 
 
   const handleNewsClick = () => {
     setOpenNewsDialog(true);
@@ -69,12 +68,10 @@ export default function Header() {
   };
 
   const handleTitleClick = () => {
-    // Navigate to the home page when the title is clicked
     navigate("/");
   };
 
   const handleLogoutClick = () => {
-    // Perform logout and navigate to the home page
     logout();
     navigate("/");
   };

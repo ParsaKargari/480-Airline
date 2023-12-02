@@ -63,9 +63,7 @@ export default function HomePage() {
         <FlightSearch />
       </div>
       <Container maxWidth="lg">
-        {/* Hero unit */}
         <Paper className={classes.mainFeaturedPost}>
-          {/* Increase the priority of the hero background image */}
           {
             <img
               style={{ display: "none" }}
