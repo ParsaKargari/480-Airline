@@ -118,7 +118,7 @@ public class AccountController {
     public ResponseEntity<Void> sendNews(@PathVariable int id) {
         try {
             User user = accountService.getAccountRepository().findById(id).orElse(null);
-            if(user != null){
+            if (user != null) {
                 String email = user.getEmail();
                 News news = new News();
                 String subject = "Embark on Unforgettable Journeys with Moussavi Airlines - Unveiling Exclusive Deals!";

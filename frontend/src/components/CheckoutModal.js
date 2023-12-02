@@ -100,10 +100,13 @@ const CheckoutModal = ({
         name: user.name,
         email: user.email,
         seatNumbers: selectedSeatsFormatted,
-        creditCardNum: creditCardNum,
+        // Remove all spaces in credit card number
+        creditCardNum: creditCardNum.replace(/\s/g, ""),
         cvv: cvv,
         expDate: expDate,
       };
+
+      console.log(bookingDetails);
 
       const response = await fetch(
         `http://localhost:8080/api/flights/${flightID}/seats/book`,
