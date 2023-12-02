@@ -172,4 +172,35 @@ public class AccountController {
         }
     }
 
+    // Update Free Ticket and Lounge Access for a user
+    @PutMapping("/users/{id}/update") // PUT /api/accounts/users/1/update
+    public ResponseEntity<Map<String, Object>> updateUser(@PathVariable int id,
+            @RequestBody Map<String, Object> updates) {
+        try {
+            Optional<User> optionalUser = accountService.getAccountRepository().findById(id);
+            if (optionalUser.isPresent()) {
+                User user = optionalUser.get();
+                if (user instanceof RegisteredUser) {
+                    RegisteredUser registeredUser = (RegisteredUser) user;
+                    if (updates.containsKey("freeTicket")) {
+                        registeredUser.setFreeTicket((Boolean) updates.get("freeTicket"));
+                    }
+                    if (updates.containsKey("loungeDiscount")) {
+                        registeredUser.setLoungeDiscount((Boolean) updates.get("loungeDiscount"));
+                    }
+                    accountService.getAccountRepository().save(registeredUser);
+                    return ResponseEntity.ok(Collections.singletonMap("success", "User updated"));
+                } else {
+                    return ResponseEntity.badRequest()
+                            .body(Collections.singletonMap("error", "User is not a registered user"));
+                }
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body(Collections.singletonMap("error", "Error updating user"));
+        }
+    }
+
 }

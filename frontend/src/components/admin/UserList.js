@@ -8,13 +8,12 @@ import {
   TableRow,
   Paper,
   Button,
+  Switch
 } from "@material-ui/core";
 import axios from "axios";
 
-
 const UserList = () => {
   const [registeredList, setRegisteredList] = useState([]);
-
 
   useEffect(() => {
     fetchUsers();
@@ -30,6 +29,15 @@ const UserList = () => {
   const handleDelete = async (id) => {
     await axios.delete(`http://localhost:8080/api/accounts/users/${id}`);
     fetchUsers();
+  };
+
+  const handleUpdate = async (id, updates) => {
+    try {
+      await axios.put(`http://localhost:8080/api/accounts/users/${id}/update`, updates);
+      fetchUsers();
+    } catch (error) {
+      console.error("Error updating user:", error);
+    }
   };
 
   const handlePrint = () => {
@@ -48,6 +56,8 @@ const UserList = () => {
               <TableCell>Email</TableCell>
               <TableCell>DOB</TableCell>
               <TableCell>CC Number</TableCell>
+              <TableCell>Free Ticket</TableCell>
+              <TableCell>Lounge Discount</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -60,6 +70,18 @@ const UserList = () => {
                 <TableCell>{user.email}</TableCell>
                 <TableCell>{user.dob}</TableCell>
                 <TableCell>{user.creditCard.number}</TableCell>
+                <TableCell>
+                  <Switch
+                    checked={user.freeTicket}
+                    onChange={() => handleUpdate(user.id, { freeTicket: !user.freeTicket })}
+                  />
+                </TableCell>
+                <TableCell>
+                  <Switch
+                    checked={user.loungeDiscount}
+                    onChange={() => handleUpdate(user.id, { loungeDiscount: !user.loungeDiscount })}
+                  />
+                </TableCell>
                 <TableCell>
                   <Button
                     variant="contained"
