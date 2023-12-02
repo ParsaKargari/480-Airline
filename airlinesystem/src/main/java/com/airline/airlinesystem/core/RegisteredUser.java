@@ -8,6 +8,9 @@ public class RegisteredUser extends User {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "credit_card_id", referencedColumnName = "id")
     private CreditCard creditCard;
+    private Boolean loungeDiscount;
+    private Boolean freeTicket;
+    private String useDate;
 
     public RegisteredUser() {
         super();
@@ -24,6 +27,30 @@ public class RegisteredUser extends User {
 
     public void setCreditCard(CreditCard creditCard) {
         this.creditCard = creditCard;
+    }
+
+    public Boolean getLoungeDiscount() {
+        return loungeDiscount;
+    }
+
+    public void setLoungeDiscount(Boolean loungeDiscount) {
+        this.loungeDiscount = loungeDiscount;
+    }
+
+    public Boolean getFreeTicket() {
+        return freeTicket;
+    }
+
+    public void setFreeTicket(Boolean freeTicket) {
+        this.freeTicket = freeTicket;
+    }
+
+    public String getUseDate() {
+        return useDate;
+    }
+
+    public void setUseDate(String useDate) {
+        this.useDate = useDate;
     }
 
 }

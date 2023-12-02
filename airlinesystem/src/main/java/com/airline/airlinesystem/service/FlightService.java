@@ -8,6 +8,8 @@ import com.airline.airlinesystem.core.Receipt;
 import com.airline.airlinesystem.core.Seat;
 import com.airline.airlinesystem.core.Aircraft;
 import com.airline.airlinesystem.core.Crew;
+import com.airline.airlinesystem.core.User;
+import com.airline.airlinesystem.core.RegisteredUser;
 import com.airline.airlinesystem.repository.CrewRepository;
 import com.airline.airlinesystem.repository.FlightRepository;
 import com.airline.airlinesystem.repository.PassengerRepository;
@@ -15,9 +17,12 @@ import com.airline.airlinesystem.repository.PaymentRepository;
 import com.airline.airlinesystem.repository.TicketRepository;
 import com.airline.airlinesystem.repository.ReceiptRepository;
 import com.airline.airlinesystem.repository.SeatRepository;
+import com.airline.airlinesystem.repository.AccountRepository;
 import javax.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,6 +47,9 @@ public class FlightService {
 
     @Autowired
     private CrewRepository crewRepository;
+
+    @Autowired
+    private AccountRepository accountRepository;
 
     private final FlightRepository flightRepository;
 
@@ -210,8 +218,18 @@ public class FlightService {
     }
 
     public Flight bookFlight(Flight flight, List<String> seatNumbers, String email, String name, String creditCardNum,
-            String cvv, String expDate) {
+            String cvv, String expDate, Boolean useFreeTicket) {
         flight.selectSeats(seatNumbers);
+        if(useFreeTicket){
+            User user =  accountRepository.findByEmail(email);
+            if(user != null){
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yy");
+                String currentDate = dateFormat.format(new Date());
+                ((RegisteredUser)user).setFreeTicket(false);
+                ((RegisteredUser)user).setUseDate(currentDate);
+                accountRepository.save(user);
+            }
+        }
         List<Passenger> existingPassengers = flight.getPassengers();
         if (existingPassengers == null) {
             existingPassengers = new ArrayList<>();
@@ -220,17 +238,17 @@ public class FlightService {
         double amount = 0;
         for (String seatNumber : seatNumbers) {
             int rowNumber = Integer.parseInt(seatNumber.substring(1));
-            if (rowNumber >= 0 && rowNumber <= 1) {
+            if (rowNumber >= 1 && rowNumber <= 2) {
                 Seat newSeat = new Seat(flight.getFlightNo(), seatNumber, "Business Class", 250);
                 newSeat.setAvailable(false);
                 amount += 250;
                 seatRepository.save(newSeat);
-            } else if (rowNumber >= 2 && rowNumber <= 4) {
+            } else if (rowNumber >= 3 && rowNumber <= 5) {
                 Seat newSeat = new Seat(flight.getFlightNo(), seatNumber, "Comfort Class", 140);
                 newSeat.setAvailable(false);
                 seatRepository.save(newSeat);
                 amount += 140;
-            } else if (rowNumber >= 5 && rowNumber <= 12) {
+            } else if (rowNumber >= 6 && rowNumber <= 13) {
                 Seat newSeat = new Seat(flight.getFlightNo(), seatNumber, "Ordinary Class", 100);
                 newSeat.setAvailable(false);
                 seatRepository.save(newSeat);
@@ -250,6 +268,7 @@ public class FlightService {
         receiptRepository.save(payment.getReceipt());
         existingPassengers.addAll(passengers);
         flight.setPassengers(existingPassengers);
+
         Flight updatedFlight = saveFlight(flight);
         return updatedFlight;
     }
