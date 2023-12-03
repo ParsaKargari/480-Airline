@@ -136,6 +136,7 @@ const FlightList = () => {
     }
     setAircraft(selectedAircraft);
   };
+  
 
   const isFormValid = () => {
     // Check if all required fields are filled
@@ -156,6 +157,18 @@ const FlightList = () => {
 
   const handleEndDateChange = (event) => {
     setFilterEndDate(event.target.value);
+  };
+
+  const formatToYYYYMMDD = (dateString) => {
+    if (!dateString) return "";
+    const parts = dateString.split("-");
+    return `${parts[2]}-${parts[1]}-${parts[0]}`; // Convert DD-MM-YYYY to YYYY-MM-DD
+  };
+
+  const formatToDDMMYYYY = (dateString) => {
+    if (!dateString) return "";
+    const parts = dateString.split("-");
+    return `${parts[2]}-${parts[1]}-${parts[0]}`; // Convert YYYY-MM-DD to DD-MM-YYYY
   };
 
   const filterFlights = () => {
@@ -181,6 +194,10 @@ const FlightList = () => {
   const filteredFlights = filterFlights();
 
   const openDialog = (flight) => {
+    if (flight) {
+      // Convert the departure date to YYYY-MM-DD format
+      flight.departureDate = formatToYYYYMMDD(flight.departureDate);
+    }
     setCurrentFlight(
       flight || {
         flightNo: "",
@@ -200,10 +217,8 @@ const FlightList = () => {
 
   const handleSave = () => {
     if (currentFlight) {
-      const formattedDate = currentFlight.departureDate
-        .split("-")
-        .reverse()
-        .join("-");
+      // Convert the departure date to DD-MM-YYYY format
+      const formattedDate = formatToDDMMYYYY(currentFlight.departureDate);
       const flightData = {
         ...currentFlight,
         departureDate: formattedDate,

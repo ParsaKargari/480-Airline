@@ -71,20 +71,20 @@ public class FlightService {
         List<Flight> flights = new ArrayList<>();
 
         // Realistic flight examples
-        flights.add(new Flight("UA303", "San Francisco", "New York", "12-01-2023", "5h 30m",
+        flights.add(new Flight("UA303", "San Francisco", "New York", "01-12-2023", "5h 30m",
                 aircrafts.get(0)));
-        flights.add(new Flight("DL105", "Atlanta", "London", "12-05-2023", "8h 15m",
+        flights.add(new Flight("DL105", "Atlanta", "London", "05-12-2023", "8h 15m",
                 aircrafts.get(1)));
-        flights.add(new Flight("AA786", "Dallas", "Tokyo", "12-08-2023", "13h 45m",
+        flights.add(new Flight("AA786", "Dallas", "Tokyo", "08-12-2023", "13h 45m",
                 aircrafts.get(2)));
-        flights.add(new Flight("LH455", "Berlin", "San Francisco", "12-20-2023", "11h 20m",
+        flights.add(new Flight("LH455", "Berlin", "San Francisco", "20-12-2023", "11h 20m",
                 aircrafts.get(0)));
-        flights.add(new Flight("QF12", "Sydney", "Los Angeles", "11-29-2023", "14h 30m",
+        flights.add(new Flight("QF12", "Sydney", "Los Angeles", "29-11-2023", "14h 30m",
                 aircrafts.get(1)));
-        flights.add(new Flight("EK241", "Dubai", "Toronto", "11-28-2023", "14h 00m", aircrafts.get(2)));
-        flights.add(new Flight("SQ26", "Singapore", "Frankfurt", "12-03-2023", "12h 10m", aircrafts.get(0)));
-        flights.add(new Flight("AF83", "Paris", "San Francisco", "12-02-2023", "11h 35m", aircrafts.get(1)));
-        flights.add(new Flight("BA75", "London", "Lagos", "12-08-2023", "6h 50m", aircrafts.get(2)));
+        flights.add(new Flight("EK241", "Dubai", "Toronto", "28-11-2023", "14h 00m", aircrafts.get(2)));
+        flights.add(new Flight("SQ26", "Singapore", "Frankfurt", "03-12-2023", "12h 10m", aircrafts.get(0)));
+        flights.add(new Flight("AF83", "Paris", "San Francisco", "02-12-2023", "11h 35m", aircrafts.get(1)));
+        flights.add(new Flight("BA75", "London", "Lagos", "08-12-2023", "6h 50m", aircrafts.get(2)));
 
         // Save the flights to the database
         flightRepository.saveAll(flights);
