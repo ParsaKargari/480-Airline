@@ -14,10 +14,10 @@ import {
 import FlightIcon from "@material-ui/icons/Flight";
 import PeopleIcon from "@material-ui/icons/People";
 import AirplanemodeActiveIcon from "@material-ui/icons/AirplanemodeActive";
-import FlightList from "./admin/FlightList"; // Import the FlightList component
-import CrewList from "./admin/CrewList"; // Import the CrewList component
-import AircraftList from "./admin/AircraftList"; // Import the AircraftList component
-import UserList from "./admin/UserList"; // Import the UserList component
+import FlightList from "./admin/FlightList";
+import CrewList from "./admin/CrewList"; 
+import AircraftList from "./admin/AircraftList"; 
+import UserList from "./admin/UserList"; 
 import { useNavigate } from "react-router-dom";
 
 const drawerWidth = 240;

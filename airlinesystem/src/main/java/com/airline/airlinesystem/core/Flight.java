@@ -3,9 +3,10 @@ package com.airline.airlinesystem.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 
-// Flight Database
 
 @Entity
 public class Flight {
@@ -19,17 +20,19 @@ public class Flight {
     private String departureDate;
     private String duration;
 
-    @Transient // Do not include in database
-    private FlightViewStrategy flightStrategy;
-
-    @Transient
-    private List<String> crew;
+    @OneToMany(mappedBy = "flight", cascade = CascadeType.ALL)
+    @JsonManagedReference
+    private List<Crew> crew;
 
     @Transient
     private List<Passenger> passengers;
 
-    @OneToMany(mappedBy = "flight", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    @OneToMany(mappedBy = "flight", cascade = CascadeType.REMOVE)
     private List<Seat> seats;
+
+    @ManyToOne // Many flights can use one aircraft
+    @JoinColumn(name = "aircraft_id") // Foreign key in the Flight table
+    private Aircraft aircraft;
 
     // Default constructor
     public Flight() {
@@ -37,23 +40,19 @@ public class Flight {
         initializeSeats();
     }
 
-    public Flight(FlightViewStrategy flightStrategy, String flightNo, String destination, String origin,
-            List<String> crew, List<Seat> seats, List<Passenger> passengers) {
-
-        this.flightStrategy = flightStrategy;
+    public Flight(String flightNo, String destination, String origin, String departureDate, String duration, Aircraft aircraft) {
+        this.duration = duration;
         this.flightNo = flightNo;
         this.destination = destination;
         this.origin = origin;
-        this.crew = crew;
-        this.seats = seats;
-        this.passengers = passengers;
+        this.aircraft = aircraft;
+        this.departureDate = departureDate;
     }
 
     // Initialize Seats
     public void initializeSeats() {
         this.seats = new ArrayList<>();
 
-        // Your logic to add seats...
 
         // First class
         for (int i = 0; i < 2; i++) {
@@ -78,7 +77,7 @@ public class Flight {
             for (char j = 'A'; j <= 'G'; j++) {
                 String seatNumber = String.valueOf(j) + (i + 1);
                 Seat seat = new Seat(flightNo, seatNumber, "Ordinary Class", 100);
-                
+
                 seats.add(seat); // No need to setFlight
             }
         }
@@ -100,14 +99,6 @@ public class Flight {
 
     public String getDuration() {
         return duration;
-    }
-
-    public FlightViewStrategy getFlightStrategy() {
-        return flightStrategy;
-    }
-
-    public void setFlightStrategy(FlightViewStrategy flightStrategy) {
-        this.flightStrategy = flightStrategy;
     }
 
     public String getFlightNo() {
@@ -134,23 +125,15 @@ public class Flight {
         this.origin = origin;
     }
 
-    public List<String> getCrew() {
+    public List<Crew> getCrew() {
         return crew;
     }
 
-    public void setCrew(List<String> crew) {
+    public void setCrew(List<Crew> crew) {
         this.crew = crew;
     }
- 
 
 
-    // Method to add a crew member
-    public void addCrewMember(String crewMember) {
-        if (crew == null) {
-            crew = new ArrayList<>();
-        }
-        crew.add(crewMember);
-    }
 
     // Method to remove a crew member
     public void removeCrewMember(String crewMember) {
@@ -180,13 +163,13 @@ public class Flight {
             for (Seat seat : seats) {
                 if (seat.getSeatNumber().equals(seatNumber)) {
                     seat.setAvailable(false);
-                    
+
                 }
             }
         }
     }
 
-        // Method to add cancelled seats back to available(for booking)
+    // Method to add cancelled seats back to available(for booking)
     public void addSeats(List<String> seatNumbers) {
         for (String seatNumber : seatNumbers) {
             for (Seat seat : seats) {
@@ -241,6 +224,17 @@ public class Flight {
     }
 
     public void setSeats(List<Seat> seats) {
-        this.seats = seats;
+        this.seats.clear();
+        if (seats != null) {
+            this.seats.addAll(seats);
+        }
+    }
+
+    public Aircraft getAircraft() {
+        return aircraft;
+    }
+
+    public void setAircraft(Aircraft aircraft) {
+        this.aircraft = aircraft;
     }
 }

@@ -32,11 +32,11 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     [theme.breakpoints.up("sm")]: {
       width: "30%",
-      height: "fit-content", // Adjusted height to fit content
+      height: "fit-content", 
     },
     [theme.breakpoints.down("xs")]: {
       width: "80%",
-      height: "fit-content", // Adjusted height to fit content
+      height: "fit-content", 
     },
     backgroundColor: theme.palette.background.paper,
     boxShadow: theme.shadows[5],
@@ -222,7 +222,7 @@ export default function RegisterModal({ open, handleClose }) {
               !email ||
               !dob ||
               !address ||
-              (wantToRegister && (!name || !address)) // Additional check for registered users
+              (wantToRegister && (!name || !address)) 
             }
           >
             Register

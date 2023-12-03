@@ -22,6 +22,8 @@ public class Payment {
     private Flight flight;
     @Transient
     private Receipt receipt;
+    @Transient
+    private static int paymentId = 1;
 
     private String name;
     private String email;                       
@@ -55,8 +57,6 @@ public class Payment {
         if (cvv == null || cvv.length() != 3) {
             return false;
         }
-
-
         if(expirationDate == null || expirationDate.length() != 5){
             return false;
         }
@@ -68,7 +68,7 @@ public class Payment {
             return false;
         }
         for (String seatNo : seats) {
-            Ticket ticket = new Ticket(id + 1, flight, passenger, seatNo);
+            Ticket ticket = new Ticket(paymentId, flight, passenger, seatNo);
             tickets.add(ticket);
             String emailSubject = "Congratulations! Your Flight Booking and Payment are Confirmed";
             String emailBody = "Dear " + name + ",\n\n" +
@@ -94,12 +94,12 @@ public class Payment {
             }
         }   
 
-        this.receipt = new Receipt(id + 1, amount, email);
+        this.receipt = new Receipt(paymentId, amount, email);
         String emailSubject = "Receipt For Your Recent Booking With Moussavi Airlines";
         String emailBody = "Dear " + name + ",\n\n" +
         "Thank you for choosing Moussavi Airlines! We are pleased to provide you with the receipt for your recent booking.\n\n" +
         "Booking Details:\n" +
-        "- Transaction ID: " + id + 1 + "\n" +
+        "- Transaction ID: " + paymentId + "\n" +
         "- Total Amount Paid: $" + amount + "\n\n" +
         "We hope you have a pleasant journey with Moussavi Airlines. If you have any questions or need further assistance, feel free to contact our customer support.\n\n" +
         "Thank you for flying with us!\n\n" +
@@ -111,6 +111,7 @@ public class Payment {
         catch(Exception e){
             e.printStackTrace();
         }
+        paymentId++;
         return true;
     }
 
