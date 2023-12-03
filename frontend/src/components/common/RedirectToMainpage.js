@@ -4,11 +4,11 @@ const RedirectToMainPage = () => {
   useEffect(() => {
     // Redirect to the main page only if the current location is not the main page
     if (window.location.pathname !== "/") {
-      window.location.href = "/"; // Replace "/" with your main page URL
+      window.location.href = "/";
     }
-  }, []); // The empty dependency array ensures that this effect runs only once on mount
+  }, []); 
 
-  return null; // This component doesn't render anything
+  return null; 
 };
 
 export default RedirectToMainPage;

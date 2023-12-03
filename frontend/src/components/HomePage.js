@@ -1,8 +1,16 @@
 // src/components/HomePage.js
 
-import React from "react";
-import { Container, Typography, Paper, makeStyles } from "@material-ui/core";
+import React, { useState } from "react";
+import {
+  Container,
+  Typography,
+  Paper,
+  makeStyles,
+  Button,
+  Drawer,
+} from "@material-ui/core";
 import FlightSearch from "./FlightSearch";
+import FlightCancellationForm from "./FlightCancellationForm";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,19 +37,33 @@ const useStyles = makeStyles((theme) => ({
   searchContainer: {
     marginBottom: theme.spacing(6),
   },
+  drawerButton: {
+    marginTop: theme.spacing(2),
+  },
 }));
 
 export default function HomePage() {
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const classes = useStyles();
+
+  const toggleDrawer = (open) => (event) => {
+    if (
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
+
+    setDrawerOpen(open);
+  };
+
   return (
     <div className={classes.root}>
       <div className={classes.searchContainer}>
         <FlightSearch />
       </div>
       <Container maxWidth="lg">
-        {/* Hero unit */}
         <Paper className={classes.mainFeaturedPost}>
-          {/* Increase the priority of the hero background image */}
           {
             <img
               style={{ display: "none" }}

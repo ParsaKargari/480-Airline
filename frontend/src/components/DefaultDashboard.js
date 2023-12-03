@@ -15,6 +15,7 @@ import ListItemIcon from "@material-ui/core/ListItemIcon";
 import PersonIcon from "@material-ui/icons/Person";
 import ListItemText from "@material-ui/core/ListItemText";
 import CheckoutModal from "./CheckoutModal";
+import axios from "axios";
 
 const numRows = 13;
 
@@ -144,9 +145,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#fff",
     borderRadius: "10px",
     marginTop: "45px",
-    // navy blue border
     padding: "30px",
-    // shadow
     boxShadow: "0 0 10px rgba(0,0,0,0.2)",
     flexDirection: "column",
     alignItems: "center",
@@ -163,15 +162,31 @@ const DefaultDashboard = () => {
   const seatOptions = ["ordinary", "comfort", "business"];
   const [selectedSeatType, setSelectedSeatType] = useState("all");
   const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
+  const [soldOutSeats, setSoldOutSeats] = useState([]);
 
-  // Sold out seats, go through a loop and add them to the array
-  const soldOutSeats = selectedFlight.soldOutSeats.map((seat) => {
-    return seat.seatNumber;
-  });
+  console.log(selectedFlight.id);
 
+  const fetchSoldOutSeats = async () => {
+    const response = await fetch(
+      `http://localhost:8080/api/flights/${selectedFlight.flightNo}/seats/sold-out`
+    );
+    const data = await response.json();
+    console.log(data);
+    setSoldOutSeats(extractSeats(data));
+  };
 
+  React.useEffect(() => {
+    fetchSoldOutSeats();
+  }, []);
 
-  console.log(soldOutSeats);
+  const extractSeats = (fetchedSeats) => {
+    const seats = [];
+    fetchedSeats.forEach((seat) => {
+      seats.push(seat.seatNumber);
+    });
+    return seats;
+  };
+
   const seatPrices = {
     // Need to get this from the backend
     ordinary: 100,
@@ -375,9 +390,7 @@ const DefaultDashboard = () => {
             fontSize="large"
             style={{ margin: "0 10px", marginLeft: "30px" }}
           />
-          <Typography variant="subtitle1">
-            {selectedFlight.flightNo}
-          </Typography>
+          <Typography variant="subtitle1">{selectedFlight.flightNo}</Typography>
           <FlightLandIcon
             fontSize="large"
             style={{ margin: "0 10px", marginLeft: "30px" }}
@@ -445,7 +458,6 @@ const DefaultDashboard = () => {
               </ListItem>
             </div>
           </div>
-          {/* Checkout button and total price */}
           <div
             style={{
               marginTop: "20px",

@@ -14,7 +14,10 @@ import {
   DialogContent,
   DialogTitle,
   Grid,
-  Typography,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -34,6 +37,10 @@ const useStyles = makeStyles((theme) => ({
   dialogContent: {
     minWidth: "400px",
   },
+  formControl: {
+    minWidth: 120,
+    marginTop: theme.spacing(2),
+  },
 }));
 
 const FlightList = () => {
@@ -43,6 +50,14 @@ const FlightList = () => {
   const [currentFlight, setCurrentFlight] = useState(null);
   const [filterStartDate, setFilterStartDate] = useState("");
   const [filterEndDate, setFilterEndDate] = useState("");
+  const [aircrafts, setAircrafts] = useState([]);
+  const [aircraft, setAircraft] = useState(null);
+  const [selectedAircraftId, setSelectedAircraftId] = useState("");
+
+  useEffect(() => {
+    fetchFlights();
+    fetchAircrafts();
+  }, []);
 
   const fetchFlights = async () => {
     try {
@@ -97,10 +112,43 @@ const FlightList = () => {
     }
   };
 
-  // Fetch flights on component mount
-  useEffect(() => {
-    fetchFlights();
-  }, []);
+  const fetchAircrafts = async () => {
+    try {
+      const response = await fetch("http://localhost:8080/api/aircraft");
+      if (response.ok) {
+        const data = await response.json();
+        setAircrafts(data);
+      }
+    } catch (error) {
+      console.error("Error fetching aircrafts:", error);
+    }
+  };
+
+  const handleAircraftChange = (event) => {
+    const aircraftId = event.target.value;
+    setSelectedAircraftId(aircraftId);
+    const selectedAircraft = aircrafts.find((a) => a.id === aircraftId);
+    if (selectedAircraft) {
+      setCurrentFlight({
+        ...currentFlight,
+        aircraft: selectedAircraft,
+      });
+    }
+    setAircraft(selectedAircraft);
+  };
+
+  const isFormValid = () => {
+    // Check if all required fields are filled
+    return (
+      currentFlight &&
+      currentFlight.flightNo &&
+      currentFlight.origin &&
+      currentFlight.destination &&
+      currentFlight.departureDate &&
+      currentFlight.duration &&
+      currentFlight.aircraft
+    );
+  };
 
   const handleStartDateChange = (event) => {
     setFilterStartDate(event.target.value);
@@ -112,16 +160,20 @@ const FlightList = () => {
 
   const filterFlights = () => {
     return flights.filter((flight) => {
-      const [month, day, year] = flight.departureDate?.split("-");
-      const flightDate = new Date(`${year}-${month}-${day}`);
 
+      // Parse the departure date of the flight
+      const [day, month, year] = flight.departureDate.split("-");
+      const flightDate = new Date(year, month - 1, day); // Month index is 0-based in JavaScript
+
+      // Parse the filter start and end dates
       const startDate = filterStartDate
         ? new Date(filterStartDate)
-        : new Date(-8640000000000000); // Far in the past
+        : new Date(-8640000000000000);
       const endDate = filterEndDate
         ? new Date(filterEndDate)
-        : new Date(8640000000000000); // Far in the future
+        : new Date(8640000000000000);
 
+      // Return true if the flight date is within the specified range
       return flightDate >= startDate && flightDate <= endDate;
     });
   };
@@ -155,17 +207,18 @@ const FlightList = () => {
       const flightData = {
         ...currentFlight,
         departureDate: formattedDate,
-        crew: [],
-        seats: [],
+        aircraft: {
+          model: aircraft?.model,
+          capacity: aircraft?.capacity,
+          airline: aircraft?.airline,
+          tailNumber: aircraft?.tailNumber,
+        },
+        crew: [], 
+        seats: [], 
       };
       addOrUpdateFlight(flightData);
     }
     closeDialog();
-  };
-
-  const formatDate = (date) => {
-    const [year, month, day] = date.split("-");
-    return `${month}-${day}-${year}`;
   };
 
   const handleDelete = (id) => {
@@ -215,6 +268,7 @@ const FlightList = () => {
               <TableCell>Destination</TableCell>
               <TableCell>Departure Date</TableCell>
               <TableCell>Duration</TableCell>
+              <TableCell>Aircraft</TableCell>
               <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
@@ -227,6 +281,7 @@ const FlightList = () => {
                 <TableCell>{flight.destination}</TableCell>
                 <TableCell>{flight.departureDate}</TableCell>
                 <TableCell>{flight.duration}</TableCell>
+                <TableCell>{flight.aircraft.model}</TableCell>
                 <TableCell>
                   <Button color="primary" onClick={() => openDialog(flight)}>
                     Edit
@@ -248,6 +303,25 @@ const FlightList = () => {
           {currentFlight?.id ? "Edit Flight" : "Add Flight"}
         </DialogTitle>
         <DialogContent className={classes.dialogContent}>
+          {!currentFlight?.id && (
+            <FormControl className={classes.formControl} fullWidth>
+              <InputLabel id="aircraft-label">Aircraft</InputLabel>
+              <Select
+                labelId="aircraft-select-label"
+                id="aircraft-select"
+                value={selectedAircraftId}
+                onChange={handleAircraftChange}
+                disabled={!!currentFlight?.id}
+              >
+                {aircrafts.map((aircraft) => (
+                  <MenuItem key={aircraft.id} value={aircraft.id}>
+                    {aircraft.model} - {aircraft.airline} -{" "}
+                    {aircraft.tailNumber}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          )}
           <TextField
             autoFocus
             margin="dense"

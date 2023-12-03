@@ -71,13 +71,12 @@ public class CreditCard {
     }
 
     private String generateRandomCreditCardNumber() {
+        // 16-digit credit card number no spaces
         Random rand = new Random();
-        StringBuilder cardNumber = new StringBuilder("4");
-        for (int i = 1; i < 16; i++) {
+        StringBuilder cardNumber = new StringBuilder();
+
+        for (int i = 0; i < 16; i++) {
             cardNumber.append(rand.nextInt(10));
-            if (i % 4 == 0 && i != 16) {
-                cardNumber.append(" ");
-            }
         }
 
         return cardNumber.toString();
@@ -94,13 +93,21 @@ public class CreditCard {
         return cvv.toString();
     }
 
-
     private String generateRandomExpDate() {
         Random rand = new Random();
-        int currentYear = 2023;
-        int year = currentYear + rand.nextInt(5); // Expiry date within the next 5 years
-        int month = rand.nextInt(12) + 1; // Month between 1 and 12
+        StringBuilder expDate = new StringBuilder();
 
-        return String.format("%02d/%d", month, year);
+        int month = rand.nextInt(12) + 1;
+        int year = 25 + rand.nextInt(2);
+
+        if (month < 10) {
+            expDate.append("0");
+        }
+        expDate.append(month);
+        expDate.append("/");
+        expDate.append(year);
+
+        return expDate.toString();
+
     }
 }

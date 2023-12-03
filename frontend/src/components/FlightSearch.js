@@ -15,6 +15,8 @@ import TextField from "@material-ui/core/TextField";
 import MuiAlert from "@material-ui/lab/Alert";
 import { AuthContext } from "./contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
+import Drawer from "@material-ui/core/Drawer";
+import FlightCancellationForm from "./FlightCancellationForm";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,7 +50,18 @@ export default function FlightSearch() {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
   const [flights, setFlights] = useState([]);
-  const [flightID, setFlightID] = useState();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const toggleDrawer = (open) => (event) => {
+    if (
+      event.type === "keydown" &&
+      (event.key === "Tab" || event.key === "Shift")
+    ) {
+      return;
+    }
+
+    setDrawerOpen(open);
+  };
 
   useEffect(() => {
     fetchFlights();
@@ -60,18 +73,15 @@ export default function FlightSearch() {
       if (response.ok) {
         const data = await response.json();
         setFlights(data);
-        console.log(data);
       } else {
         throw new Error("Failed to fetch flights");
       }
     } catch (error) {
       console.error("Error fetching flights:", error);
-      // Handle errors here
     }
   };
 
   const handleSearch = () => {
-    // Here you would handle the actual search logic
     const searchResults = flights.find(
       (flight) =>
         flight.flightNo +
@@ -110,7 +120,6 @@ export default function FlightSearch() {
   };
 
   const handleSearchAdmin = () => {
-    // Navigate to admin dashboard
     navigate("/admin-dashboard");
   };
 
@@ -149,7 +158,6 @@ export default function FlightSearch() {
                 flight.destination
             )}
             onInputChange={(event, newInputValue) => {
-              console.log(newInputValue);
               setSearchTerm(newInputValue);
             }}
             renderInput={(params) => (
@@ -183,8 +191,19 @@ export default function FlightSearch() {
               Admin Dashboard
             </Button>
           )}
+          <Button
+            className={classes.button}
+            fullWidth
+            variant="outlined"
+            onClick={toggleDrawer(true)}
+          >
+            Cancel Flight
+          </Button>
         </CardContent>
       </Card>
+      <Drawer anchor="right" open={drawerOpen} onClose={toggleDrawer(false)}>
+        <FlightCancellationForm flights={flights}  />
+      </Drawer>
       <Snackbar
         open={openSnackbar}
         autoHideDuration={6000}

@@ -1,5 +1,5 @@
 // src/components/AirAgentDashboard.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { Button, Switch, makeStyles } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
@@ -19,6 +19,7 @@ import EventSeatIcon from "@material-ui/icons/EventSeat";
 import AttachMoneyIcon from "@material-ui/icons/AttachMoney";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import CheckoutModalEmail from "./CheckoutModalEmail";
+import axios from "axios";
 
 const numRows = 13;
 
@@ -49,9 +50,9 @@ const useStyles = makeStyles((theme) => ({
   },
   seat: {
     backgroundColor: "#b4d9ff",
-    height: "35px", // Adjust the height as needed
-    width: "35px", // Adjust the width as needed
-    margin: "3px", // Adjust the margin as needed
+    height: "35px",
+    width: "35px",
+    margin: "3px",
     fontSize: "11px",
     borderRadius: "5px",
     cursor: "not-allowed",
@@ -141,7 +142,6 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
   },
   seatPrev: {
-    // make bigger
     height: "60px",
     width: "60px",
     "&:hover": {
@@ -154,9 +154,7 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#fff",
     borderRadius: "10px",
     marginTop: "25px",
-    // navy blue border
     padding: "30px",
-    // shadow
     boxShadow: "0 0 10px rgba(0,0,0,0.2)",
     flexDirection: "column",
     alignItems: "center",
@@ -172,49 +170,50 @@ const AirAgentDashboard = () => {
   const [viewMode, setViewMode] = useState(true);
   const seatOptions = ["ordinary", "comfort", "business"];
   const [selectedPage, setSelectedPage] = useState("passenger");
-  const [seatToBook, setSeatToBook] = useState(null);
+  const [passengerList, setPassengerList] = useState(null);
+  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
+  const [soldOutSeats, setSoldOutSeats] = useState(null);
+
   const seatPrices = {
-    // Need to get this from the backend
     ordinary: 100,
     comfort: 140,
     business: 250,
   };
-  const [passengerList, setPassengerList] = useState([
-    // Need to get this from the backend
-    {
-      name: "John Doe",
-      email: "johndoe@gmail.com",
-      seat: "A1",
-      seatType: "business",
-    },
-    {
-      name: "Jane Doe",
-      email: "janedoe@gmail.com",
-      seat: "A3",
-      seatType: "comfort",
-    },
-    {
-      name: "Sarah Doe",
-      email: "sarahdoe@gmail.com",
-      seat: "B2",
-      seatType: "comfort",
-    },
-    {
-      name: "John Doe",
-      email: "johndoe@gmail.com",
-      seat: "G12",
-      seatType: "ordinary",
-    },
-    {
-      name: "Jane Doe",
-      email: "janedoe@gmail.com",
-      seat: "D7",
-      seatType: "ordinary",
-    },
-  ]);
 
-  const soldOutSeats = passengerList.map((passenger) => passenger.seat) || [];
-  const [isCheckoutModalOpen, setIsCheckoutModalOpen] = useState(false);
+  useEffect(() => {
+    fetchPassengerList().then((data) => {
+      setPassengerList(data);
+    });
+  }, []);
+
+  const fetchPassengerList = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8080/api/flights/${selectedFlight.flightNo}/passenger`
+      );
+      return response.data;
+    } catch (error) {}
+  };
+
+  const fetchSoldOutSeats = async () => {
+    const response = await fetch(
+      `http://localhost:8080/api/flights/${selectedFlight.flightNo}/seats/sold-out`
+    );
+    const data = await response.json();
+    console.log(data);
+    setSoldOutSeats(extractSeats(data));
+  };
+
+  React.useEffect(() => {
+    fetchSoldOutSeats();
+  }, []);
+  const extractSeats = (fetchedSeats) => {
+    const seats = [];
+    fetchedSeats.forEach((seat) => {
+      seats.push(seat.seatNumber);
+    });
+    return seats;
+  };
 
   const getSeatNumber = (row, seat) => {
     const seatLetter = String.fromCharCode(64 + seat);
@@ -222,8 +221,8 @@ const AirAgentDashboard = () => {
   };
 
   const getPassegerName = (seat) => {
-    const passenger = passengerList.find(
-      (passenger) => passenger.seat === seat
+    const passenger = passengerList?.find(
+      (passenger) => passenger.seatNo === seat
     );
     return passenger && passenger.name;
   };
@@ -240,7 +239,6 @@ const AirAgentDashboard = () => {
     } else {
       return seatOptions[0];
     }
-
   };
 
   const getIconColor = (passenger) => {
@@ -259,17 +257,19 @@ const AirAgentDashboard = () => {
     return seatPrices[seatType];
   };
 
-  // Function to check if a seat is sold out
   const isSoldOut = (rowIndex, seatIndex) => {
     // Convert the row and seat index into a seat number
     const seatKey = getSeatNumber(rowIndex, seatIndex);
-    return soldOutSeats.includes(seatKey);
+    if (soldOutSeats) {
+      return soldOutSeats.includes(seatKey);
+    }
   };
 
   const isSoldOut2 = (seatKey) => {
-    return soldOutSeats.includes(seatKey);
+    if (soldOutSeats) {
+      return soldOutSeats.includes(seatKey);
+    }
   };
-
 
   // Updated handleSeatClick function
   const handleSeatClick = (rowIndex, seatIndex) => {
@@ -443,9 +443,7 @@ const AirAgentDashboard = () => {
             fontSize="large"
             style={{ margin: "0 10px", marginLeft: "30px" }}
           />
-          <Typography variant="subtitle1">
-            {selectedFlight.flightNumber}
-          </Typography>
+          <Typography variant="subtitle1">{selectedFlight.flightNo}</Typography>
           <FlightLandIcon
             fontSize="large"
             style={{ margin: "0 10px", marginLeft: "30px" }}
@@ -510,8 +508,6 @@ const AirAgentDashboard = () => {
               value="passengerList"
             />
           </BottomNavigation>
-
-          {/* Display Single Passenger Info, based on selected seat */}
           {selectedPage === "passenger" && (
             <div className={classes.selectedSeatsContainer}>
               <Paper elevation={3} className={classes.passengerDetailPaper}>
@@ -549,9 +545,7 @@ const AirAgentDashboard = () => {
                 variant="contained"
                 color="primary"
                 style={{ marginTop: "20px" }}
-                disabled={
-                  viewMode || !selectedSeat || isSoldOut2(selectedSeat)
-                }
+                disabled={viewMode || !selectedSeat || isSoldOut2(selectedSeat)}
                 onClick={() => {
                   setIsCheckoutModalOpen({
                     isOpen: true,
@@ -566,21 +560,25 @@ const AirAgentDashboard = () => {
               </Button>
             </div>
           )}
-          {/* Display Passenger List */}
+
           {selectedPage === "passengerList" && (
             <div className={classes.selectedSeatsContainer}>
               <Paper elevation={3} className={classes.passengerListPaper}>
                 <List style={{ overflow: "auto", maxHeight: "250px" }}>
                   {passengerList.map((passenger) => (
-                    <ListItem key={passenger.name}>
+                    <ListItem key={passenger.id}>
                       <ListItemIcon
-                        style={{ color: getIconColor(passenger.seatType) }}
+                        style={{
+                          color: getIconColor(getSeatType(passenger.seatNo)),
+                        }}
                       >
                         <PersonIcon />
                       </ListItemIcon>
                       <ListItemText
                         primary={passenger.name}
-                        secondary={`Seat: ${passenger.seat} | ${passenger.seatType} ${passenger.email}`}
+                        secondary={`Seat: ${passenger.seatNo} | ${getSeatType(
+                          passenger.seatNo
+                        )} ${passenger.email}`}
                       />
                     </ListItem>
                   ))}

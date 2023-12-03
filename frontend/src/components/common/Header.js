@@ -6,12 +6,16 @@ import {
   Button,
   makeStyles,
   Link,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@material-ui/core";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import RegisterModal from "../RegisterModal";
 import LoginModal from "../LoginModal";
 import { AuthContext } from "../contexts/AuthContext";
-
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -22,8 +26,7 @@ const useStyles = makeStyles((theme) => ({
   },
   title: {
     flexGrow: 1,
-    cursor: "pointer", // Add cursor pointer for indicating it's clickable
-    // make it smaller width
+    cursor: "pointer", 
     width: "fit-content",
   },
   appBar: {
@@ -35,9 +38,18 @@ export default function Header() {
   const classes = useStyles();
   const { user, logout } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [openNewsDialog, setOpenNewsDialog] = useState(false);
 
   const [isLoginOpen, setLoginOpen] = useState(false);
-  const [isRegisterOpen, setRegisterOpen] = useState(false); // State for the registration modal
+  const [isRegisterOpen, setRegisterOpen] = useState(false); 
+
+  const handleNewsClick = () => {
+    setOpenNewsDialog(true);
+  };
+
+  const handleNewsDialogClose = () => {
+    setOpenNewsDialog(false);
+  };
 
   const handleLoginOpen = () => {
     setLoginOpen(true);
@@ -56,14 +68,29 @@ export default function Header() {
   };
 
   const handleTitleClick = () => {
-    // Navigate to the home page when the title is clicked
     navigate("/");
   };
 
   const handleLogoutClick = () => {
-    // Perform logout and navigate to the home page
     logout();
     navigate("/");
+  };
+
+  const subscribeToNews = async () => {
+    try {
+      const userId = user.id;
+      const response = await fetch(`/api/accounts/news/${userId}`, {
+        method: "GET",
+      });
+      if (response.ok) {
+        console.log("News Sent");
+      } else {
+        console.log("Error sending news");
+      }
+    } catch (error) {
+      console.error("Error sending news:", error);
+    }
+    setOpenNewsDialog(false);
   };
 
   return (
@@ -80,10 +107,15 @@ export default function Header() {
           >
             <Typography variant="h6">Moussavi Airlines</Typography>
           </Link>
+          {user && user.role === "REGISTERED_USER" && (
+            <Button color="inherit" onClick={handleNewsClick}>
+              News
+            </Button>
+          )}
           {user ? (
             <>
               <Typography variant="h6" style={{ marginRight: "1rem" }}>
-                Welcome, {user.username}
+                Welcome, {user.name}
               </Typography>
               <Button color="inherit" onClick={handleLogoutClick}>
                 Logout
@@ -100,9 +132,30 @@ export default function Header() {
             </>
           )}
           <LoginModal open={isLoginOpen} handleClose={handleLoginClose} />
-          <RegisterModal open={isRegisterOpen} handleClose={handleRegisterClose} />
+          <RegisterModal
+            open={isRegisterOpen}
+            handleClose={handleRegisterClose}
+          />
         </Toolbar>
       </AppBar>
+
+      <Dialog open={openNewsDialog} onClose={handleNewsDialogClose}>
+        <DialogTitle>Get News Notification</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Do you want to receive the latest news and offers from Moussavi
+            Airlines?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleNewsDialogClose} color="primary">
+            No
+          </Button>
+          <Button onClick={subscribeToNews} color="primary" autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }

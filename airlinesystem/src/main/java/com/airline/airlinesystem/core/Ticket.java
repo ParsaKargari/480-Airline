@@ -61,13 +61,13 @@ public class Ticket implements Email {
         this.paymentId = paymentId;
 
         int rowNumber = Integer.parseInt(seatNumber.substring(1));
-        if (rowNumber >= 1 && rowNumber <= 2) {
+        if (rowNumber >= 0 && rowNumber <= 1) {
             this.seatClass = "Business Class";
             this.price = 250;
-        } else if (rowNumber >= 3 && rowNumber <= 5) {
+        } else if (rowNumber >= 2 && rowNumber <= 4) {
             this.seatClass = "Comfort Class";
             this.price = 140;
-        } else if (rowNumber >= 6 && rowNumber <= 13) {
+        } else if (rowNumber >= 5 && rowNumber <= 12) {
             this.seatClass = "Ordinary Class";
             this.price = 100;
         }
